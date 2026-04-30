@@ -29,10 +29,10 @@
 
 | Metric | Value |
 |---|---|
-| Total tasks | 77 |
+| Total tasks | 99 |
 | Completed tasks | 9 |
-| Remaining tasks | 68 |
-| Completion | 11.7% |
+| Remaining tasks | 90 |
+| Completion | 9.1% |
 
 ---
 

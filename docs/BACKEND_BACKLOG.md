@@ -10,10 +10,10 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 
 | Metric | Value |
 |---|---|
-| Total tasks | 75 |
-| Completed tasks | 14 |
-| Remaining tasks | 61 |
-| Completion | 18.7% |
+| Total tasks | 86 |
+| Completed tasks | 19 |
+| Remaining tasks | 67 |
+| Completion | 22.1% |
 
 ---
 
@@ -152,13 +152,13 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 
 ### Iteration 3 — Row Level Security (RLS)
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** Minden tábla RLS-sel védett, hogy a felhasználók csak a saját adataikat láthassák és módosíthassák.
 
 **Tasks:**
 
-- [ ] 3.1 RLS bekapcsolása minden táblán és policy-k létrehozása a user-specifikus táblákra:
+- [x] 3.1 RLS bekapcsolása minden táblán és policy-k létrehozása a user-specifikus táblákra:
   ```sql
   -- Példa: profiles
   ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
@@ -169,15 +169,15 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
   CREATE POLICY "Users can update own profile"
     ON profiles FOR UPDATE USING (auth.uid() = id);
   ```
-- [ ] 3.2 Ugyanez a minta a következő táblákra: `workout_plans`, `workout_days` (join a `workout_plans`-on keresztül), `workout_day_exercises` (join a `workout_days` → `workout_plans`-on keresztül), `daily_logs`, `food_entries` (join a `daily_logs`-on keresztül), `weight_logs`, `weekly_analyses`, `orders`, `order_items` (join az `orders`-on keresztül), `workout_exercise_logs` (join a `daily_logs`-on keresztül)
-- [ ] 3.3 Publikus olvasási policy az `exercises` és `products` táblákra:
+- [x] 3.2 Ugyanez a minta a következő táblákra: `workout_plans`, `workout_days` (join a `workout_plans`-on keresztül), `workout_day_exercises` (join a `workout_days` → `workout_plans`-on keresztül), `daily_logs`, `food_entries` (join a `daily_logs`-on keresztül), `weight_logs`, `weekly_analyses`, `orders`, `order_items` (join az `orders`-on keresztül), `workout_exercise_logs` (join a `daily_logs`-on keresztül)
+- [x] 3.3 Publikus olvasási policy az `exercises` és `products` táblákra:
   ```sql
   ALTER TABLE exercises ENABLE ROW LEVEL SECURITY;
 
   CREATE POLICY "Exercises are publicly readable"
     ON exercises FOR SELECT USING (true);
   ```
-- [ ] 3.4 RLS tesztelése: bejelentkezve csak a saját adatok jelennek meg; kijelentkezve a publikus táblák elérhetők, a privátok nem
+- [x] 3.4 RLS tesztelése: bejelentkezve csak a saját adatok jelennek meg; kijelentkezve a publikus táblák elérhetők, a privátok nem
 
 **Acceptance Criteria:**
 

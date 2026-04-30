@@ -14,9 +14,9 @@ A FitTrack Pro egy magyar nyelvű fullstack fitness webalkalmazás, amely a Szak
 - Külső adat: wger API (gyakorlatok), Open Food Facts API (ételek)
 
 **Backlog struktúra:**
-- Backend backlog: `/docs/BACKEND_BACKLOG.md` — 14 iteráció, 75 task összesen
-- Frontend backlog: `/docs/FRONTEND_BACKLOG.md` — 11 iteráció (F1-F11), 77 task összesen
-- Összesen: 152 task
+- Backend backlog: `/docs/BACKEND_BACKLOG.md` — 14 iteráció, 86 task összesen
+- Frontend backlog: `/docs/FRONTEND_BACKLOG.md` — 11 iteráció (F1-F11), 99 task összesen
+- Összesen: 185 task
 
 **Backend iterációk:**
 1. Projekt alapok + Supabase inicializálás
