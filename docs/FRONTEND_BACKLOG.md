@@ -30,9 +30,9 @@
 | Metric | Value |
 |---|---|
 | Total tasks | 99 |
-| Completed tasks | 9 |
-| Remaining tasks | 90 |
-| Completion | 9.1% |
+| Completed tasks | 23 |
+| Remaining tasks | 76 |
+| Completion | 23.2% |
 
 ---
 
@@ -100,19 +100,19 @@
 
 ### Iteration F2 — Auth Oldalak (Login & Regisztráció)
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** A bejelentkezési és regisztrációs oldalak UI-ja, a Supabase Auth-hoz csatlakoztatva. Ezek az első oldalak, amiket az új felhasználó lát — az első benyomás számít.
 
 **Tasks:**
 
-- [ ] F2.1 Auth layout (`(auth)/layout.tsx`): osztott képernyős elrendezés desktopra — bal oldalon a form, jobb oldalon egy dekoratív panel (gradiens háttér, motivációs idézet vagy app mockup). Mobilon csak a form jelenik meg.
-- [ ] F2.2 Login oldal: email + jelszó input (shadcn/ui Input), „Bejelentkezés" gomb (sötétvörös `#780000`), „Nincs fiókod? Regisztrálj" link, hibaüzenet megjelenítés (toast vagy inline)
-- [ ] F2.3 Regisztrációs oldal: email + jelszó + jelszó megerősítés inputok, jelszó erősség indikátor (vizuális sáv), „Regisztráció" gomb, „Van fiókod? Jelentkezz be" link
-- [ ] F2.4 Form validáció: Zod séma + React Hook Form (vagy natív form validáció), valós idejű hibaüzenetek magyarul, submit gomb disabled állapot amíg érvénytelen
-- [ ] F2.5 Loading állapotok: submit gomb spinner/loading animációval, disabled input mezők küldés közben
-- [ ] F2.6 Supabase Auth csatlakoztatás: `signUp`, `signIn` hívások a form submit-ra, sikeres login → redirect `/dashboard`, sikeres regisztráció → redirect `/onboarding`
-- [ ] F2.7 Auth guard (middleware csatlakoztatás): a protected oldalak redirect-elnek `/login`-ra ha nincs session; `/login` és `/register` redirect-elnek `/dashboard`-ra ha van session
+- [x] F2.1 Auth layout (`(auth)/layout.tsx`): osztott képernyős elrendezés desktopra — bal oldalon a form, jobb oldalon egy dekoratív panel (gradiens háttér, motivációs idézet vagy app mockup). Mobilon csak a form jelenik meg.
+- [x] F2.2 Login oldal: email + jelszó input (shadcn/ui Input), „Bejelentkezés" gomb (sötétvörös `#780000`), „Nincs fiókod? Regisztrálj" link, hibaüzenet megjelenítés (toast vagy inline)
+- [x] F2.3 Regisztrációs oldal: email + jelszó + jelszó megerősítés inputok, jelszó erősség indikátor (vizuális sáv), „Regisztráció" gomb, „Van fiókod? Jelentkezz be" link
+- [x] F2.4 Form validáció: Zod séma + React Hook Form (vagy natív form validáció), valós idejű hibaüzenetek magyarul, submit gomb disabled állapot amíg érvénytelen
+- [x] F2.5 Loading állapotok: submit gomb spinner/loading animációval, disabled input mezők küldés közben
+- [x] F2.6 Supabase Auth csatlakoztatás: `signUp`, `signIn` hívások a form submit-ra, sikeres login → redirect `/dashboard`, sikeres regisztráció → redirect `/onboarding`
+- [x] F2.7 Auth guard (middleware csatlakoztatás): a protected oldalak redirect-elnek `/login`-ra ha nincs session; `/login` és `/register` redirect-elnek `/dashboard`-ra ha van session
 
 **Acceptance Criteria:**
 
@@ -130,13 +130,13 @@
 
 ### Iteration F3 — Onboarding & Profil Oldal
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** A regisztráció utáni profil kitöltő form és a későbbi profil szerkesztő oldal.
 
 **Tasks:**
 
-- [ ] F3.1 Onboarding oldal (`/onboarding`): egyetlen scrollozható form az alábbi mezőkkel:
+- [x] F3.1 Onboarding oldal (`/onboarding`): egyetlen scrollozható form az alábbi mezőkkel:
   - Név (text input)
   - Nem (select/radio group: férfi, nő)
   - Életkor (number input vagy dátum picker)
@@ -144,12 +144,12 @@
   - Magasság cm-ben (number input)
   - Cél (select/radio group: fogyás, izomnövelés, erőnövelés, egészség — vizuális kártyák ikonokkal)
   - Aktivitási szint (select/radio group: ülő, mérsékelten aktív, aktív, nagyon aktív — rövid leírásokkal)
-- [ ] F3.2 Inline validáció: minden mező validálódik blur/change-re, hibaüzenetek közvetlenül a mező alatt, a „Mentés" gomb csak akkor aktív, ha minden kötelező mező ki van töltve
-- [ ] F3.3 Kalóriacél előnézet: a form alján, real-time számolva a Mifflin-St Jeor képlettel a kitöltött adatok alapján — egy kártya mutatja: „Az ajánlott napi kalóriabeviteled: **2,450 kcal**" (dinamikusan frissül ahogy töltöd a formot)
-- [ ] F3.4 Mentés és redirect: sikeres mentés után navigáció a `/dashboard`-ra, toast értesítéssel („Profil mentve!")
-- [ ] F3.5 Onboarding guard: ha a `profiles` kötelező mezői (nem, súly, magasság, cél) üresek, minden protected route redirect-el `/onboarding`-ra
-- [ ] F3.6 Profil szerkesztő oldal (`/profile`): ugyanaz a form mint az onboarding, de előre kitöltve az aktuális adatokkal, + profilkép feltöltés mező (Supabase Storage)
-- [ ] F3.7 Avatar feltöltés UI: kép kiválasztás, előnézet (crop opcionális), feltöltés progress, az avatar megjelenik a navbarban is
+- [x] F3.2 Inline validáció: minden mező validálódik blur/change-re, hibaüzenetek közvetlenül a mező alatt, a „Mentés" gomb csak akkor aktív, ha minden kötelező mező ki van töltve
+- [x] F3.3 Kalóriacél előnézet: a form alján, real-time számolva a Mifflin-St Jeor képlettel a kitöltött adatok alapján — egy kártya mutatja: „Az ajánlott napi kalóriabeviteled: **2,450 kcal**" (dinamikusan frissül ahogy töltöd a formot)
+- [x] F3.4 Mentés és redirect: sikeres mentés után navigáció a `/dashboard`-ra, toast értesítéssel („Profil mentve!")
+- [x] F3.5 Onboarding guard: ha a `profiles` kötelező mezői (nem, súly, magasság, cél) üresek, minden protected route redirect-el `/onboarding`-ra
+- [x] F3.6 Profil szerkesztő oldal (`/profile`): ugyanaz a form mint az onboarding, de előre kitöltve az aktuális adatokkal, + profilkép feltöltés mező (Supabase Storage)
+- [x] F3.7 Avatar feltöltés UI: kép kiválasztás, előnézet (crop opcionális), feltöltés progress, az avatar megjelenik a navbarban is
 
 **Acceptance Criteria:**
 

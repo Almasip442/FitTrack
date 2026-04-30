@@ -1,2 +1,4 @@
 - [Stack quirks (Tailwind v4 / base-ui Button / lucide v1)](project_stack_quirks.md) — non-obvious setup details that prevent wasted refactors
 - [F1 design-system foundation](project_design_system_F1.md) — where tokens, layout shell, and animation primitives live after F1
+- [F2 auth pages](project_auth_F2.md) — split-screen shell, password-strength meter, mapAuthError, console-style form conventions
+- [F3 onboarding & profile](project_profile_F3.md) — protected-layout guard, shared ProfileForm, calorie preview, avatar upload pipeline

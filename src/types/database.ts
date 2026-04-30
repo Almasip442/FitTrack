@@ -58,6 +58,7 @@ export type Database = {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       // -----------------------------------------------------------------
       // exercises
@@ -108,6 +109,7 @@ export type Database = {
           category?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       // -----------------------------------------------------------------
       // workout_plans
@@ -140,6 +142,7 @@ export type Database = {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       // -----------------------------------------------------------------
       // workout_days
@@ -169,6 +172,7 @@ export type Database = {
           day_of_week?: number | null
           created_at?: string
         }
+        Relationships: []
       }
       // -----------------------------------------------------------------
       // workout_day_exercises
@@ -207,6 +211,7 @@ export type Database = {
           notes?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       // -----------------------------------------------------------------
       // daily_logs
@@ -236,6 +241,7 @@ export type Database = {
           notes?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       // -----------------------------------------------------------------
       // food_entries
@@ -277,6 +283,7 @@ export type Database = {
           meal_type?: 'reggeli' | 'ebéd' | 'vacsora' | 'snack' | null
           created_at?: string
         }
+        Relationships: []
       }
       // -----------------------------------------------------------------
       // weight_logs
@@ -303,6 +310,7 @@ export type Database = {
           weight?: number
           created_at?: string
         }
+        Relationships: []
       }
       // -----------------------------------------------------------------
       // weekly_analyses
@@ -347,6 +355,7 @@ export type Database = {
           ai_rating?: number | null
           created_at?: string
         }
+        Relationships: []
       }
       // -----------------------------------------------------------------
       // products
@@ -385,6 +394,7 @@ export type Database = {
           is_active?: boolean
           created_at?: string
         }
+        Relationships: []
       }
       // -----------------------------------------------------------------
       // orders
@@ -414,6 +424,7 @@ export type Database = {
           stripe_session_id?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       // -----------------------------------------------------------------
       // order_items
@@ -443,6 +454,7 @@ export type Database = {
           unit_price?: number
           created_at?: string
         }
+        Relationships: []
       }
       // -----------------------------------------------------------------
       // workout_exercise_logs
@@ -478,6 +490,7 @@ export type Database = {
           notes?: string | null
           created_at?: string
         }
+        Relationships: []
       }
     }
     Views: Record<string, never>
@@ -489,6 +502,15 @@ export type Database = {
       get_dashboard_data: {
         Args: { p_user_id: string }
         Returns: Json
+      }
+      // Workout-plan RPCs (Backend I7 — supabase/migrations/20260430000007_workout_rpc.sql).
+      update_exercise_order: {
+        Args: { updates: Json }
+        Returns: void
+      }
+      set_active_workout_plan: {
+        Args: { p_plan_id: string; p_user_id: string }
+        Returns: void
       }
     }
     Enums: Record<string, never>

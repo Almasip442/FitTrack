@@ -10,13 +10,23 @@ import { UserAvatar } from './user-avatar'
 import { SignOutButton } from './sign-out-button'
 import { desktopRoutes } from './nav-routes'
 
+interface NavbarProps {
+  /** Display name from the user's profile (used for avatar initials). */
+  userName?: string | null
+  /** Optional avatar image URL — overrides the initials when present. */
+  avatarUrl?: string | null
+}
+
 /**
  * Desktop top navbar + mobile mini top bar.
  *
  * - Desktop: full-width fixed bar with logo, centered nav, profile cluster.
  * - Mobile: just the logo + profile avatar (the bottom tab bar handles nav).
+ *
+ * The avatar links to /profile so the user can edit their info from any
+ * protected surface.
  */
-export function Navbar() {
+export function Navbar({ userName, avatarUrl }: NavbarProps = {}) {
   const pathname = usePathname()
 
   return (
@@ -67,10 +77,16 @@ export function Navbar() {
           })}
         </nav>
 
-        {/* Right: Theme toggle + avatar + sign-out */}
+        {/* Right: Theme toggle + avatar (links to /profile) + sign-out */}
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <UserAvatar />
+          <Link
+            href="/profile"
+            aria-label="Profilom"
+            className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+          >
+            <UserAvatar name={userName} src={avatarUrl} />
+          </Link>
           <SignOutButton />
         </div>
       </div>

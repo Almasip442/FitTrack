@@ -11,9 +11,9 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 | Metric | Value |
 |---|---|
 | Total tasks | 86 |
-| Completed tasks | 32 |
-| Remaining tasks | 54 |
-| Completion | 37.2% |
+| Completed tasks | 48 |
+| Remaining tasks | 38 |
+| Completion | 55.8% |
 
 ---
 
@@ -220,18 +220,18 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 
 ### Iteration 5 — Felhasználói Profil CRUD
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** A felhasználó ki tudja tölteni és módosítani tudja a profilját, ami a kalóriacél számításához szükséges.
 
 **Tasks:**
 
-- [ ] 5.1 Profil lekérdezés: a bejelentkezett user `profiles` sorának betöltése Server Component-ből
-- [ ] 5.2 Profil szerkesztő form: név, kor, nem, súly, magasság, cél, aktivitási szint
-- [ ] 5.3 Profil mentés: Server Action vagy API Route a `profiles` tábla UPDATE-eléséhez
-- [ ] 5.4 Profilkép feltöltés: Supabase Storage bucket létrehozása (`avatars`), kép feltöltés és URL mentése a `profiles.avatar_url`-be
-- [ ] 5.5 Onboarding flow: regisztráció után a user a profil kitöltő oldalra kerül, és addig nem tud továbblépni a dashboardra, amíg a kötelező mezők (nem, súly, magasság, cél) nincsenek kitöltve
-- [ ] 5.6 Kalóriacél számítás utility (`src/lib/calories.ts`): Mifflin-St Jeor képlet implementálása a profil adatok alapján:
+- [x] 5.1 Profil lekérdezés: a bejelentkezett user `profiles` sorának betöltése Server Component-ből
+- [x] 5.2 Profil szerkesztő form: név, kor, nem, súly, magasság, cél, aktivitási szint
+- [x] 5.3 Profil mentés: Server Action vagy API Route a `profiles` tábla UPDATE-eléséhez
+- [x] 5.4 Profilkép feltöltés: Supabase Storage bucket létrehozása (`avatars`), kép feltöltés és URL mentése a `profiles.avatar_url`-be
+- [x] 5.5 Onboarding flow: regisztráció után a user a profil kitöltő oldalra kerül, és addig nem tud továbblépni a dashboardra, amíg a kötelező mezők (nem, súly, magasság, cél) nincsenek kitöltve
+- [x] 5.6 Kalóriacél számítás utility (`src/lib/calories.ts`): Mifflin-St Jeor képlet implementálása a profil adatok alapján:
   ```
   BMR (férfi) = 10 × súly(kg) + 6.25 × magasság(cm) − 5 × kor + 5
   BMR (nő)    = 10 × súly(kg) + 6.25 × magasság(cm) − 5 × kor − 161
@@ -286,15 +286,15 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 
 ### Iteration 7 — Edzésterv CRUD (Backend)
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** Az edzéstervek teljes backend logikája: terv létrehozás, napok kezelése, gyakorlatok hozzárendelése, sorrend kezelés.
 
 **Tasks:**
 
-- [ ] 7.1 Edzésterv létrehozás: `INSERT INTO workout_plans` — a user új tervet hoz létre névvel
-- [ ] 7.2 Edzésterv listázás: az aktuális user összes tervének lekérdezése, az aktív terv megjelölésével
-- [ ] 7.3 Edzésterv betöltés: egy terv teljes lekérdezése a napokkal és gyakorlatokkal együtt (nested query vagy join):
+- [x] 7.1 Edzésterv létrehozás: `INSERT INTO workout_plans` — a user új tervet hoz létre névvel
+- [x] 7.2 Edzésterv listázás: az aktuális user összes tervének lekérdezése, az aktív terv megjelölésével
+- [x] 7.3 Edzésterv betöltés: egy terv teljes lekérdezése a napokkal és gyakorlatokkal együtt (nested query vagy join):
   ```sql
   SELECT wp.*, 
     (SELECT json_agg(
@@ -323,10 +323,10 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
   FROM workout_plans wp
   WHERE wp.id = $1 AND wp.user_id = auth.uid();
   ```
-- [ ] 7.4 Nap hozzáadás/törlés/átnevezés: `INSERT/DELETE/UPDATE` a `workout_days` táblán, beleértve a `day_of_week` mező beállítását (melyik valós hétköznapra esik az edzésnap)
-- [ ] 7.5 Gyakorlat hozzáadás naphoz: `INSERT INTO workout_day_exercises`
-- [ ] 7.6 Gyakorlat eltávolítása napból: `DELETE FROM workout_day_exercises`
-- [ ] 7.7 Sorrend frissítés (drag & drop után): batch `UPDATE` az `exercise_order` mezőn — egy API hívásban több sor frissítése:
+- [x] 7.4 Nap hozzáadás/törlés/átnevezés: `INSERT/DELETE/UPDATE` a `workout_days` táblán, beleértve a `day_of_week` mező beállítását (melyik valós hétköznapra esik az edzésnap)
+- [x] 7.5 Gyakorlat hozzáadás naphoz: `INSERT INTO workout_day_exercises`
+- [x] 7.6 Gyakorlat eltávolítása napból: `DELETE FROM workout_day_exercises`
+- [x] 7.7 Sorrend frissítés (drag & drop után): batch `UPDATE` az `exercise_order` mezőn — egy API hívásban több sor frissítése:
   ```typescript
   // Példa: a kliens elküldi az új sorrendet
   const updates = [
@@ -336,9 +336,9 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
   ];
   // Supabase-ben: upsert vagy RPC function
   ```
-- [ ] 7.8 Aktív terv beállítása: `UPDATE workout_plans SET is_active = true WHERE id = $1` + az összes többi tervet `is_active = false`-ra állítani (egyetlen tranzakcióban)
-- [ ] 7.9 Edzésterv törlése: CASCADE törli a napokat és a hozzárendelt gyakorlatokat is
-- [ ] 7.10 `workout_exercise_logs` CRUD: edzés közbeni részletes rögzítés — melyik gyakorlatot végezte el a user, hány szettet, szettenkénti ismétlés (integer tömb), szettenkénti súly (decimal tömb), megjegyzés. UPSERT logika (daily_log_id + exercise_id párosra). Ez teszi lehetővé, hogy az AI elemzés izomcsoport-szintű fejlődést értékeljen.
+- [x] 7.8 Aktív terv beállítása: `UPDATE workout_plans SET is_active = true WHERE id = $1` + az összes többi tervet `is_active = false`-ra állítani (egyetlen tranzakcióban)
+- [x] 7.9 Edzésterv törlése: CASCADE törli a napokat és a hozzárendelt gyakorlatokat is
+- [x] 7.10 `workout_exercise_logs` CRUD: edzés közbeni részletes rögzítés — melyik gyakorlatot végezte el a user, hány szettet, szettenkénti ismétlés (integer tömb), szettenkénti súly (decimal tömb), megjegyzés. UPSERT logika (daily_log_id + exercise_id párosra). Ez teszi lehetővé, hogy az AI elemzés izomcsoport-szintű fejlődést értékeljen.
 
 **Acceptance Criteria:**
 
