@@ -1,0 +1,2 @@
+- [Stack quirks (Tailwind v4 / base-ui Button / lucide v1)](project_stack_quirks.md) — non-obvious setup details that prevent wasted refactors
+- [F1 design-system foundation](project_design_system_F1.md) — where tokens, layout shell, and animation primitives live after F1

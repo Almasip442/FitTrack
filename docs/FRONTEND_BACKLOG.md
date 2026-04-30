@@ -30,9 +30,9 @@
 | Metric | Value |
 |---|---|
 | Total tasks | 77 |
-| Completed tasks | 0 |
-| Remaining tasks | 77 |
-| Completion | 0% |
+| Completed tasks | 9 |
+| Remaining tasks | 68 |
+| Completion | 11.7% |
 
 ---
 
@@ -42,13 +42,13 @@
 
 ### Iteration F1 — Design System & Layout Shell
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** A teljes alkalmazás vizuális alapjainak lerakása: színrendszer, tipográfia, dark/light mode, navbar, layout wrapper. Amíg ez nincs meg, semmilyen más oldalt nem érdemes építeni, mert utólag refaktorálni fájdalmas.
 
 **Tasks:**
 
-- [ ] F1.1 Tailwind CSS konfigurálás — egyedi színpaletta definiálása a `tailwind.config.ts`-ben + shadcn/ui CSS változók a `globals.css`-ben:
+- [x] F1.1 Tailwind CSS konfigurálás — egyedi színpaletta definiálása a `tailwind.config.ts`-ben + shadcn/ui CSS változók a `globals.css`-ben:
   ```
   Fő háttérszín (dark): #111111 (HSL: 0 0% 6.7%)
   Másodlagos háttér (dark): #1a1a1a
@@ -73,17 +73,17 @@
   --border: 0 0% 20% (dark) / 0 0% 90% (light)
   --ring: 0 100% 23.5%
   ```
-- [ ] F1.2 Dark/Light mode implementálása: `next-themes` csomag integrálása, `ThemeProvider` wrapper, toggle gomb a navbarban (nap/hold ikon). A rendszer felismeri az OS beállítást, de felülírható.
-- [ ] F1.3 Tipográfia beállítása: **Barlow Condensed** (display/heading — Bold/ExtraBold, uppercase, letter-spacing: 0.96–1.17px) + **Barlow** (body — Regular/Medium, normál eset, jó olvashatóság). Mindkettő Google Fonts, `next/font/google` betöltés optimalizálással. A Barlow család a DIN ipari stílus legközelebbi Google Fonts megfelelője — geometrikus, mérnöki karakter, tökéletes a sötét ipari esztétikához.
-- [ ] F1.4 shadcn/ui telepítése és konfigurálása: alap komponensek (Button, Card, Input, Dialog, Sheet, Tabs, Badge, Tooltip, Skeleton, Toast) telepítése és a téma színekhez igazítása. A `globals.css`-ben a CSS változók beállítása dark/light módra.
-- [ ] F1.5 Layout shell: `(protected)/layout.tsx` létrehozása:
+- [x] F1.2 Dark/Light mode implementálása: `next-themes` csomag integrálása, `ThemeProvider` wrapper, toggle gomb a navbarban (nap/hold ikon). A rendszer felismeri az OS beállítást, de felülírható.
+- [x] F1.3 Tipográfia beállítása: **Barlow Condensed** (display/heading — Bold/ExtraBold, uppercase, letter-spacing: 0.96–1.17px) + **Barlow** (body — Regular/Medium, normál eset, jó olvashatóság). Mindkettő Google Fonts, `next/font/google` betöltés optimalizálással. A Barlow család a DIN ipari stílus legközelebbi Google Fonts megfelelője — geometrikus, mérnöki karakter, tökéletes a sötét ipari esztétikához.
+- [x] F1.4 shadcn/ui telepítése és konfigurálása: alap komponensek (Button, Card, Input, Dialog, Sheet, Tabs, Badge, Tooltip, Skeleton, Toast) telepítése és a téma színekhez igazítása. A `globals.css`-ben a CSS változók beállítása dark/light módra.
+- [x] F1.5 Layout shell: `(protected)/layout.tsx` létrehozása:
   - Desktop: felső navbar (logo + navigációs linkek + profil avatar + theme toggle + kijelentkezés)
   - Mobil: felső sáv (logo + hamburger/profil) + alsó tab bar (Dashboard, Edzés, Kalória, Shop, Fejlődés — 5 Lucide React ikon+label, pl. `LayoutDashboard`, `Dumbbell`, `Flame`, `ShoppingBag`, `TrendingUp`)
   - A content area a navbar alatt renderelődik, max-width konténerrel
-- [ ] F1.6 Navbar komponens implementálása: aktív oldal jelölése (sötétvörös `#780000` underline/highlight), user avatar a jobb felső sarokban, smooth hover animációk, uppercase Barlow Condensed nav linkek letter-spacing-gel
-- [ ] F1.7 Mobil alsó tab bar: fix pozíció, 5 tab (Lucide React ikonokkal), aktív tab ikon+szín kiemelés (`#780000`), safe area kezelés (iPhone notch)
-- [ ] F1.8 Alap animációs rendszer: Framer Motion telepítése, page transition wrapper (fade/slide in), reusable animációs variánsok definiálása (fadeIn, slideUp, staggerChildren)
-- [ ] F1.9 Globális loading és error komponensek: `loading.tsx` skeleton layout, `error.tsx` error boundary stílusozott hibaüzenettel, `not-found.tsx` 404 oldal
+- [x] F1.6 Navbar komponens implementálása: aktív oldal jelölése (sötétvörös `#780000` underline/highlight), user avatar a jobb felső sarokban, smooth hover animációk, uppercase Barlow Condensed nav linkek letter-spacing-gel
+- [x] F1.7 Mobil alsó tab bar: fix pozíció, 5 tab (Lucide React ikonokkal), aktív tab ikon+szín kiemelés (`#780000`), safe area kezelés (iPhone notch)
+- [x] F1.8 Alap animációs rendszer: Framer Motion telepítése, page transition wrapper (fade/slide in), reusable animációs variánsok definiálása (fadeIn, slideUp, staggerChildren)
+- [x] F1.9 Globális loading és error komponensek: `loading.tsx` skeleton layout, `error.tsx` error boundary stílusozott hibaüzenettel, `not-found.tsx` 404 oldal
 
 **Acceptance Criteria:**
 

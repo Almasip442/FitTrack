@@ -11,9 +11,9 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 | Metric | Value |
 |---|---|
 | Total tasks | 75 |
-| Completed tasks | 5 |
-| Remaining tasks | 70 |
-| Completion | 6.7% |
+| Completed tasks | 14 |
+| Remaining tasks | 61 |
+| Completion | 18.7% |
 
 ---
 
@@ -69,13 +69,13 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 
 ### Iteration 2 — Adatbázis Séma: Core Táblák
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** A teljes adatbázis séma létrehozása Supabase-ben, RLS nélkül — a struktúra legyen kész, mielőtt bármi más épülne rá.
 
 **Tasks:**
 
-- [ ] 2.1 `profiles` tábla létrehozása (a Supabase Auth `auth.users`-t kiegészítő tábla):
+- [x] 2.1 `profiles` tábla létrehozása (a Supabase Auth `auth.users`-t kiegészítő tábla):
   ```sql
   CREATE TABLE profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -91,13 +91,13 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
     updated_at TIMESTAMPTZ DEFAULT NOW()
   );
   ```
-- [ ] 2.2 `exercises` tábla létrehozása
-- [ ] 2.3 Edzésterv táblák létrehozása: `workout_plans`, `workout_days` (beleértve `day_of_week INTEGER` mezőt — 0-6, nullable — a valós hétköznaphoz rendeléshez), `workout_day_exercises`
-- [ ] 2.4 Kalóriakövetés táblák létrehozása: `daily_logs`, `food_entries`
-- [ ] 2.5 `weight_logs` tábla létrehozása
-- [ ] 2.6 `weekly_analyses` tábla létrehozása
-- [ ] 2.7 Webshop táblák létrehozása: `products`, `orders`, `order_items`
-- [ ] 2.8 `workout_exercise_logs` tábla létrehozása (edzés közbeni részletes rögzítés):
+- [x] 2.2 `exercises` tábla létrehozása
+- [x] 2.3 Edzésterv táblák létrehozása: `workout_plans`, `workout_days` (beleértve `day_of_week INTEGER` mezőt — 0-6, nullable — a valós hétköznaphoz rendeléshez), `workout_day_exercises`
+- [x] 2.4 Kalóriakövetés táblák létrehozása: `daily_logs`, `food_entries`
+- [x] 2.5 `weight_logs` tábla létrehozása
+- [x] 2.6 `weekly_analyses` tábla létrehozása
+- [x] 2.7 Webshop táblák létrehozása: `products`, `orders`, `order_items`
+- [x] 2.8 `workout_exercise_logs` tábla létrehozása (edzés közbeni részletes rögzítés):
   ```sql
   CREATE TABLE workout_exercise_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -110,7 +110,7 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
     created_at TIMESTAMPTZ DEFAULT NOW()
   );
   ```
-- [ ] 2.9 Supabase Database Trigger: `profiles` sor automatikus létrehozása új user regisztrációkor:
+- [x] 2.9 Supabase Database Trigger: `profiles` sor automatikus létrehozása új user regisztrációkor:
   ```sql
   CREATE OR REPLACE FUNCTION public.handle_new_user()
   RETURNS TRIGGER AS $$
@@ -125,7 +125,7 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
     AFTER INSERT ON auth.users
     FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
   ```
-- [ ] 2.9 Indexek létrehozása a gyakran szűrt mezőkre:
+- [x] 2.9 Indexek létrehozása a gyakran szűrt mezőkre:
   ```sql
   CREATE INDEX idx_workout_plans_user_id ON workout_plans(user_id);
   CREATE INDEX idx_daily_logs_user_date ON daily_logs(user_id, date);
