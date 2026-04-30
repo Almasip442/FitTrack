@@ -11,9 +11,9 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 | Metric | Value |
 |---|---|
 | Total tasks | 86 |
-| Completed tasks | 19 |
-| Remaining tasks | 67 |
-| Completion | 22.1% |
+| Completed tasks | 32 |
+| Remaining tasks | 54 |
+| Completion | 37.2% |
 
 ---
 
@@ -193,18 +193,18 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 
 ### Iteration 4 — Autentikáció
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** Teljes auth flow: regisztráció, bejelentkezés, kijelentkezés, session kezelés, protected routes.
 
 **Tasks:**
 
-- [ ] 4.1 Supabase Auth konfigurálása: email+jelszó provider engedélyezése a Supabase Dashboard-on
-- [ ] 4.2 Auth helper funkciók implementálása (`src/lib/supabase/auth.ts`): `signUp`, `signIn`, `signOut`, `getSession`, `getUser`
-- [ ] 4.3 Next.js Middleware implementálása (`src/middleware.ts`) a protected route-ok védelméhez — ha nincs session, redirect `/login`-ra
-- [ ] 4.4 Regisztrációs oldal: form → `signUp()` hívás → sikeres regisztráció után redirect a profil onboarding-ra
-- [ ] 4.5 Bejelentkezési oldal: form → `signIn()` hívás → sikeres login után redirect a dashboard-ra
-- [ ] 4.6 Kijelentkezés gomb a layoutban → `signOut()` → redirect `/login`-ra
+- [x] 4.1 Supabase Auth konfigurálása: email+jelszó provider engedélyezése a Supabase Dashboard-on
+- [x] 4.2 Auth helper funkciók implementálása (`src/lib/supabase/auth.ts`): `signUp`, `signIn`, `signOut`, `getSession`, `getUser`
+- [x] 4.3 Next.js Middleware implementálása (`src/middleware.ts`) a protected route-ok védelméhez — ha nincs session, redirect `/login`-ra
+- [x] 4.4 Regisztrációs oldal: form → `signUp()` hívás → sikeres regisztráció után redirect a profil onboarding-ra
+- [x] 4.5 Bejelentkezési oldal: form → `signIn()` hívás → sikeres login után redirect a dashboard-ra
+- [x] 4.6 Kijelentkezés gomb a layoutban → `signOut()` → redirect `/login`-ra
 
 **Acceptance Criteria:**
 
@@ -253,23 +253,23 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 
 ### Iteration 6 — Gyakorlat-adatbázis Import (Seed)
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** A wger API-ból 150-200 gyakorlat importálása a Supabase `exercises` táblába, magyar fordítással és képekkel.
 
 **Tasks:**
 
-- [ ] 6.1 Seed script létrehozása (`scripts/seed-exercises.ts`): wger API végpontok hívása:
+- [x] 6.1 Seed script létrehozása (`scripts/seed-exercises.ts`): wger API végpontok hívása:
   - `GET https://wger.de/api/v2/exerciseinfo/?format=json&limit=100&offset=0&language=2` (angol)
   - `GET https://wger.de/api/v2/muscle/?format=json`
   - `GET https://wger.de/api/v2/equipment/?format=json`
   - `GET https://wger.de/api/v2/exercisecategory/?format=json`
-- [ ] 6.2 Gyakorlatok szűrése: csak `status=2` (jóváhagyott), és a fő izomcsoportok lefedése (mellkas, hát, váll, bicepsz, tricepsz, láb/quad, láb/hamstring, vádli, core)
-- [ ] 6.3 Magyar fordítás: ellenőrizni, hogy a wger-ben van-e magyar fordítás (`language=14`). Ahol nincs, OpenRouter API hívással lefordítani a nevet és leírást
-- [ ] 6.4 Nehézségi szint (difficulty) meghatározása: a seed script során a Claude Code agent klasszifikálja a gyakorlatokat (kezdő/haladó/profi) a gyakorlat jellemzői (mozgás komplexitása, szükséges eszközök, izomcsoportok száma) alapján
-- [ ] 6.5 Képek letöltése és feltöltése Supabase Storage-ba (`exercises` bucket)
-- [ ] 6.6 Az összes adat beszúrása az `exercises` táblába a Supabase klienssel
-- [ ] 6.7 A seed script futtathatóvá tétele: `npx tsx scripts/seed-exercises.ts`
+- [x] 6.2 Gyakorlatok szűrése: csak `status=2` (jóváhagyott), és a fő izomcsoportok lefedése (mellkas, hát, váll, bicepsz, tricepsz, láb/quad, láb/hamstring, vádli, core)
+- [x] 6.3 Magyar fordítás: ellenőrizni, hogy a wger-ben van-e magyar fordítás (`language=14`). Ahol nincs, OpenRouter API hívással lefordítani a nevet és leírást
+- [x] 6.4 Nehézségi szint (difficulty) meghatározása: a seed script során a Claude Code agent klasszifikálja a gyakorlatokat (kezdő/haladó/profi) a gyakorlat jellemzői (mozgás komplexitása, szükséges eszközök, izomcsoportok száma) alapján
+- [x] 6.5 Képek letöltése és feltöltése Supabase Storage-ba (`exercises` bucket)
+- [x] 6.6 Az összes adat beszúrása az `exercises` táblába a Supabase klienssel
+- [x] 6.7 A seed script futtathatóvá tétele: `npx tsx scripts/seed-exercises.ts`
 
 **Acceptance Criteria:**
 

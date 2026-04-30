@@ -1,2 +1,3 @@
 - [FitTrack Pro Stack and Architecture](project_stack.md) — Core tech stack, env vars, Supabase client patterns, route groups, fonts
 - [FitTrack RLS Policy Conventions](project_rls_conventions.md) — Direct vs EXISTS-join ownership patterns; orders/profiles policy carve-outs
+- [FitTrack Auth Pattern](project_auth_pattern.md) — auth.ts vs auth-actions.ts split; updateSession middleware; protected/auth route lists

@@ -1,0 +1,43 @@
+-- =============================================================================
+-- Iteration 4 — Authentication
+--
+-- Backlog task 4.1: Supabase Auth configuration.
+--
+-- Auth provider settings (enabling email + password, configuring email
+-- templates, redirect URLs, etc.) cannot be applied through SQL migrations.
+-- They MUST be configured manually by a project maintainer in the Supabase
+-- Dashboard at:
+--
+--   Project Settings → Authentication → Providers
+--
+-- Required configuration for FitTrack Pro:
+--
+--   1. Email provider:
+--        - Enable "Email" provider.
+--        - Decide whether "Confirm email" is required:
+--            * Disabled  → users get an active session immediately after
+--                          /api signUp and are redirected to /onboarding
+--                          by the register page.
+--            * Enabled   → the register page surfaces a message asking
+--                          the user to confirm via the confirmation link
+--                          before they can sign in.
+--          (Either mode is supported by the application code.)
+--
+--   2. Site URL & Redirect URLs (Project Settings → Authentication → URL
+--      configuration):
+--        - Site URL: the deployment origin (e.g. http://localhost:3000
+--                                            during development).
+--        - Additional Redirect URLs: include the same value plus any
+--          preview / staging origins that need to handle Supabase email
+--          confirmation links.
+--
+--   3. (Optional) Customize the email confirmation / password reset
+--      templates under Authentication → Email Templates.
+--
+-- This migration is intentionally a no-op on the database; it exists
+-- solely to keep the Iteration 4 checklist visible in the migration
+-- history.
+-- =============================================================================
+
+-- No-op.
+SELECT 1;
