@@ -11,9 +11,9 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 | Metric | Value |
 |---|---|
 | Total tasks | 86 |
-| Completed tasks | 48 |
-| Remaining tasks | 38 |
-| Completion | 55.8% |
+| Completed tasks | 52 |
+| Remaining tasks | 34 |
+| Completion | 60.5% |
 
 ---
 
@@ -357,13 +357,13 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 
 ### Iteration 8 — Gyakorlat-kereső és Szűrő (Backend)
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** A drag & drop tervező számára szükséges gyakorlat-keresés és szűrés optimalizálása.
 
 **Tasks:**
 
-- [ ] 8.1 Full-text search implementálása az `exercises` táblán magyar névhez:
+- [x] 8.1 Full-text search implementálása az `exercises` táblán magyar névhez:
   ```sql
   ALTER TABLE exercises ADD COLUMN search_vector tsvector
     GENERATED ALWAYS AS (
@@ -372,9 +372,9 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 
   CREATE INDEX idx_exercises_search ON exercises USING GIN (search_vector);
   ```
-- [ ] 8.2 Szűrő API: gyakorlatok lekérdezése kategória (`category`), izomcsoport (`muscle_group`), eszköz (`equipment`), nehézség (`difficulty`) és szabad szöveges keresés kombinációjával
-- [ ] 8.3 Pagination: `LIMIT/OFFSET` vagy cursor-based pagination a gyakorlat listához
-- [ ] 8.4 Gyakorlat részletek lekérdezése: egyetlen gyakorlat összes adatával és képeivel
+- [x] 8.2 Szűrő API: gyakorlatok lekérdezése kategória (`category`), izomcsoport (`muscle_group`), eszköz (`equipment`), nehézség (`difficulty`) és szabad szöveges keresés kombinációjával
+- [x] 8.3 Pagination: `LIMIT/OFFSET` vagy cursor-based pagination a gyakorlat listához
+- [x] 8.4 Gyakorlat részletek lekérdezése: egyetlen gyakorlat összes adatával és képeivel
 
 **Acceptance Criteria:**
 

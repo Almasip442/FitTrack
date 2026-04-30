@@ -30,9 +30,9 @@
 | Metric | Value |
 |---|---|
 | Total tasks | 99 |
-| Completed tasks | 23 |
-| Remaining tasks | 76 |
-| Completion | 23.2% |
+| Completed tasks | 29 |
+| Remaining tasks | 70 |
+| Completion | 29.3% |
 
 ---
 
@@ -200,18 +200,18 @@
 
 ### Iteration F5 — Gyakorlat Böngésző & Kereső UI
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** A gyakorlat-adatbázis böngészésére és szűrésére szolgáló felület, ami az edzéstervező alapja is lesz.
 
 **Tasks:**
 
-- [ ] F5.1 Gyakorlat kereső sáv: debounced text input (300ms), keresés gépelés közben, „X" gomb a törléshez
-- [ ] F5.2 Szűrő rendszer: izomcsoport (multi-select tag-ek vagy chip-ek: mellkas, hát, váll, kar, láb, core), eszköz szűrő (súlyzó, gép, testsúly, kötél stb.), nehézség szűrő (kezdő, haladó, profi). A szűrők összecsukhatók mobilon.
-- [ ] F5.3 Gyakorlat kártya komponens: kompakt kártya a találati listához — gyakorlat neve (HU), izomcsoport badge(ek), nehézség badge, kis thumbnail kép. Hover-re enyhe kiemelés.
-- [ ] F5.4 Gyakorlat részletek popup (Dialog/Sheet): kattintásra megnyílik a részletes nézet — nagy kép(ek), magyar leírás (végrehajtás), elsődleges és másodlagos izomcsoportok, szükséges eszközök, nehézségi szint. Mobilon Sheet (alulról felcsúszó panel), desktopon Dialog.
-- [ ] F5.5 Pagination vagy infinite scroll: a találati lista lapozható vagy görgetésre tölt be újabb gyakorlatokat
-- [ ] F5.6 Találati lista üres állapot: „Nincs találat a keresésre" üzenet szűrő resetelés gombbal
+- [x] F5.1 Gyakorlat kereső sáv: debounced text input (300ms), keresés gépelés közben, „X" gomb a törléshez
+- [x] F5.2 Szűrő rendszer: izomcsoport (multi-select tag-ek vagy chip-ek: mellkas, hát, váll, kar, láb, core), eszköz szűrő (súlyzó, gép, testsúly, kötél stb.), nehézség szűrő (kezdő, haladó, profi). A szűrők összecsukhatók mobilon.
+- [x] F5.3 Gyakorlat kártya komponens: kompakt kártya a találati listához — gyakorlat neve (HU), izomcsoport badge(ek), nehézség badge, kis thumbnail kép. Hover-re enyhe kiemelés.
+- [x] F5.4 Gyakorlat részletek popup (Dialog/Sheet): kattintásra megnyílik a részletes nézet — nagy kép(ek), magyar leírás (végrehajtás), elsődleges és másodlagos izomcsoportok, szükséges eszközök, nehézségi szint. Mobilon Sheet (alulról felcsúszó panel), desktopon Dialog.
+- [x] F5.5 Pagination vagy infinite scroll: a találati lista lapozható vagy görgetésre tölt be újabb gyakorlatokat
+- [x] F5.6 Találati lista üres állapot: „Nincs találat a keresésre" üzenet szűrő resetelés gombbal
 
 **Acceptance Criteria:**
 
