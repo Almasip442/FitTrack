@@ -1,0 +1,2 @@
+- [FitTrack Pro projekt](project_fittrack_pro.md) — magyar nyelvű fitness app (szakdolgozat); 2 backlog, 14 backend + 11 frontend iteráció, 152 task
+- [Backlog fájlok helye](reference_backlog_files.md) — BACKEND_BACKLOG.md és FRONTEND_BACKLOG.md (nagybetűs) a docs/ mappában

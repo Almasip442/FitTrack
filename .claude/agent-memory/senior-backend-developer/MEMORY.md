@@ -1,0 +1,1 @@
+- [FitTrack Pro Stack and Architecture](project_stack.md) — Core tech stack, env vars, Supabase client patterns, route groups, fonts
