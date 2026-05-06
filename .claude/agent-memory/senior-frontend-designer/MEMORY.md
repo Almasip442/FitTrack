@@ -5,3 +5,4 @@
 - [F5 exercise browser](project_exercises_F5.md) — taxonomy + URL-state pattern + chip filters + dialog/sheet detail body convention
 - [F6 workout planner](project_workouts_F6.md) — dnd-kit drag/drop, sortable, optimistic temp-row + debounced auto-save patterns
 - [F7 calorie tracking](project_calories_F7.md) — date nav with browser-client refetch, lazy daily-log, custom SVG bar chart (no recharts)
+- [F4 dashboard](project_dashboard_F4.md) — widget grid, SVG calorie ring, workout completion upsert, sparkline, AI overlay, quick-nav
