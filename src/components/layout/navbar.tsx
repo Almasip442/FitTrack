@@ -9,6 +9,7 @@ import { ThemeToggle } from './theme-toggle'
 import { UserAvatar } from './user-avatar'
 import { SignOutButton } from './sign-out-button'
 import { desktopRoutes } from './nav-routes'
+import { CartDrawer } from '@/components/shop/cart-drawer'
 
 interface NavbarProps {
   /** Display name from the user's profile (used for avatar initials). */
@@ -77,8 +78,9 @@ export function Navbar({ userName, avatarUrl }: NavbarProps = {}) {
           })}
         </nav>
 
-        {/* Right: Theme toggle + avatar (links to /profile) + sign-out */}
+        {/* Right: Cart + Theme toggle + avatar (links to /profile) + sign-out */}
         <div className="flex items-center gap-2">
+          <CartDrawer />
           <ThemeToggle />
           <Link
             href="/profile"
