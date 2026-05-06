@@ -1,8 +1,14 @@
 ---
 name: FitTrack Pro projekt
-description: Magyar nyelvű fullstack fitness webalkalmazás (egyetemi szakdolgozat) — Next.js + Supabase + Stripe + OpenRouter AI
+description: Magyar nyelvű fullstack fitness webalkalmazás (egyetemi szakdolgozat) — backlog 100%-on (185/185), projekt befejezve 2026-05-06
 type: project
 ---
+
+**STÁTUSZ (2026-05-06):** A teljes backlog befejezve. Backend 86/86 (100%), Frontend 99/99 (100%), összesített 185/185 (100%). Az utolsó iterációk (Backend I14 — Integráció/Tesztelés/Deployment és Frontend F11 — Polish/Responsive Audit) ugyanabban a session-ben fejeződtek be.
+
+**Why befejezve:** Szakdolgozati védésre készül — a backlog a megvalósítás teljes scope-ját definiálja, és a 100% teljesítés a projekt késznek nyilvánításának kritériuma.
+
+**How to apply:** Új feature kérés SCOPE-on kívül esik — jelezni kell. Hiba egy meglévő modulban nem új backlog tétel, hanem javítás a már DONE iteráción belül. Új backlog tétel hozzáadása CSAK explicit user kérésre.
 
 A FitTrack Pro egy magyar nyelvű fullstack fitness webalkalmazás, amely a Szakdoga (szakdolgozat) projekt része.
 

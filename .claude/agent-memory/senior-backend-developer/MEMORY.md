@@ -2,3 +2,4 @@
 - [FitTrack RLS Policy Conventions](project_rls_conventions.md) — Direct vs EXISTS-join ownership patterns; orders/profiles policy carve-outs
 - [FitTrack Auth Pattern](project_auth_pattern.md) — auth.ts vs auth-actions.ts split; updateSession middleware; protected/auth route lists
 - [database.ts type contract](project_database_types_contract.md) — every Tables entry needs Relationships: [] or .update/.insert types collapse to never
+- [Deployment Configuration](project_deployment.md) — Vercel/Supabase/Stripe/OpenRouter touchpoints, vercel.json maxDuration map, demo user contract

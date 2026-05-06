@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
 import { GripVertical, Plus } from 'lucide-react'
@@ -79,16 +80,16 @@ export function DraggableExerciseCard({
         className={cn(
           'relative shrink-0 overflow-hidden rounded-md border border-border',
           'h-12 w-12',
-          'bg-gradient-to-br from-[#1a1a1a] to-[#0e0e0e]',
+          'bg-gradient-to-br from-muted/40 to-background dark:from-[#1a1a1a] dark:to-[#0e0e0e]',
         )}
       >
         {exercise.image_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={exercise.image_url}
             alt=""
-            loading="lazy"
-            className="h-full w-full object-cover"
+            fill
+            sizes="48px"
+            className="object-cover"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
@@ -177,12 +178,17 @@ export function ExerciseDragGhost({ exercise }: { exercise: Exercise }) {
         className={cn(
           'relative shrink-0 overflow-hidden rounded-md border border-brand-red/40',
           'h-12 w-12',
-          'bg-gradient-to-br from-[#1a1a1a] to-[#0e0e0e]',
+          'bg-gradient-to-br from-muted/40 to-background dark:from-[#1a1a1a] dark:to-[#0e0e0e]',
         )}
       >
         {exercise.image_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={exercise.image_url} alt="" className="h-full w-full object-cover" />
+          <Image
+            src={exercise.image_url}
+            alt=""
+            fill
+            sizes="48px"
+            className="object-cover"
+          />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
             <span className="font-condensed text-xs font-extrabold uppercase tracking-wide-display text-brand-red">

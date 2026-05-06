@@ -60,8 +60,8 @@ function AnalysisOverlay({
         exit="hidden"
         className={cn(
           'relative w-full max-w-lg rounded-xl border p-6 shadow-2xl',
-          'bg-[#1a1a1a] border-[#2a2a2a]',
           'bg-card border-border',
+          'dark:bg-[#1a1a1a] dark:border-[#2a2a2a]',
         )}
         onClick={(e) => e.stopPropagation()}
       >

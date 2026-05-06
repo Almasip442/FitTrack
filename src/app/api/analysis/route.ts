@@ -418,113 +418,124 @@ function parseAnalysis(raw: string): AnalysisResult | null {
 /* -------------------------------------------------------------------------- */
 
 export async function POST() {
-  const supabase = await createClient()
-
-  // 1) Auth ----------------------------------------------------------------
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) {
-    return NextResponse.json(
-      { error: 'Bejelentkezés szükséges.' },
-      { status: 401 },
-    )
-  }
-  const userId = user.id
-
-  // Compute the ISO week window once and reuse it everywhere.
-  const today = new Date()
-  const weekStart = startOfWeekMonday(today)
-  const weekEnd = addDays(weekStart, 6)
-  const weekStartIso = toIsoDate(weekStart)
-  const weekEndIso = toIsoDate(weekEnd)
-
-  // 2) Rate limit ----------------------------------------------------------
-  const { data: existing, error: existingErr } = await supabase
-    .from('weekly_analyses')
-    .select('id')
-    .eq('user_id', userId)
-    .eq('week_start', weekStartIso)
-    .maybeSingle()
-
-  if (existingErr) {
-    return NextResponse.json(
-      { error: 'Adatbázis hiba történt.' },
-      { status: 500 },
-    )
-  }
-  if (existing) {
-    return NextResponse.json(
-      { error: 'Ezen a héten már generáltál elemzést.' },
-      { status: 429 },
-    )
-  }
-
-  // 3) Collect metrics -----------------------------------------------------
-  let metrics: WeeklyMetrics
   try {
-    metrics = await collectWeeklyMetrics(userId, weekStartIso, weekEndIso)
-  } catch {
-    return NextResponse.json(
-      { error: 'Nem sikerült összegyűjteni a heti adatokat.' },
-      { status: 500 },
-    )
-  }
+    const supabase = await createClient()
 
-  // 4) Build prompt --------------------------------------------------------
-  const userPrompt = buildUserPrompt(metrics)
+    // 1) Auth ----------------------------------------------------------------
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Bejelentkezés szükséges.' },
+        { status: 401 },
+      )
+    }
+    const userId = user.id
 
-  // 5) Call OpenRouter -----------------------------------------------------
-  const aiContent = await callOpenRouter(SYSTEM_PROMPT, userPrompt)
-  if (!aiContent) {
-    return NextResponse.json(
-      {
-        error:
-          'Az AI elemzés jelenleg nem elérhető, próbáld újra később.',
-      },
-      { status: 503 },
-    )
-  }
+    // Compute the ISO week window once and reuse it everywhere.
+    const today = new Date()
+    const weekStart = startOfWeekMonday(today)
+    const weekEnd = addDays(weekStart, 6)
+    const weekStartIso = toIsoDate(weekStart)
+    const weekEndIso = toIsoDate(weekEnd)
 
-  // 6) Parse + validate ----------------------------------------------------
-  const result = parseAnalysis(aiContent)
-  if (!result) {
-    return NextResponse.json(
-      { error: 'Az AI érvénytelen választ adott.' },
-      { status: 502 },
-    )
-  }
+    // 2) Rate limit ----------------------------------------------------------
+    const { data: existing, error: existingErr } = await supabase
+      .from('weekly_analyses')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('week_start', weekStartIso)
+      .maybeSingle()
 
-  // 7) Persist -------------------------------------------------------------
-  const { data: row, error: insertError } = await supabase
-    .from('weekly_analyses')
-    .insert({
-      user_id: userId,
-      week_start: weekStartIso,
-      week_end: weekEndIso,
-      workouts_completed: metrics.completedWorkouts,
-      avg_calories: metrics.avgCalories,
-      weight_change: metrics.weightChange,
-      ai_analysis: result.summary,
-      ai_suggestions: result.suggestions,
-      ai_rating: result.rating,
+    if (existingErr) {
+      return NextResponse.json(
+        { error: 'Adatbázis hiba történt.' },
+        { status: 500 },
+      )
+    }
+    if (existing) {
+      return NextResponse.json(
+        { error: 'Ezen a héten már generáltál elemzést.' },
+        { status: 429 },
+      )
+    }
+
+    // 3) Collect metrics -----------------------------------------------------
+    let metrics: WeeklyMetrics
+    try {
+      metrics = await collectWeeklyMetrics(userId, weekStartIso, weekEndIso)
+    } catch {
+      return NextResponse.json(
+        { error: 'Nem sikerült összegyűjteni a heti adatokat.' },
+        { status: 500 },
+      )
+    }
+
+    // 4) Build prompt --------------------------------------------------------
+    const userPrompt = buildUserPrompt(metrics)
+
+    // 5) Call OpenRouter -----------------------------------------------------
+    const aiContent = await callOpenRouter(SYSTEM_PROMPT, userPrompt)
+    if (!aiContent) {
+      return NextResponse.json(
+        {
+          error:
+            'Az AI elemzés jelenleg nem elérhető, próbáld újra később.',
+        },
+        { status: 503 },
+      )
+    }
+
+    // 6) Parse + validate ----------------------------------------------------
+    const result = parseAnalysis(aiContent)
+    if (!result) {
+      return NextResponse.json(
+        { error: 'Az AI érvénytelen választ adott.' },
+        { status: 502 },
+      )
+    }
+
+    // 7) Persist -------------------------------------------------------------
+    const { data: row, error: insertError } = await supabase
+      .from('weekly_analyses')
+      .insert({
+        user_id: userId,
+        week_start: weekStartIso,
+        week_end: weekEndIso,
+        workouts_completed: metrics.completedWorkouts,
+        avg_calories: metrics.avgCalories,
+        weight_change: metrics.weightChange,
+        ai_analysis: result.summary,
+        ai_suggestions: result.suggestions,
+        ai_rating: result.rating,
+      })
+      .select('*')
+      .single()
+
+    if (insertError || !row) {
+      return NextResponse.json(
+        { error: 'Nem sikerült elmenteni az elemzést.' },
+        { status: 500 },
+      )
+    }
+
+    return NextResponse.json({
+      id: row.id,
+      summary: row.ai_analysis,
+      suggestions: row.ai_suggestions,
+      rating: row.ai_rating,
+      week_start: row.week_start,
+      week_end: row.week_end,
     })
-    .select('*')
-    .single()
-
-  if (insertError || !row) {
+  } catch (err) {
+    // Catch-all for unexpected runtime errors (e.g. cookie store failure,
+    // out-of-memory, etc.). Returning a structured 500 keeps the client UX
+    // deterministic instead of leaking a raw stack trace.
+    const message = err instanceof Error ? err.message : 'Ismeretlen hiba'
     return NextResponse.json(
-      { error: 'Nem sikerült elmenteni az elemzést.' },
+      { error: 'Belső szerver hiba történt.', details: message },
       { status: 500 },
     )
   }
-
-  return NextResponse.json({
-    id: row.id,
-    summary: row.ai_analysis,
-    suggestions: row.ai_suggestions,
-    rating: row.ai_rating,
-    week_start: row.week_start,
-    week_end: row.week_end,
-  })
 }

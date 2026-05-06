@@ -77,63 +77,68 @@ function readDecimal(form: FormData, key: string): { value: number | null } | { 
  * (stored as NULL).
  */
 export async function updateProfile(formData: FormData): Promise<ProfileActionResult> {
-  const supabase = await createClient()
+  try {
+    const supabase = await createClient()
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
 
-  if (authError || !user) {
-    return { success: false, error: 'Bejelentkezés szükséges.' }
+    if (authError || !user) {
+      return { success: false, error: 'Bejelentkezés szükséges.' }
+    }
+
+    // ----- Parse + validate -----
+    const name = readString(formData, 'name')
+
+    const ageRes = readInt(formData, 'age')
+    if ('error' in ageRes) return { success: false, error: ageRes.error }
+
+    const genderRes = readEnum<Gender>(formData, 'gender', GENDERS)
+    if ('error' in genderRes) return { success: false, error: genderRes.error }
+
+    const weightRes = readDecimal(formData, 'weight')
+    if ('error' in weightRes) return { success: false, error: weightRes.error }
+
+    const heightRes = readDecimal(formData, 'height')
+    if ('error' in heightRes) return { success: false, error: heightRes.error }
+
+    const goalRes = readEnum<Goal>(formData, 'goal', GOALS)
+    if ('error' in goalRes) return { success: false, error: goalRes.error }
+
+    const activityRes = readEnum<ActivityLevel>(formData, 'activity_level', ACTIVITY_LEVELS)
+    if ('error' in activityRes) return { success: false, error: activityRes.error }
+
+    const update: ProfileUpdate = {
+      name,
+      age: ageRes.value,
+      gender: genderRes.value,
+      weight: weightRes.value,
+      height: heightRes.value,
+      goal: goalRes.value,
+      activity_level: activityRes.value,
+      // No DB trigger maintains updated_at on profiles — set it explicitly.
+      updated_at: new Date().toISOString(),
+    }
+
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update(update)
+      .eq('id', user.id)
+
+    if (updateError) {
+      return { success: false, error: `Mentés sikertelen: ${updateError.message}` }
+    }
+
+    // Refresh server-rendered surfaces that consume profile data.
+    revalidatePath('/profile')
+    revalidatePath('/dashboard')
+    revalidatePath('/onboarding')
+
+    return { success: true }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Ismeretlen hiba'
+    return { success: false, error: `Mentés sikertelen: ${message}` }
   }
-
-  // ----- Parse + validate -----
-  const name = readString(formData, 'name')
-
-  const ageRes = readInt(formData, 'age')
-  if ('error' in ageRes) return { success: false, error: ageRes.error }
-
-  const genderRes = readEnum<Gender>(formData, 'gender', GENDERS)
-  if ('error' in genderRes) return { success: false, error: genderRes.error }
-
-  const weightRes = readDecimal(formData, 'weight')
-  if ('error' in weightRes) return { success: false, error: weightRes.error }
-
-  const heightRes = readDecimal(formData, 'height')
-  if ('error' in heightRes) return { success: false, error: heightRes.error }
-
-  const goalRes = readEnum<Goal>(formData, 'goal', GOALS)
-  if ('error' in goalRes) return { success: false, error: goalRes.error }
-
-  const activityRes = readEnum<ActivityLevel>(formData, 'activity_level', ACTIVITY_LEVELS)
-  if ('error' in activityRes) return { success: false, error: activityRes.error }
-
-  const update: ProfileUpdate = {
-    name,
-    age: ageRes.value,
-    gender: genderRes.value,
-    weight: weightRes.value,
-    height: heightRes.value,
-    goal: goalRes.value,
-    activity_level: activityRes.value,
-    // No DB trigger maintains updated_at on profiles — set it explicitly.
-    updated_at: new Date().toISOString(),
-  }
-
-  const { error: updateError } = await supabase
-    .from('profiles')
-    .update(update)
-    .eq('id', user.id)
-
-  if (updateError) {
-    return { success: false, error: `Mentés sikertelen: ${updateError.message}` }
-  }
-
-  // Refresh server-rendered surfaces that consume profile data.
-  revalidatePath('/profile')
-  revalidatePath('/dashboard')
-  revalidatePath('/onboarding')
-
-  return { success: true }
 }

@@ -34,33 +34,38 @@ function toIsoDate(d: Date): string {
  * `workout_completed = true`.
  */
 export async function completeTodayWorkout(): Promise<ActionResult> {
-  const supabase = await createClient()
+  try {
+    const supabase = await createClient()
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { success: false, error: 'Bejelentkezés szükséges.' }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: 'Bejelentkezés szükséges.' }
 
-  const todayIso = toIsoDate(new Date())
+    const todayIso = toIsoDate(new Date())
 
-  // Upsert daily_log for today — no-op if the row already exists.
-  const { data: logRow, error: upsertError } = await supabase
-    .from('daily_logs')
-    .upsert(
-      { user_id: user.id, date: todayIso, workout_completed: true },
-      { onConflict: 'user_id,date' },
-    )
-    .select('id')
-    .single()
+    // Upsert daily_log for today — no-op if the row already exists.
+    const { data: logRow, error: upsertError } = await supabase
+      .from('daily_logs')
+      .upsert(
+        { user_id: user.id, date: todayIso, workout_completed: true },
+        { onConflict: 'user_id,date' },
+      )
+      .select('id')
+      .single()
 
-  if (upsertError || !logRow) {
-    return {
-      success: false,
-      error: `Mentés sikertelen: ${upsertError?.message ?? 'ismeretlen hiba'}`,
+    if (upsertError || !logRow) {
+      return {
+        success: false,
+        error: `Mentés sikertelen: ${upsertError?.message ?? 'ismeretlen hiba'}`,
+      }
     }
-  }
 
-  revalidatePath('/dashboard')
-  revalidatePath('/calories')
-  return { success: true }
+    revalidatePath('/dashboard')
+    revalidatePath('/calories')
+    return { success: true }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Ismeretlen hiba'
+    return { success: false, error: `Mentés sikertelen: ${message}` }
+  }
 }

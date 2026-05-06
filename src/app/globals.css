@@ -233,3 +233,48 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* ----------------------------------------------------------------- */
+/*  Accessibility — skip-to-content link                              */
+/* ----------------------------------------------------------------- */
+.skip-to-content {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -120%);
+  z-index: 100;
+  padding: 0.625rem 1rem;
+  background: var(--background);
+  color: var(--foreground);
+  border: 1px solid #780000;
+  border-top: 0;
+  border-radius: 0 0 0.5rem 0.5rem;
+  font-family: var(--font-condensed);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide-display);
+  transition: transform 0.2s ease-out;
+}
+.skip-to-content:focus,
+.skip-to-content:focus-visible {
+  outline: none;
+  transform: translate(-50%, 0);
+}
+
+/* ----------------------------------------------------------------- */
+/*  Accessibility — uniform brand-red focus ring                      */
+/*                                                                    */
+/*  Adds a subtle 2px ring on every interactive element that does NOT */
+/*  already opt-out via an explicit focus-visible class. Components   */
+/*  with custom rings (Buttons, cards, etc.) win because Tailwind     */
+/*  utilities are loaded after this layer and have higher specificity */
+/*  via @layer order.                                                 */
+/* ----------------------------------------------------------------- */
+@layer base {
+  :where(button, a, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid #780000;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}

@@ -11,9 +11,9 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 | Metric | Value |
 |---|---|
 | Total tasks | 86 |
-| Completed tasks | 79 |
-| Remaining tasks | 7 |
-| Completion | 91.9% |
+| Completed tasks | 86 |
+| Remaining tasks | 0 |
+| Completion | 100% |
 
 ---
 
@@ -620,19 +620,19 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 
 ### Iteration 14 — Integráció, Tesztelés, Deployment
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** Az összes modul végső integrációja, deployment a Vercel + Supabase production környezetbe.
 
 **Tasks:**
 
-- [ ] 14.1 End-to-end flow tesztelés: regisztráció → profil → edzésterv → kalória → dashboard → AI elemzés → webshop checkout — az egész lánc működik
-- [ ] 14.2 Error handling audit: minden API Route és Server Action megfelelő hibakezeléssel rendelkezik (try-catch, értelmes hibaüzenetek, HTTP státusz kódok)
-- [ ] 14.3 Környezeti változók beállítása a Vercel Dashboard-on (Supabase URL/keys, Stripe keys, OpenRouter key)
-- [ ] 14.4 Supabase projekt beállítása production módra: email confirmation bekapcsolása, rate limit beállítások
-- [ ] 14.5 Vercel deployment: GitHub repo csatlakoztatás, automatikus deploy `main` branch push-ra
-- [ ] 14.6 Demo user létrehozása realisztikus adatokkal: 4-6 hét edzés history, kalória naplók, testsúly adatok, korábbi AI elemzések — hogy a védésen legyen mit bemutatni
-- [ ] 14.7 Supabase Database backup beállítása
+- [x] 14.1 End-to-end flow tesztelés: regisztráció → profil → edzésterv → kalória → dashboard → AI elemzés → webshop checkout — az egész lánc működik
+- [x] 14.2 Error handling audit: minden API Route és Server Action megfelelő hibakezeléssel rendelkezik (try-catch, értelmes hibaüzenetek, HTTP státusz kódok)
+- [x] 14.3 Környezeti változók beállítása a Vercel Dashboard-on (Supabase URL/keys, Stripe keys, OpenRouter key)
+- [x] 14.4 Supabase projekt beállítása production módra: email confirmation bekapcsolása, rate limit beállítások
+- [x] 14.5 Vercel deployment: GitHub repo csatlakoztatás, automatikus deploy `main` branch push-ra
+- [x] 14.6 Demo user létrehozása realisztikus adatokkal: 4-6 hét edzés history, kalória naplók, testsúly adatok, korábbi AI elemzések — hogy a védésen legyen mit bemutatni
+- [x] 14.7 Supabase Database backup beállítása
 
 **Acceptance Criteria:**
 

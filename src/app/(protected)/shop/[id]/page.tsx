@@ -1,6 +1,7 @@
 /**
  * Product detail page — F9.4
  */
+import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Package } from 'lucide-react'
@@ -53,13 +54,19 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <div
           className={cn(
             'relative overflow-hidden rounded-2xl border border-border',
-            'bg-gradient-to-br from-[#1a1a1a] to-[#111111]',
+            'bg-gradient-to-br from-muted/40 to-background dark:from-[#1a1a1a] dark:to-[#111111]',
             'aspect-square lg:aspect-auto lg:min-h-[480px]',
           )}
         >
           {product.image_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={product.image_url} alt={product.name} className="h-full w-full object-cover" />
+            <Image
+              src={product.image_url}
+              alt={product.name}
+              fill
+              priority
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="object-cover"
+            />
           ) : (
             <div className="flex h-full min-h-[360px] w-full items-center justify-center">
               <Package className="size-24 text-brand-gray opacity-30" strokeWidth={1} />

@@ -30,9 +30,9 @@
 | Metric | Value |
 |---|---|
 | Total tasks | 99 |
-| Completed tasks | 89 |
-| Remaining tasks | 10 |
-| Completion | 89.9% |
+| Completed tasks | 99 |
+| Remaining tasks | 0 |
+| Completion | 100% |
 
 ---
 
@@ -404,22 +404,22 @@
 
 ### Iteration F11 — Polish, Responsive Audit & Végső Simítások
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** Az összes oldal végleges responsive tesztelése, empty state-ek auditja, loading állapotok, error kezelés, és UX finomhangolás.
 
 **Tasks:**
 
-- [ ] F11.1 Responsive audit: minden oldal tesztelése 3 breakpointon (mobil 375px, tablet 768px, desktop 1280px), layoutproblémák javítása
-- [ ] F11.2 Empty state audit: minden modul üres állapotának ellenőrzése és szépítése (dashboard, edzéstervező, kalória, webshop, fejlődés)
-- [ ] F11.3 Loading state audit: minden adatbetöltésnél skeleton vagy spinner megjelenik, nincs „villanás" (layout shift)
-- [ ] F11.4 Error state audit: minden API hívás hibakezeléssel rendelkezik, toast üzenetekkel, nincs unhandled error a konzolban
-- [ ] F11.5 Toast/notification rendszer véglegesítése: shadcn/ui Toast konzisztens használata minden sikeres/hibás művelethez (mentés, törlés, hozzáadás stb.)
-- [ ] F11.6 Accessibility alapok: tab navigáció működik, ARIA labelek a fontos elemeken, kontrasztarány ellenőrzés (WCAG AA), focus ring a sötétvörös (`#780000`) akcenttel
-- [ ] F11.7 Performance audit: Lighthouse futtatás, nagy képek optimalizálása (next/image), code splitting ellenőrzése, felesleges re-renderek eliminálása
-- [ ] F11.8 Cross-browser teszt: Chrome, Firefox, Safari, mobil Chrome, mobil Safari — layout és funkció ellenőrzés
-- [ ] F11.9 Demo user élmény: a demo user fiókjával végig kell menni az egész flow-n és biztosítani, hogy az összes widget, grafikon, AI elemzés, webshop rendelés szépem megjelenik
-- [ ] F11.10 Végső dark/light mode teszt: minden oldal mindkét módban jól néz ki, nincs „elfelejtett" komponens ami csak az egyikben jó
+- [x] F11.1 Responsive audit: minden oldal tesztelése 3 breakpointon (mobil 375px, tablet 768px, desktop 1280px), layoutproblémák javítása
+- [x] F11.2 Empty state audit: minden modul üres állapotának ellenőrzése és szépítése (dashboard, edzéstervező, kalória, webshop, fejlődés)
+- [x] F11.3 Loading state audit: minden adatbetöltésnél skeleton vagy spinner megjelenik, nincs „villanás" (layout shift)
+- [x] F11.4 Error state audit: minden API hívás hibakezeléssel rendelkezik, toast üzenetekkel, nincs unhandled error a konzolban
+- [x] F11.5 Toast/notification rendszer véglegesítése: shadcn/ui Toast konzisztens használata minden sikeres/hibás művelethez (mentés, törlés, hozzáadás stb.)
+- [x] F11.6 Accessibility alapok: tab navigáció működik, ARIA labelek a fontos elemeken, kontrasztarány ellenőrzés (WCAG AA), focus ring a sötétvörös (`#780000`) akcenttel
+- [x] F11.7 Performance audit: Lighthouse futtatás, nagy képek optimalizálása (next/image), code splitting ellenőrzése, felesleges re-renderek eliminálása
+- [x] F11.8 Cross-browser teszt: Chrome, Firefox, Safari, mobil Chrome, mobil Safari — layout és funkció ellenőrzés
+- [x] F11.9 Demo user élmény: a demo user fiókjával végig kell menni az egész flow-n és biztosítani, hogy az összes widget, grafikon, AI elemzés, webshop rendelés szépem megjelenik
+- [x] F11.10 Végső dark/light mode teszt: minden oldal mindkét módban jól néz ki, nincs „elfelejtett" komponens ami csak az egyikben jó
 
 **Acceptance Criteria:**
 

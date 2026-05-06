@@ -71,14 +71,20 @@ export default async function ProtectedLayout({
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Skip-to-content — keyboard users only (a11y) */}
+      <a href="#main-content" className="skip-to-content">
+        Ugrás a tartalomra
+      </a>
       <Navbar
         userName={profile?.name ?? null}
         avatarUrl={profile?.avatar_url ?? null}
       />
       <main
+        id="main-content"
+        tabIndex={-1}
         className={
           'mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 ' +
-          'pt-20 pb-24 md:pb-12'
+          'pt-20 pb-24 md:pb-12 outline-none'
         }
       >
         {children}

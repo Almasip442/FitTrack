@@ -11,6 +11,7 @@
  * The cart button only adds to cart (does NOT navigate).
  */
 
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { ShoppingBag, ShoppingCart } from 'lucide-react'
 
@@ -62,14 +63,14 @@ export function ProductCard({ product }: ProductCardProps) {
       )}
     >
       {/* Product image */}
-      <div className="relative aspect-square w-full overflow-hidden bg-gradient-to-br from-[#1a1a1a] to-[#111111]">
+      <div className="relative aspect-square w-full overflow-hidden bg-gradient-to-br from-muted/40 to-background dark:from-[#1a1a1a] dark:to-[#111111]">
         {product.image_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={product.image_url}
             alt={product.name}
-            loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover transition-transform duration-300 group-hover:scale-[1.04]"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">

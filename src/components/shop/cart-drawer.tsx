@@ -8,6 +8,7 @@
  * Handles checkout via POST /api/checkout → Stripe redirect URL.
  */
 
+import Image from 'next/image'
 import { useState } from 'react'
 import { ShoppingCart, Plus, Minus, X, ShoppingBag, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -105,7 +106,7 @@ export function CartDrawer() {
       <SheetContent
         side="right"
         showCloseButton
-        className="flex flex-col bg-[#1a1a1a] p-0 sm:max-w-md"
+        className="flex flex-col bg-card p-0 sm:max-w-md"
       >
         <SheetHeader className="border-b border-border px-6 py-4">
           <SheetTitle className="flex items-center gap-2 font-condensed text-xl font-bold uppercase tracking-display">
@@ -124,7 +125,7 @@ export function CartDrawer() {
           {items.length === 0 ? (
             /* Empty state */
             <div className="flex flex-col items-center justify-center gap-4 py-16 text-center px-6">
-              <div className="rounded-full border border-border bg-[#111111] p-5">
+              <div className="rounded-full border border-border bg-background p-5">
                 <ShoppingCart
                   className="size-10 text-muted-foreground/40"
                   strokeWidth={1.5}
@@ -135,7 +136,7 @@ export function CartDrawer() {
                   A kosarad üres
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Fedezd fel termékeinket és adj valamit a kosarAdba!
+                  Fedezd fel termékeinket és adj valamit a kosaradba!
                 </p>
               </div>
               <button
@@ -158,14 +159,14 @@ export function CartDrawer() {
               {items.map((item) => (
                 <li key={item.product.id} className="flex gap-4 px-6 py-4">
                   {/* Product image */}
-                  <div className="relative size-16 shrink-0 overflow-hidden rounded-lg border border-border bg-[#111111]">
+                  <div className="relative size-16 shrink-0 overflow-hidden rounded-lg border border-border bg-background">
                     {item.product.image_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <Image
                         src={item.product.image_url}
                         alt={item.product.name}
-                        loading="lazy"
-                        className="h-full w-full object-cover"
+                        fill
+                        sizes="64px"
+                        className="object-cover"
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center">
