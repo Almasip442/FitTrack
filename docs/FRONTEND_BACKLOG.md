@@ -30,9 +30,9 @@
 | Metric | Value |
 |---|---|
 | Total tasks | 99 |
-| Completed tasks | 50 |
-| Remaining tasks | 49 |
-| Completion | 50.5% |
+| Completed tasks | 89 |
+| Remaining tasks | 10 |
+| Completion | 89.9% |
 
 ---
 
@@ -166,22 +166,22 @@
 
 ### Iteration F4 — Dashboard Layout & Widgetek
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** Az alkalmazás szíve: a dashboard oldal a widgetes kártyás grid-del, ami összefoglalja a felhasználó aznapi és heti állapotát.
 
 **Tasks:**
 
-- [ ] F4.1 Dashboard oldal layout (`/dashboard`): felső üdvözlő sáv („Szia [Név]! Ma [napnév] van." + dátum), alatta a widget grid
-- [ ] F4.2 Widget grid rendszer: CSS Grid vagy Tailwind grid, desktop: 2-3 oszlop, tablet: 2 oszlop, mobil: 1 oszlop. A kártyák különböző méretűek lehetnek (span-1 vagy span-2).
-- [ ] F4.3 **Kalóriamérleg widget** (nagy kártya): körkörös progress ring (SVG) a napi kalória célhoz képest (bevitt/cél), alatta makró bontás (fehérje/szénhidrát/zsír) kis progress bar-okkal, ha meghaladja a célt piros szín
-- [ ] F4.4 **Mai edzésterv widget** (nagy kártya): az aktív terv mai napjának gyakorlat listája (név + szettek × ismétlés) a `workout_days.day_of_week` mező alapján, „Kész vagyok" gomb ami a `daily_logs.workout_completed`-et true-ra állítja, ha nincs aktív terv → empty state: „Készíts egy edzéstervet!" link, ha ma pihenőnap (nincs az adott hétköznaphoz rendelt edzésnap) → „Pihenőnap — regenerálódj!" állapot
-- [ ] F4.5 **Heti aktivitás widget** (kis kártya): 7 kör (Hé-Va), kitöltött=elvégzett edzés, üres=kihagyott, mai nap kiemelve, pl. „4/6 edzés teljesítve"
-- [ ] F4.6 **Testsúly trend widget** (kis kártya): Recharts sparkline/vonaldiagram, utolsó 30 nap, az aktuális súly és változás kiemelve (pl. „-1.2 kg az elmúlt hónapban ↓")
-- [ ] F4.7 **Heti AI elemzés widget** (közepes kártya): ha van elemzés az aktuális hétre: összefoglaló szöveg preview + rating (1-10 vizuális), „Részletek" gomb → overlay; ha nincs: „Generálj elemzést!" CTA gomb; ha nincs elég adat: „Eddz legalább 3 napot..." üzenet
-- [ ] F4.8 **Gyors navigáció**: a dashboard alján vagy a widgetek között gyors linkek a modulokhoz (Edzéstervező, Kalória, Shop, Fejlődés)
-- [ ] F4.9 Dashboard adatok betöltése: a backend `get_dashboard_data` RPC hívás vagy párhuzamos query-k, skeleton loading minden kártyára amíg töltődik
-- [ ] F4.10 Empty state-ek minden widgethez: vizuálisan szép „nincs még adat" állapot illusztrációkkal vagy ikonokkal + CTA gombbal a megfelelő modulhoz
+- [x] F4.1 Dashboard oldal layout (`/dashboard`): felső üdvözlő sáv („Szia [Név]! Ma [napnév] van." + dátum), alatta a widget grid
+- [x] F4.2 Widget grid rendszer: CSS Grid vagy Tailwind grid, desktop: 2-3 oszlop, tablet: 2 oszlop, mobil: 1 oszlop. A kártyák különböző méretűek lehetnek (span-1 vagy span-2).
+- [x] F4.3 **Kalóriamérleg widget** (nagy kártya): körkörös progress ring (SVG) a napi kalória célhoz képest (bevitt/cél), alatta makró bontás (fehérje/szénhidrát/zsír) kis progress bar-okkal, ha meghaladja a célt piros szín
+- [x] F4.4 **Mai edzésterv widget** (nagy kártya): az aktív terv mai napjának gyakorlat listája (név + szettek × ismétlés) a `workout_days.day_of_week` mező alapján, „Kész vagyok" gomb ami a `daily_logs.workout_completed`-et true-ra állítja, ha nincs aktív terv → empty state: „Készíts egy edzéstervet!" link, ha ma pihenőnap (nincs az adott hétköznaphoz rendelt edzésnap) → „Pihenőnap — regenerálódj!" állapot
+- [x] F4.5 **Heti aktivitás widget** (kis kártya): 7 kör (Hé-Va), kitöltött=elvégzett edzés, üres=kihagyott, mai nap kiemelve, pl. „4/6 edzés teljesítve"
+- [x] F4.6 **Testsúly trend widget** (kis kártya): Recharts sparkline/vonaldiagram, utolsó 30 nap, az aktuális súly és változás kiemelve (pl. „-1.2 kg az elmúlt hónapban ↓")
+- [x] F4.7 **Heti AI elemzés widget** (közepes kártya): ha van elemzés az aktuális hétre: összefoglaló szöveg preview + rating (1-10 vizuális), „Részletek" gomb → overlay; ha nincs: „Generálj elemzést!" CTA gomb; ha nincs elég adat: „Eddz legalább 3 napot..." üzenet
+- [x] F4.8 **Gyors navigáció**: a dashboard alján vagy a widgetek között gyors linkek a modulokhoz (Edzéstervező, Kalória, Shop, Fejlődés)
+- [x] F4.9 Dashboard adatok betöltése: a backend `get_dashboard_data` RPC hívás vagy párhuzamos query-k, skeleton loading minden kártyára amíg töltődik
+- [x] F4.10 Empty state-ek minden widgethez: vizuálisan szép „nincs még adat" állapot illusztrációkkal vagy ikonokkal + CTA gombbal a megfelelő modulhoz
 
 **Acceptance Criteria:**
 
@@ -298,25 +298,25 @@
 
 ### Iteration F8 — Fejlődéskövetés & AI Elemzés
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** A testsúly napló UI és a heti AI elemzés teljes képernyős overlay megjelenítése.
 
 **Tasks:**
 
-- [ ] F8.1 Fejlődés oldal layout (`/progress`): két fő szekció — testsúly trend és AI elemzések
-- [ ] F8.2 Testsúly rögzítés: egyszerű input mező + „Mentés" gomb a napi súly rögzítéséhez, UPSERT logika (egy napra egy bejegyzés, felülírható)
-- [ ] F8.3 Testsúly trend grafikon: Recharts LineChart, utolsó 30-60 nap, interaktív tooltip (dátum + súly), a cél súly vízszintes vonalként (ha a profilban be van állítva)
-- [ ] F8.4 Súlyváltozás összesítő: kártya az aktuális hét átlaga vs. előző hét átlaga, változás %-ban és kg-ban, szín kódolva (zöld ha a cél felé halad, piros ha nem)
-- [ ] F8.5 AI elemzés CTA kártya: „Heti elemzés generálása" gomb, ha az aktuális hétre még nincs elemzés; disabled + tooltip ha nincs elég adat; „Már generáltál elemzést ezen a héten" üzenet ha rate limited
-- [ ] F8.6 AI elemzés generálás: gombnyomásra loading animáció (skeleton/pulse vagy egy szép „AI gondolkodik..." animáció), az `/api/analysis` hívás, válasz után az overlay megnyílik
-- [ ] F8.7 AI elemzés overlay (teljes képernyős modal): 
+- [x] F8.1 Fejlődés oldal layout (`/progress`): két fő szekció — testsúly trend és AI elemzések
+- [x] F8.2 Testsúly rögzítés: egyszerű input mező + „Mentés" gomb a napi súly rögzítéséhez, UPSERT logika (egy napra egy bejegyzés, felülírható)
+- [x] F8.3 Testsúly trend grafikon: Recharts LineChart, utolsó 30-60 nap, interaktív tooltip (dátum + súly), a cél súly vízszintes vonalként (ha a profilban be van állítva)
+- [x] F8.4 Súlyváltozás összesítő: kártya az aktuális hét átlaga vs. előző hét átlaga, változás %-ban és kg-ban, szín kódolva (zöld ha a cél felé halad, piros ha nem)
+- [x] F8.5 AI elemzés CTA kártya: „Heti elemzés generálása" gomb, ha az aktuális hétre még nincs elemzés; disabled + tooltip ha nincs elég adat; „Már generáltál elemzést ezen a héten" üzenet ha rate limited
+- [x] F8.6 AI elemzés generálás: gombnyomásra loading animáció (skeleton/pulse vagy egy szép „AI gondolkodik..." animáció), az `/api/analysis` hívás, válasz után az overlay megnyílik
+- [x] F8.7 AI elemzés overlay (teljes képernyős modal): 
   - Felül: hét dátum tartomány + összesítő rating (1-10, vizuális — pl. kitöltött csillagok vagy körkörös gauge)
   - Közép: az AI összefoglaló szöveg, szépen formázva
   - Alul: 3 konkrét javaslat, kártyákon vagy felsorolásban, mindegyik mellé egy ikon (edzés/táplálkozás/pihenés)
   - „Bezár" gomb + ESC-re záródik
-- [ ] F8.8 Korábbi elemzések lista: idővonalas lista az eddigi heti elemzésekből, kattintásra megnyílik az overlay az adott hét elemzésével
-- [ ] F8.9 Empty state: „Még nincs heti elemzésed. Rögzítsd az edzéseidet és kalóriáidat, és a hét végén generálj AI elemzést!" — egy szép illusztráció
+- [x] F8.8 Korábbi elemzések lista: idővonalas lista az eddigi heti elemzésekből, kattintásra megnyílik az overlay az adott hét elemzésével
+- [x] F8.9 Empty state: „Még nincs heti elemzésed. Rögzítsd az edzéseidet és kalóriáidat, és a hét végén generálj AI elemzést!" — egy szép illusztráció
 
 **Acceptance Criteria:**
 
@@ -334,23 +334,23 @@
 
 ### Iteration F9 — Webshop
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** A mock táplálékkiegészítő webshop teljes frontend-je: terméklista, termékoldal, kosár, és Stripe checkout.
 
 **Tasks:**
 
-- [ ] F9.1 Webshop oldal layout (`/shop`): felül szűrő sáv (kategória: protein, kreatin, vitamin, aminosav; ár tartomány), alatta a termék grid
-- [ ] F9.2 Termék kártya komponens: kép (aspect-ratio fixed, a képeket a projekttulajdonos adja hozzá a projekt mappához), terméknév, rövid leírás (1 sor, csonkítva), ár (HUF, formázva: „4 990 Ft"), „Kosárba" gomb. Hover-re: enyhe scale (1.02) + shadow növekedés.
-- [ ] F9.3 Termék grid: 3 oszlop (desktop), 2 oszlop (tablet), 1 oszlop (mobil). Responsive gap és padding.
-- [ ] F9.4 Termék részletek oldal (`/shop/[id]`): nagy termékfotó, teljes leírás, ár, „Kosárba" gomb, mennyiség választó (+ / - stepper), kategória badge, készlet jelzés
-- [ ] F9.5 Kosár (Zustand store): globális állapot — `items: [{ product, quantity }]`, `addItem`, `removeItem`, `updateQuantity`, `clearCart`, `totalPrice` computed
-- [ ] F9.6 Kosár drawer (Sheet): a jobb oldalról becsúszó panel, trigger: kosár ikon a navbarban (badge-dzsel mutatja a tételek számát). Benne: termék lista (kép + név + ár + mennyiség stepper + törlés), összesen ár, „Megrendelés" gomb
-- [ ] F9.7 Checkout flow: „Megrendelés" gomb → `/api/checkout` hívás → Stripe Checkout Session → redirect a Stripe fizetési oldalra
-- [ ] F9.8 Sikeres rendelés oldal (`/shop/success`): „Sikeres rendelés!" üzenet, rendelés összefoglaló, „Vissza a shopba" gomb. Konfetti animáció (opcionális, de fun).
-- [ ] F9.9 Megszakított rendelés oldal (`/shop/cancel`): „A rendelés megszakadt" üzenet, „Próbáld újra" gomb
-- [ ] F9.10 Rendelési előzmények: a profil oldalon vagy külön szekció — korábbi rendelések listája (dátum, összeg, státusz)
-- [ ] F9.11 Empty state: üres kosár → „A kosarad üres — böngéssz a termékeink között!" + link a shopra
+- [x] F9.1 Webshop oldal layout (`/shop`): felül szűrő sáv (kategória: protein, kreatin, vitamin, aminosav; ár tartomány), alatta a termék grid
+- [x] F9.2 Termék kártya komponens: kép (aspect-ratio fixed, a képeket a projekttulajdonos adja hozzá a projekt mappához), terméknév, rövid leírás (1 sor, csonkítva), ár (HUF, formázva: „4 990 Ft"), „Kosárba" gomb. Hover-re: enyhe scale (1.02) + shadow növekedés.
+- [x] F9.3 Termék grid: 3 oszlop (desktop), 2 oszlop (tablet), 1 oszlop (mobil). Responsive gap és padding.
+- [x] F9.4 Termék részletek oldal (`/shop/[id]`): nagy termékfotó, teljes leírás, ár, „Kosárba" gomb, mennyiség választó (+ / - stepper), kategória badge, készlet jelzés
+- [x] F9.5 Kosár (Zustand store): globális állapot — `items: [{ product, quantity }]`, `addItem`, `removeItem`, `updateQuantity`, `clearCart`, `totalPrice` computed
+- [x] F9.6 Kosár drawer (Sheet): a jobb oldalról becsúszó panel, trigger: kosár ikon a navbarban (badge-dzsel mutatja a tételek számát). Benne: termék lista (kép + név + ár + mennyiség stepper + törlés), összesen ár, „Megrendelés" gomb
+- [x] F9.7 Checkout flow: „Megrendelés" gomb → `/api/checkout` hívás → Stripe Checkout Session → redirect a Stripe fizetési oldalra
+- [x] F9.8 Sikeres rendelés oldal (`/shop/success`): „Sikeres rendelés!" üzenet, rendelés összefoglaló, „Vissza a shopba" gomb. Konfetti animáció (opcionális, de fun).
+- [x] F9.9 Megszakított rendelés oldal (`/shop/cancel`): „A rendelés megszakadt" üzenet, „Próbáld újra" gomb
+- [x] F9.10 Rendelési előzmények: a profil oldalon vagy külön szekció — korábbi rendelések listája (dátum, összeg, státusz)
+- [x] F9.11 Empty state: üres kosár → „A kosarad üres — böngéssz a termékeink között!" + link a shopra
 
 **Acceptance Criteria:**
 
@@ -368,25 +368,25 @@
 
 ### Iteration F10 — Landing Page (Wow-hatás)
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** A nem bejelentkezett felhasználók számára készült „eladó" oldal, parallax animációkkal és scroll-effektekkel.
 
 **Tasks:**
 
-- [ ] F10.1 Hero szekció: teljes képernyős sötét háttér (`#111111`), nagy motivációs headline Barlow Condensed uppercase-ben (pl. „TERVEZD MEG. EDZD LE. FEJLŐDJ."), alatta subtitle, két CTA gomb (Regisztráció — sötétvörös `#780000`, Bejelentkezés — ghost/outline), háttérben halványított edzőtermi kép vagy absztrakt gradiens animáció (a képeket a projekttulajdonos adja hozzá a projekt mappához)
-- [ ] F10.2 Feature szekciók (3-4 db): scroll-ra bejövő szekciók (Framer Motion `whileInView`), minden szekció: bal oldalon szöveg (feature cím + leírás), jobb oldalon app screenshot/mockup. Váltakozó elrendezés (balra-jobbra).
+- [x] F10.1 Hero szekció: teljes képernyős sötét háttér (`#111111`), nagy motivációs headline Barlow Condensed uppercase-ben (pl. „TERVEZD MEG. EDZD LE. FEJLŐDJ."), alatta subtitle, két CTA gomb (Regisztráció — sötétvörös `#780000`, Bejelentkezés — ghost/outline), háttérben halványított edzőtermi kép vagy absztrakt gradiens animáció (a képeket a projekttulajdonos adja hozzá a projekt mappához)
+- [x] F10.2 Feature szekciók (3-4 db): scroll-ra bejövő szekciók (Framer Motion `whileInView`), minden szekció: bal oldalon szöveg (feature cím + leírás), jobb oldalon app screenshot/mockup. Váltakozó elrendezés (balra-jobbra).
   - Feature 1: Drag & Drop Edzéstervező
   - Feature 2: Kalóriakövetés
   - Feature 3: Heti AI Elemzés
   - Feature 4: Integrált Webshop
-- [ ] F10.3 Statisztikák szekció: animált számláló (count-up effekt) — pl. „200+ gyakorlat", „Heti AI elemzés", „Minden egy helyen"
-- [ ] F10.4 Parallax effekt: a háttér elemek (sötétvörös/szürke gradiens blobek, dekoratív formák) lassabban mozognak scroll-ra mint a tartalom
-- [ ] F10.5 Social proof / Differenciálók szekció: a 3 fő differenciáló tényező (integráció, drag&drop, AI elemzés) kártyákon, ikonokkal
-- [ ] F10.6 CTA footer szekció: „Kezdd el most — Ingyen!" nagy gomb, alatta kis szöveg, háttérben gradiens
-- [ ] F10.7 Navbar a landing page-en: átlátszó háttér, scroll-ra válik sötétté (`#111111` + blur effekt), a „Regisztráció" és „Bejelentkezés" gombok mindig láthatók, uppercase Barlow Condensed letter-spacing-gel
-- [ ] F10.8 Responsív landing: mobilon egyoszlopos, az animációk egyszerűsítettek (kevesebb parallax, kevesebb mozgás — teljesítmény)
-- [ ] F10.9 Footer: wger CC-BY-SA 3.0 licenc hivatkozás, Open Food Facts hivatkozás, „© 2026 FitTrack Pro"
+- [x] F10.3 Statisztikák szekció: animált számláló (count-up effekt) — pl. „200+ gyakorlat", „Heti AI elemzés", „Minden egy helyen"
+- [x] F10.4 Parallax effekt: a háttér elemek (sötétvörös/szürke gradiens blobek, dekoratív formák) lassabban mozognak scroll-ra mint a tartalom
+- [x] F10.5 Social proof / Differenciálók szekció: a 3 fő differenciáló tényező (integráció, drag&drop, AI elemzés) kártyákon, ikonokkal
+- [x] F10.6 CTA footer szekció: „Kezdd el most — Ingyen!" nagy gomb, alatta kis szöveg, háttérben gradiens
+- [x] F10.7 Navbar a landing page-en: átlátszó háttér, scroll-ra válik sötétté (`#111111` + blur effekt), a „Regisztráció" és „Bejelentkezés" gombok mindig láthatók, uppercase Barlow Condensed letter-spacing-gel
+- [x] F10.8 Responsív landing: mobilon egyoszlopos, az animációk egyszerűsítettek (kevesebb parallax, kevesebb mozgás — teljesítmény)
+- [x] F10.9 Footer: wger CC-BY-SA 3.0 licenc hivatkozás, Open Food Facts hivatkozás, „© 2026 FitTrack Pro"
 
 **Acceptance Criteria:**
 
