@@ -11,9 +11,9 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 | Metric | Value |
 |---|---|
 | Total tasks | 86 |
-| Completed tasks | 52 |
-| Remaining tasks | 34 |
-| Completion | 60.5% |
+| Completed tasks | 60 |
+| Remaining tasks | 26 |
+| Completion | 69.8% |
 
 ---
 
@@ -389,21 +389,21 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 
 ### Iteration 9 — Kalóriakövetés (Backend)
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** A napi étkezések rögzítésének és lekérdezésének backend logikája, Open Food Facts API integrációval.
 
 **Tasks:**
 
-- [ ] 9.1 `daily_logs` CRUD: napi napló létrehozása/lekérdezése — egy napra egy napló usernél (UPSERT logika `user_id + date` párosra)
-- [ ] 9.2 `food_entries` CRUD: étel hozzáadás/módosítás/törlés egy naplóhoz
-- [ ] 9.3 Open Food Facts API proxy: Next.js API Route (`/api/food-search`) ami a kliens kérését továbbítja az Open Food Facts felé, és a választ normalizálja:
+- [x] 9.1 `daily_logs` CRUD: napi napló létrehozása/lekérdezése — egy napra egy napló usernél (UPSERT logika `user_id + date` párosra)
+- [x] 9.2 `food_entries` CRUD: étel hozzáadás/módosítás/törlés egy naplóhoz
+- [x] 9.3 Open Food Facts API proxy: Next.js API Route (`/api/food-search`) ami a kliens kérését továbbítja az Open Food Facts felé, és a választ normalizálja:
   ```typescript
   // GET /api/food-search?q=túró
   // → fetch('https://hu.openfoodfacts.org/cgi/search.pl?search_terms=túró&json=true&page_size=10')
   // → normalizált válasz: [{ name, calories, protein, carbs, fat, serving_size }]
   ```
-- [ ] 9.4 Napi összesítő lekérdezés: egy adott nap összes kalóriája és makrói aggregálva:
+- [x] 9.4 Napi összesítő lekérdezés: egy adott nap összes kalóriája és makrói aggregálva:
   ```sql
   SELECT
     SUM(calories) as total_calories,
@@ -413,7 +413,7 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
   FROM food_entries
   WHERE daily_log_id = $1;
   ```
-- [ ] 9.5 Heti trend lekérdezés: az utolsó 7 (vagy N) nap napi kalória összesítése:
+- [x] 9.5 Heti trend lekérdezés: az utolsó 7 (vagy N) nap napi kalória összesítése:
   ```sql
   SELECT dl.date, COALESCE(SUM(fe.calories), 0) as total_calories
   FROM daily_logs dl
@@ -479,15 +479,15 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 
 ### Iteration 11 — Testsúly Napló
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** A testsúly rögzítésének és trend megjelenítésének backend logikája.
 
 **Tasks:**
 
-- [ ] 11.1 `weight_logs` CRUD: súly rögzítése adott napra (UPSERT — egy napra egy bejegyzés)
-- [ ] 11.2 Trend lekérdezés: az utolsó N nap súlyadatai vonaldiagramhoz
-- [ ] 11.3 Súlyváltozás kiszámítása: aktuális hét átlaga vs. előző hét átlaga
+- [x] 11.1 `weight_logs` CRUD: súly rögzítése adott napra (UPSERT — egy napra egy bejegyzés)
+- [x] 11.2 Trend lekérdezés: az utolsó N nap súlyadatai vonaldiagramhoz
+- [x] 11.3 Súlyváltozás kiszámítása: aktuális hét átlaga vs. előző hét átlaga
 
 **Acceptance Criteria:**
 

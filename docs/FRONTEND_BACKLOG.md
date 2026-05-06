@@ -30,9 +30,9 @@
 | Metric | Value |
 |---|---|
 | Total tasks | 99 |
-| Completed tasks | 29 |
-| Remaining tasks | 70 |
-| Completion | 29.3% |
+| Completed tasks | 41 |
+| Remaining tasks | 58 |
+| Completion | 41.4% |
 
 ---
 
@@ -228,26 +228,26 @@
 
 ### Iteration F6 — Drag & Drop Edzéstervező
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** A projekt legösszetettebb frontend komponense: az edzésterv összeállítása vizuális tervező felületen.
 
 **Tasks:**
 
-- [ ] F6.1 Edzésterv lista oldal (`/workouts`): a user összes tervének listája kártyákon (név, napok száma, aktív jelölés), „Új terv" gomb, aktív terv kiemelve (sötétvörös `#780000` szegély)
-- [ ] F6.2 Edzésterv szerkesztő oldal (`/workouts/[id]`): az egyoldalas layout implementálása:
+- [x] F6.1 Edzésterv lista oldal (`/workouts`): a user összes tervének listája kártyákon (név, napok száma, aktív jelölés), „Új terv" gomb, aktív terv kiemelve (sötétvörös `#780000` szegély)
+- [x] F6.2 Edzésterv szerkesztő oldal (`/workouts/[id]`): az egyoldalas layout implementálása:
   - **Felső szekció (sticky):** gyakorlat kereső + szűrők (F5 komponensek újrafelhasználása), találati kártyák horizontális scrollozható sávban vagy kompakt gridben
   - **Alsó szekció:** edzésnapok tab-okban vagy accordion-ban (Hétfő, Kedd, stb.), minden nap egy drop zone
-- [ ] F6.3 dnd-kit integráció (desktop): `DndContext`, `DragOverlay`, `useDraggable` a gyakorlat kártyákon, `useDroppable` az edzésnap zónákon. Drag közben vizuális feedback (ghost kártya + drop zone kiemelés).
-- [ ] F6.4 Mobil alternatíva: a gyakorlat kártyán egy „+" gomb, ami kattintásra megnyit egy mini dialogot: „Melyik naphoz adod?" → nap kiválasztás → hozzáadás. Nem drag & drop, hanem tap-alapú.
-- [ ] F6.5 Gyakorlat beállítások (inline szerkesztés): miután egy gyakorlat bekerült egy napba, inline szerkeszthető mezők jelennek meg mellette: szettek száma (number stepper), ismétlések száma (number stepper), pihenőidő másodpercben (number input), megjegyzés (opcionális text)
-- [ ] F6.6 Sorrend átrendezés nap-on belül: dnd-kit `SortableContext`-tel a gyakorlatok sorrendje húzással változtatható (kis fogó/grip ikon a kártya szélén)
-- [ ] F6.7 Nap kezelés: nap hozzáadás (gomb + név input + hétköznap kiválasztó — melyik valós hétköznapra esik az edzésnap), nap törlés (megerősítő dialog), nap átnevezés (inline edit), hétköznap módosítása
-- [ ] F6.8 Gyakorlat eltávolítás: „X" gomb a gyakorlat kártyán, kattintásra eltávolítás (megerősítés nélkül, de undo toast: „Gyakorlat eltávolítva — Visszavonás")
-- [ ] F6.9 Terv mentés: automatikus mentés változáskor (debounced) VAGY explicit „Mentés" gomb — mindkét megközelítés jó, de válasszunk egyet. Javaslat: auto-save + „Mentve" indikátor.
-- [ ] F6.10 Aktív terv beállítása: „Legyen ez az aktív tervem" toggle/gomb a terv oldalon, ami a dashboardon megjelenő tervet állítja be
-- [ ] F6.11 Terv törlés: megerősítő dialog („Biztosan törlöd? A napok és gyakorlatok is törlődnek."), sikeres törlés után redirect a terv listára
-- [ ] F6.12 Empty state: üres edzésnap → „Húzz ide egy gyakorlatot!" placeholder (desktop) / „Adj hozzá gyakorlatot!" gomb (mobil); új terv → „Adj hozzá egy napot a tervezéshez!" üzenet
+- [x] F6.3 dnd-kit integráció (desktop): `DndContext`, `DragOverlay`, `useDraggable` a gyakorlat kártyákon, `useDroppable` az edzésnap zónákon. Drag közben vizuális feedback (ghost kártya + drop zone kiemelés).
+- [x] F6.4 Mobil alternatíva: a gyakorlat kártyán egy „+" gomb, ami kattintásra megnyit egy mini dialogot: „Melyik naphoz adod?" → nap kiválasztás → hozzáadás. Nem drag & drop, hanem tap-alapú.
+- [x] F6.5 Gyakorlat beállítások (inline szerkesztés): miután egy gyakorlat bekerült egy napba, inline szerkeszthető mezők jelennek meg mellette: szettek száma (number stepper), ismétlések száma (number stepper), pihenőidő másodpercben (number input), megjegyzés (opcionális text)
+- [x] F6.6 Sorrend átrendezés nap-on belül: dnd-kit `SortableContext`-tel a gyakorlatok sorrendje húzással változtatható (kis fogó/grip ikon a kártya szélén)
+- [x] F6.7 Nap kezelés: nap hozzáadás (gomb + név input + hétköznap kiválasztó — melyik valós hétköznapra esik az edzésnap), nap törlés (megerősítő dialog), nap átnevezés (inline edit), hétköznap módosítása
+- [x] F6.8 Gyakorlat eltávolítás: „X" gomb a gyakorlat kártyán, kattintásra eltávolítás (megerősítés nélkül, de undo toast: „Gyakorlat eltávolítva — Visszavonás")
+- [x] F6.9 Terv mentés: automatikus mentés változáskor (debounced) VAGY explicit „Mentés" gomb — mindkét megközelítés jó, de válasszunk egyet. Javaslat: auto-save + „Mentve" indikátor.
+- [x] F6.10 Aktív terv beállítása: „Legyen ez az aktív tervem" toggle/gomb a terv oldalon, ami a dashboardon megjelenő tervet állítja be
+- [x] F6.11 Terv törlés: megerősítő dialog („Biztosan törlöd? A napok és gyakorlatok is törlődnek."), sikeres törlés után redirect a terv listára
+- [x] F6.12 Empty state: üres edzésnap → „Húzz ide egy gyakorlatot!" placeholder (desktop) / „Adj hozzá gyakorlatot!" gomb (mobil); új terv → „Adj hozzá egy napot a tervezéshez!" üzenet
 
 **Acceptance Criteria:**
 

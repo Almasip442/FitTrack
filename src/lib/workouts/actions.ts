@@ -337,6 +337,79 @@ export async function addExerciseToDay(
 }
 
 /* -------------------------------------------------------------------------- */
+/*  7.5b — updateDayExercise (inline sets/reps/rest editing)                  */
+/* -------------------------------------------------------------------------- */
+
+export type DayExerciseUpdates = {
+  sets?: number
+  reps?: number
+  rest_seconds?: number
+  notes?: string | null
+}
+
+/**
+ * Inline edit of an existing workout_day_exercises row — used by the
+ * workout planner's stepper inputs (sets / reps / rest seconds).
+ */
+export async function updateDayExercise(
+  rowId: string,
+  updates: DayExerciseUpdates,
+): Promise<ActionResult> {
+  const userId = await getAuthUserId()
+  if (!userId) return { success: false, error: AUTH_REQUIRED }
+
+  const patch: {
+    sets?: number
+    reps?: number
+    rest_seconds?: number
+    notes?: string | null
+  } = {}
+
+  if (updates.sets !== undefined) {
+    if (!Number.isInteger(updates.sets) || updates.sets <= 0 || updates.sets > 50) {
+      return { success: false, error: 'Érvénytelen szettszám.' }
+    }
+    patch.sets = updates.sets
+  }
+  if (updates.reps !== undefined) {
+    if (!Number.isInteger(updates.reps) || updates.reps <= 0 || updates.reps > 500) {
+      return { success: false, error: 'Érvénytelen ismétlésszám.' }
+    }
+    patch.reps = updates.reps
+  }
+  if (updates.rest_seconds !== undefined) {
+    if (!Number.isInteger(updates.rest_seconds) || updates.rest_seconds < 0 || updates.rest_seconds > 3600) {
+      return { success: false, error: 'Érvénytelen pihenőidő.' }
+    }
+    patch.rest_seconds = updates.rest_seconds
+  }
+  if (updates.notes !== undefined) {
+    patch.notes = updates.notes
+  }
+
+  if (Object.keys(patch).length === 0) {
+    return { success: false, error: 'Nincs frissítendő mező.' }
+  }
+
+  if (!(await ownsDayExercise(rowId, userId))) {
+    return { success: false, error: NOT_FOUND }
+  }
+
+  const supabase = await createClient()
+  const { error } = await supabase
+    .from('workout_day_exercises')
+    .update(patch)
+    .eq('id', rowId)
+
+  if (error) {
+    return { success: false, error: `Mentés sikertelen: ${error.message}` }
+  }
+
+  revalidateWorkoutSurfaces()
+  return { success: true }
+}
+
+/* -------------------------------------------------------------------------- */
 /*  7.6 — removeExerciseFromDay                                                */
 /* -------------------------------------------------------------------------- */
 

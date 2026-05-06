@@ -3,3 +3,4 @@
 - [F2 auth pages](project_auth_F2.md) — split-screen shell, password-strength meter, mapAuthError, console-style form conventions
 - [F3 onboarding & profile](project_profile_F3.md) — protected-layout guard, shared ProfileForm, calorie preview, avatar upload pipeline
 - [F5 exercise browser](project_exercises_F5.md) — taxonomy + URL-state pattern + chip filters + dialog/sheet detail body convention
+- [F6 workout planner](project_workouts_F6.md) — dnd-kit drag/drop, sortable, optimistic temp-row + debounced auto-save patterns
