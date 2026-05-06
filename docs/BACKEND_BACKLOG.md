@@ -11,9 +11,9 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 | Metric | Value |
 |---|---|
 | Total tasks | 86 |
-| Completed tasks | 60 |
-| Remaining tasks | 26 |
-| Completion | 69.8% |
+| Completed tasks | 79 |
+| Remaining tasks | 7 |
+| Completion | 91.9% |
 
 ---
 
@@ -437,17 +437,17 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 
 ### Iteration 10 — Dashboard Adataggregáció
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** A dashboard widgetekhez szükséges összes adat egyetlen hatékony lekérdezéssel vagy néhány párhuzamos lekérdezéssel elérhető.
 
 **Tasks:**
 
-- [ ] 10.1 Aznapi edzésterv lekérdezés: az aktív terv mai napjának gyakorlatai a `workout_days.day_of_week` mező alapján (`EXTRACT(DOW FROM CURRENT_DATE)`), és hogy a `daily_logs.workout_completed` igaz-e. Ha nincs az aktuális hétköznaphoz rendelt edzésnap → "Pihenőnap" / "Ma nincs edzés" állapot.
-- [ ] 10.2 Mai kalóriamérleg: a profil alapján számolt kalóriacél vs. a mai `food_entries` összege
-- [ ] 10.3 Heti aktivitás: az utolsó 7 nap `daily_logs.workout_completed` értékei
-- [ ] 10.4 Testsúly trend: az utolsó 30 nap `weight_logs` adatai
-- [ ] 10.5 Supabase RPC function létrehozása, ami egyetlen hívással visszaadja az összes dashboard adatot:
+- [x] 10.1 Aznapi edzésterv lekérdezés: az aktív terv mai napjának gyakorlatai a `workout_days.day_of_week` mező alapján (`EXTRACT(DOW FROM CURRENT_DATE)`), és hogy a `daily_logs.workout_completed` igaz-e. Ha nincs az aktuális hétköznaphoz rendelt edzésnap → "Pihenőnap" / "Ma nincs edzés" állapot.
+- [x] 10.2 Mai kalóriamérleg: a profil alapján számolt kalóriacél vs. a mai `food_entries` összege
+- [x] 10.3 Heti aktivitás: az utolsó 7 nap `daily_logs.workout_completed` értékei
+- [x] 10.4 Testsúly trend: az utolsó 30 nap `weight_logs` adatai
+- [x] 10.5 Supabase RPC function létrehozása, ami egyetlen hívással visszaadja az összes dashboard adatot:
   ```sql
   CREATE OR REPLACE FUNCTION get_dashboard_data(p_user_id UUID)
   RETURNS JSON AS $$
@@ -501,15 +501,15 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 
 ### Iteration 12 — Heti AI Elemzés
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** Az OpenRouter API-n keresztül heti AI elemzés generálása a felhasználó adataiból.
 
 **Tasks:**
 
-- [ ] 12.1 Next.js API Route létrehozása (`/api/analysis`): ez az endpoint fogadja a kliens kérését, összegyűjti a heti adatokat, és továbbítja az OpenRouter-nek
-- [ ] 12.2 Heti adatgyűjtő query: az elmúlt 7 nap összes releváns adatának összegyűjtése (elvégzett edzések, kalória átlag, súlyváltozás, edzés részletek — beleértve a `workout_exercise_logs` szettenkénti ismétlés/súly adatait izomcsoport-szintű elemzéshez)
-- [ ] 12.3 AI prompt összeállítás:
+- [x] 12.1 Next.js API Route létrehozása (`/api/analysis`): ez az endpoint fogadja a kliens kérését, összegyűjti a heti adatokat, és továbbítja az OpenRouter-nek
+- [x] 12.2 Heti adatgyűjtő query: az elmúlt 7 nap összes releváns adatának összegyűjtése (elvégzett edzések, kalória átlag, súlyváltozás, edzés részletek — beleértve a `workout_exercise_logs` szettenkénti ismétlés/súly adatait izomcsoport-szintű elemzéshez)
+- [x] 12.3 AI prompt összeállítás:
   ```typescript
   const systemPrompt = `Személyi edző és táplálkozási tanácsadó vagy. 
   Magyarul válaszolj. Légy motiváló, de realista.
@@ -528,7 +528,7 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
   - Átlagos bevitel: ${avgCalories} kcal/nap
   - Testsúlyváltozás: ${weightChange} kg`;
   ```
-- [ ] 12.4 OpenRouter API hívás implementálása:
+- [x] 12.4 OpenRouter API hívás implementálása:
   ```typescript
   const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
@@ -545,9 +545,9 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
     }),
   });
   ```
-- [ ] 12.5 AI válasz parseolása és mentése a `weekly_analyses` táblába
-- [ ] 12.6 Rate limiting: max 1 elemzés / hét / felhasználó — ellenőrzés a `weekly_analyses` tábla alapján (`week_start` az aktuális hétre már létezik-e)
-- [ ] 12.7 Korábbi elemzések lekérdezése: az utolsó N hét elemzéseinek listázása
+- [x] 12.5 AI válasz parseolása és mentése a `weekly_analyses` táblába
+- [x] 12.6 Rate limiting: max 1 elemzés / hét / felhasználó — ellenőrzés a `weekly_analyses` tábla alapján (`week_start` az aktuális hétre már létezik-e)
+- [x] 12.7 Korábbi elemzések lekérdezése: az utolsó N hét elemzéseinek listázása
 
 **Acceptance Criteria:**
 
@@ -563,16 +563,16 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
 
 ### Iteration 13 — Webshop Backend
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** A mock webshop termékkatalógusa, kosár logikája és Stripe Checkout integráció.
 
 **Tasks:**
 
-- [ ] 13.1 Termék seed script (`scripts/seed-products.ts`): 20-30 mock táplálékkiegészítő termék feltöltése az adatbázisba (protein porok, kreatin, vitaminok, aminosavak) — képekkel a Supabase Storage-ban
-- [ ] 13.2 Terméklista lekérdezés: szűrés kategória és ár tartomány szerint, rendezés
-- [ ] 13.3 Termék részletek lekérdezés: egyetlen termék összes adatával
-- [ ] 13.4 Stripe Checkout Session létrehozás — Next.js API Route (`/api/checkout`):
+- [x] 13.1 Termék seed script (`scripts/seed-products.ts`): 20-30 mock táplálékkiegészítő termék feltöltése az adatbázisba (protein porok, kreatin, vitaminok, aminosavak) — képekkel a Supabase Storage-ban
+- [x] 13.2 Terméklista lekérdezés: szűrés kategória és ár tartomány szerint, rendezés
+- [x] 13.3 Termék részletek lekérdezés: egyetlen termék összes adatával
+- [x] 13.4 Stripe Checkout Session létrehozás — Next.js API Route (`/api/checkout`):
   ```typescript
   import Stripe from 'stripe';
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -595,7 +595,7 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
     metadata: { user_id: user.id },
   });
   ```
-- [ ] 13.5 Stripe Webhook handler — Next.js API Route (`/api/webhooks/stripe`):
+- [x] 13.5 Stripe Webhook handler — Next.js API Route (`/api/webhooks/stripe`):
   ```typescript
   // POST /api/webhooks/stripe
   // Stripe 'checkout.session.completed' event esetén:
@@ -603,8 +603,8 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
   // 2. Order items létrehozása
   // 3. Készlet csökkentése (opcionális mock-nál)
   ```
-- [ ] 13.6 Rendelés státusz lekérdezés: a felhasználó saját rendeléseinek listázása
-- [ ] 13.7 Stripe environment változók ellenőrzése: az `.env.local`-ban (Iteration 1-ben definiált) `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` meglétének ellenőrzése
+- [x] 13.6 Rendelés státusz lekérdezés: a felhasználó saját rendeléseinek listázása
+- [x] 13.7 Stripe environment változók ellenőrzése: az `.env.local`-ban (Iteration 1-ben definiált) `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` meglétének ellenőrzése
 
 **Acceptance Criteria:**
 

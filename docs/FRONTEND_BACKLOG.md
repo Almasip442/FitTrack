@@ -30,9 +30,9 @@
 | Metric | Value |
 |---|---|
 | Total tasks | 99 |
-| Completed tasks | 41 |
-| Remaining tasks | 58 |
-| Completion | 41.4% |
+| Completed tasks | 50 |
+| Remaining tasks | 49 |
+| Completion | 50.5% |
 
 ---
 
@@ -266,21 +266,21 @@
 
 ### Iteration F7 — Kalóriakövetés UI
 
-**Status:** TODO
+**Status:** DONE
 
 **Goal:** A napi étkezések rögzítése és a kalória/makró összesítők megjelenítése.
 
 **Tasks:**
 
-- [ ] F7.1 Kalóriakövetés oldal layout (`/calories`): felül a dátum választó (mai nap default, léptetés előre/hátra nyilakkal), alatta a napi összesítő, alatta az étkezés lista
-- [ ] F7.2 Napi összesítő sáv: nagy számok — összes kalória (cél vs. bevitt), fehérje, szénhidrát, zsír grammban, vizuális progress bar-ok (shadcn/ui Progress), ha túl van a célon piros jelzés
-- [ ] F7.3 Étkezés szekciók: Reggeli / Ebéd / Vacsora / Snack csoportosítás, minden szekció alatt az adott étkezéstípushoz rögzített ételek listája, szekciónkénti részösszeg
-- [ ] F7.4 Étel hozzáadás flow: „+ Étel hozzáadása" gomb egy szekción belül → kereső mező megnyílik (inline vagy Sheet/Dialog) → gépelés → debounced Open Food Facts API keresés → találati lista (étel neve + kcal/100g) → kattintás → adag méret input (gramm, alapértelmezett: 100g) → „Hozzáadás" gomb
-- [ ] F7.5 Találati lista formázása: minden találat egy sor — étel neve, kalória/100g halvány szöveggel, kattintásra kiválasztódik
-- [ ] F7.6 Rögzített étel sor: étel neve, adag méret, kalória, makrók kis betűvel, „X" gomb törléshez. Kattintásra az adag méret szerkeszthető.
-- [ ] F7.7 Heti trend grafikon: az oldal alján vagy külön tab-on, Recharts BarChart az utolsó 7 nap kalóriabevitelével, a kalóriacél vízszintes vonalként jelölve
-- [ ] F7.8 Üres állapot: „Ma még nem rögzítettél ételt — kezdd a reggelivel!" + CTA gomb
-- [ ] F7.9 Loading/error kezelés: skeleton loading az étel keresőnél, error toast ha az Open Food Facts nem elérhető („A keresés jelenleg nem elérhető, próbáld újra.")
+- [x] F7.1 Kalóriakövetés oldal layout (`/calories`): felül a dátum választó (mai nap default, léptetés előre/hátra nyilakkal), alatta a napi összesítő, alatta az étkezés lista
+- [x] F7.2 Napi összesítő sáv: nagy számok — összes kalória (cél vs. bevitt), fehérje, szénhidrát, zsír grammban, vizuális progress bar-ok (shadcn/ui Progress), ha túl van a célon piros jelzés
+- [x] F7.3 Étkezés szekciók: Reggeli / Ebéd / Vacsora / Snack csoportosítás, minden szekció alatt az adott étkezéstípushoz rögzített ételek listája, szekciónkénti részösszeg
+- [x] F7.4 Étel hozzáadás flow: „+ Étel hozzáadása" gomb egy szekción belül → kereső mező megnyílik (inline vagy Sheet/Dialog) → gépelés → debounced Open Food Facts API keresés → találati lista (étel neve + kcal/100g) → kattintás → adag méret input (gramm, alapértelmezett: 100g) → „Hozzáadás" gomb
+- [x] F7.5 Találati lista formázása: minden találat egy sor — étel neve, kalória/100g halvány szöveggel, kattintásra kiválasztódik
+- [x] F7.6 Rögzített étel sor: étel neve, adag méret, kalória, makrók kis betűvel, „X" gomb törléshez. Kattintásra az adag méret szerkeszthető.
+- [x] F7.7 Heti trend grafikon: az oldal alján vagy külön tab-on, Recharts BarChart az utolsó 7 nap kalóriabevitelével, a kalóriacél vízszintes vonalként jelölve
+- [x] F7.8 Üres állapot: „Ma még nem rögzítettél ételt — kezdd a reggelivel!" + CTA gomb
+- [x] F7.9 Loading/error kezelés: skeleton loading az étel keresőnél, error toast ha az Open Food Facts nem elérhető („A keresés jelenleg nem elérhető, próbáld újra.")
 
 **Acceptance Criteria:**
 
