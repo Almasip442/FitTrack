@@ -47,11 +47,11 @@ async function requireUserId(): Promise<string | null> {
 /*  Internal helpers                                                           */
 /* -------------------------------------------------------------------------- */
 
-/** Format a Date as `YYYY-MM-DD` in UTC (matches Postgres `date` columns). */
+/** Format a Date as `YYYY-MM-DD` in local time (matches Postgres `date` columns). */
 function toIsoDate(d: Date): string {
-  const yyyy = d.getUTCFullYear()
-  const mm = String(d.getUTCMonth() + 1).padStart(2, '0')
-  const dd = String(d.getUTCDate()).padStart(2, '0')
+  const yyyy = d.getFullYear()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
   return `${yyyy}-${mm}-${dd}`
 }
 
@@ -217,10 +217,10 @@ export async function getWeeklyCalorieTrend(
 
   const span = Number.isInteger(days) && days > 0 ? days : 7
 
-  // Build the inclusive date window [start, today] in UTC.
+  // Build the inclusive date window [start, today] in local time.
   const today = new Date()
   const start = new Date(today)
-  start.setUTCDate(start.getUTCDate() - (span - 1))
+  start.setDate(start.getDate() - (span - 1))
 
   const startIso = toIsoDate(start)
   const endIso = toIsoDate(today)
@@ -258,7 +258,7 @@ export async function getWeeklyCalorieTrend(
   const series: CalorieTrendPoint[] = []
   for (let i = 0; i < span; i++) {
     const d = new Date(start)
-    d.setUTCDate(start.getUTCDate() + i)
+    d.setDate(start.getDate() + i)
     const iso = toIsoDate(d)
     series.push({ date: iso, total_calories: totals.get(iso) ?? 0 })
   }

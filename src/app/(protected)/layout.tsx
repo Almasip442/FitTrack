@@ -11,24 +11,39 @@ import { createClient } from '@/lib/supabase/server'
  * Resolve the current pathname from the request headers.
  *
  * Next.js does not surface the active pathname directly to a server
- * layout; the standard workaround is to read the `x-pathname` /
- * `x-invoke-path` header that Next sets on the inbound request.
- * We fall back to `x-url` / `referer` and finally `''` so the guard
- * defaults to "treat as protected" when the pathname is unknown.
+ * layout. We rely on the `x-pathname` header that our own middleware
+ * (`src/lib/supabase/middleware.ts`) writes onto every incoming request
+ * — this is the only fully trustworthy source of the user-visible
+ * pathname inside a Server Component.
+ *
+ * Fallbacks (`x-invoke-path`, `referer`) are kept defensively for the
+ * edge case where the middleware did not run (e.g. assets matched by
+ * the matcher exclusion). When nothing matches we return '' which
+ * causes the onboarding-gate to assume "not on /onboarding" and act
+ * conservatively.
+ *
+ * NOTE: `next-url` is intentionally NOT consulted. Next.js sets it
+ * internally for RSC payload requests and its value is not a stable
+ * user-visible pathname; reading it caused incomplete profiles to
+ * always be redirected to /onboarding even after the user was already
+ * on that page (and complete profiles to be misclassified during RSC
+ * navigations).
  */
 async function getCurrentPathname(): Promise<string> {
   const h = await headers()
-  const direct =
-    h.get('x-invoke-path') ??
-    h.get('x-pathname') ??
-    h.get('next-url') ??
-    null
-  if (direct) return direct
 
-  const url = h.get('x-url') ?? h.get('referer')
-  if (url) {
+  // Primary source — set by our middleware on every request.
+  const fromMiddleware = h.get('x-pathname')
+  if (fromMiddleware) return fromMiddleware
+
+  // Defensive fallbacks for unusual request paths.
+  const invokePath = h.get('x-invoke-path')
+  if (invokePath) return invokePath
+
+  const referer = h.get('referer')
+  if (referer) {
     try {
-      return new URL(url).pathname
+      return new URL(referer).pathname
     } catch {
       return ''
     }

@@ -279,7 +279,7 @@ Ha bizonytalan vagy a teendőkben, kérdezd meg a product-owner-t hogy a kérés
 ```
 
 ---
-Csak vedd fel a kontextust ne kezdj el iterációt
+A projekt elkeszult ,csak vedd fel a kontextust
 
 ## 2. PRODUCT-OWNER
 

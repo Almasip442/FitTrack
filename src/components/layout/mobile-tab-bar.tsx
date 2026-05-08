@@ -15,6 +15,14 @@ import { mobileTabs } from './nav-routes'
  */
 export function MobileTabBar() {
   const pathname = usePathname()
+  // See navbar.tsx for the full explanation. While the user is on
+  // /onboarding, each protected route's RSC prefetch is server-redirected
+  // back to /onboarding (the onboarding-gate in the protected layout),
+  // and the rendered RSC payload re-prefetches the same five links.
+  // Disabling prefetch on this surface while on /onboarding breaks the
+  // loop without affecting the regular UX on every other page.
+  const onOnboarding =
+    pathname === '/onboarding' || pathname.startsWith('/onboarding/')
 
   return (
     <nav
@@ -36,6 +44,7 @@ export function MobileTabBar() {
             <li key={tab.href} className="flex">
               <Link
                 href={tab.href}
+                prefetch={onOnboarding ? false : undefined}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
                   'group relative flex w-full flex-col items-center justify-center',

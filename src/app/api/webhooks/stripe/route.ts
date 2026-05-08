@@ -43,8 +43,9 @@ function getStripe(): Stripe {
     throw new Error('STRIPE_SECRET_KEY is not configured.')
   }
   stripeClient = new Stripe(key, {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    apiVersion: '2026-04-22.dahlia' as any,
+    // Must match the version pinned in `/api/checkout` so the Session
+    // shape produced at checkout matches the shape consumed here.
+    apiVersion: '2026-04-22.dahlia',
   })
   return stripeClient
 }
@@ -180,6 +181,11 @@ async function persistCompletedSession(session: Stripe.Checkout.Session) {
     .insert(itemRows)
 
   if (itemsError) {
+    // Compensating delete: avoid leaving an orphaned `orders` row when
+    // the items insert fails. Stripe will retry the webhook, and the
+    // idempotency check at the top relies on `stripe_session_id`
+    // being absent for unfinished orders.
+    await supabase.from('orders').delete().eq('id', orderRow.id)
     throw new Error(`Failed to insert order items: ${itemsError.message}`)
   }
 }

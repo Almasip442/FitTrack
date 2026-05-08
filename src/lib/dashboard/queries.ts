@@ -492,14 +492,47 @@ export async function getDashboardData(): Promise<DashboardData> {
   const todayDbDow = jsDayToDbDayOfWeek(now.getDay())
   const weekStart = startOfWeekMonday(now)
 
-  const [todayWorkout, todayCalories, weeklyActivity, weightResult, latestAnalysis] =
-    await Promise.all([
-      loadTodayWorkout(userId, todayIso, todayDbDow),
-      loadTodayCalories(userId, todayIso),
-      loadWeeklyActivity(userId, weekStart),
-      loadWeightTrend(userId),
-      loadLatestAnalysis(userId),
-    ])
+  // `allSettled` so a single failing widget query does not blank the
+  // entire dashboard — each rejected loader falls back to its neutral
+  // default value from `EMPTY_DASHBOARD`.
+  const [
+    todayWorkoutResult,
+    todayCaloriesResult,
+    weeklyActivityResult,
+    weightResultSettled,
+    latestAnalysisResult,
+  ] = await Promise.allSettled([
+    loadTodayWorkout(userId, todayIso, todayDbDow),
+    loadTodayCalories(userId, todayIso),
+    loadWeeklyActivity(userId, weekStart),
+    loadWeightTrend(userId),
+    loadLatestAnalysis(userId),
+  ])
+
+  const todayWorkout =
+    todayWorkoutResult.status === 'fulfilled'
+      ? todayWorkoutResult.value
+      : EMPTY_DASHBOARD.todayWorkout
+
+  const todayCalories =
+    todayCaloriesResult.status === 'fulfilled'
+      ? todayCaloriesResult.value
+      : EMPTY_DASHBOARD.todayCalories
+
+  const weeklyActivity =
+    weeklyActivityResult.status === 'fulfilled'
+      ? weeklyActivityResult.value
+      : EMPTY_DASHBOARD.weeklyActivity
+
+  const weightResult: WeightTrendResult =
+    weightResultSettled.status === 'fulfilled'
+      ? weightResultSettled.value
+      : { trend: [], currentWeight: null, weightChange: null }
+
+  const latestAnalysis =
+    latestAnalysisResult.status === 'fulfilled'
+      ? latestAnalysisResult.value
+      : null
 
   return {
     todayWorkout,

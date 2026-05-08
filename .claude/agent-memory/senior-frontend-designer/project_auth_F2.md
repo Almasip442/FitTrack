@@ -14,6 +14,13 @@ After F2 ships, the auth surface is composed this way:
 
 - **`src/lib/auth-errors.ts`** — `mapAuthError(AuthError): string` — maps Supabase `code`/message to friendly Hungarian copy (`invalid_credentials`, `email_not_confirmed`, `user_already_exists`, `weak_password`, `over_request_rate_limit`, network heuristics, generic fallback).
 
+- **`src/app/(auth)/forgot-password/page.tsx`** — client component, single email field. Calls `supabase.auth.resetPasswordForEmail(email, { redirectTo: ${origin}/reset-password })` via the browser client (`@/lib/supabase/client`). On success sets an emerald success notice ("Jelszó visszaállítási linket küldtünk az email címedre.") and locks the input + button (`isSent` flag) — Supabase returns no error even for non-existent emails, so we always show success to avoid email enumeration. Heading prefix: `// 03 / Jelszó visszaállítása`. Footer link: "Vissza a bejelentkezéshez" with ArrowLeft icon. The login page links here via a `text-xs uppercase tracking-wide-display text-muted-foreground hover:text-brand-red` "Elfelejtett jelszó?" between the submit button and the register footer link.
+
+- **Two SignOutButton components — intentional, do not consolidate:**
+  - `src/components/layout/sign-out-button.tsx` — used by `Navbar`. Custom ghost-red button (compact `h-9`, brand-red border/bg, Barlow Condensed uppercase, hides "Kilépés" label below `sm:`). Wraps a `<form action={signOutAction}>`.
+  - `src/components/auth/sign-out-button.tsx` — generic, shadcn Button-based variant (variant/size/className props, optional children + hideIcon). For use inside menus, settings pages, profile dropdowns. Also wraps `<form action={signOutAction}>`.
+  - Both bind to `signOutAction` from `src/lib/supabase/auth-actions.ts`. The action calls `supabase.auth.signOut()` then `redirect('/login')`. **Why two:** the navbar one is a tightly-tuned visual primitive matching the F1 layout shell aesthetic; the auth one is a flexible button. They are not duplicates — they are different design surfaces.
+
 - **`src/app/(auth)/login/page.tsx`** + **`src/app/(auth)/register/page.tsx`** — both client components. Form-state pattern: `email`/`password`(`/confirm`) state + `touched: { ...: boolean }` state. `errors` is a `useMemo` derived object (validation runs every render). A field error renders ONLY if `touched[field] && errors[field]`. Submit forces `setTouched({ all: true })`. Submit button is disabled when `isPending || !isValid`. Server errors go through `mapAuthError`. Register handles "no session returned" (email confirm required) by showing an emerald success notice instead of navigating.
 
 - **Visual conventions established here that future pages should reuse:**

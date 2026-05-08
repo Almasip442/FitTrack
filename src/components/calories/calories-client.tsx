@@ -81,6 +81,14 @@ export function CaloriesClient({
   /* ----- Track the latest fetch sequence to prevent stale writes ---------- */
   const fetchSeqRef = useRef(0)
 
+  /* ----- Coalesce concurrent ensureDailyLog calls -------------------------- */
+  // If the user opens several meal sections in quick succession, each one
+  // calls `ensureDailyLog`. Without coalescing, each call would fire its own
+  // upsert+select round-trip and race against the others. We share a single
+  // in-flight promise per render-cycle so all concurrent callers resolve
+  // with the same daily-log id.
+  const dailyLogPromiseRef = useRef<Promise<string | null> | null>(null)
+
   /* ----- Keep the per-date data fresh when `date` changes ------------------ */
 
   const fetchDay = useCallback(
@@ -212,40 +220,54 @@ export function CaloriesClient({
 
   /* ----- Lazy daily-log creation on first food add ----------------------- */
 
-  const ensureDailyLog = useCallback(async (): Promise<string | null> => {
-    if (dailyLog) return dailyLog.id
-    try {
-      const { data: userData } = await supabase.auth.getUser()
-      const userId = userData.user?.id
-      if (!userId) {
-        toast.error('Bejelentkezés szükséges.')
+  const ensureDailyLog = useCallback((): Promise<string | null> => {
+    if (dailyLog) return Promise.resolve(dailyLog.id)
+    // Reuse the in-flight promise if another caller already kicked off the
+    // upsert+select. This collapses N parallel attempts into a single
+    // round-trip and guarantees they all see the same daily-log id.
+    if (dailyLogPromiseRef.current) return dailyLogPromiseRef.current
+
+    const promise = (async (): Promise<string | null> => {
+      try {
+        const { data: userData } = await supabase.auth.getUser()
+        const userId = userData.user?.id
+        if (!userId) {
+          toast.error('Bejelentkezés szükséges.')
+          return null
+        }
+        // Idempotent upsert on (user_id, date).
+        const { error: upsertError } = await supabase
+          .from('daily_logs')
+          .upsert(
+            { user_id: userId, date },
+            { onConflict: 'user_id,date', ignoreDuplicates: true },
+          )
+        if (upsertError) throw new Error(upsertError.message)
+
+        const { data: log, error } = await supabase
+          .from('daily_logs')
+          .select('*')
+          .eq('user_id', userId)
+          .eq('date', date)
+          .single()
+
+        if (error || !log) throw new Error(error?.message ?? 'no row')
+
+        setDailyLog(log)
+        return log.id
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Ismeretlen hiba'
+        toast.error(`Nem sikerült létrehozni a naplót: ${msg}`)
         return null
       }
-      // Idempotent upsert on (user_id, date).
-      const { error: upsertError } = await supabase
-        .from('daily_logs')
-        .upsert(
-          { user_id: userId, date },
-          { onConflict: 'user_id,date', ignoreDuplicates: true },
-        )
-      if (upsertError) throw new Error(upsertError.message)
+    })().finally(() => {
+      // Release the cached promise so the next genuinely-new call (e.g.
+      // after the user navigates to a different date) starts fresh.
+      dailyLogPromiseRef.current = null
+    })
 
-      const { data: log, error } = await supabase
-        .from('daily_logs')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('date', date)
-        .single()
-
-      if (error || !log) throw new Error(error?.message ?? 'no row')
-
-      setDailyLog(log)
-      return log.id
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Ismeretlen hiba'
-      toast.error(`Nem sikerült létrehozni a naplót: ${msg}`)
-      return null
-    }
+    dailyLogPromiseRef.current = promise
+    return promise
   }, [dailyLog, supabase, date])
 
   /* ----- Mutation handlers ------------------------------------------------ */

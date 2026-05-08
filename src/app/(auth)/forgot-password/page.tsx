@@ -1,43 +1,34 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Loader2 } from 'lucide-react'
+import { ArrowLeft, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
 import { useMemo, useState, type FormEvent } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { slideUp, staggerChildren } from '@/lib/animations'
 import { mapAuthError } from '@/lib/auth-errors'
-import { signIn } from '@/lib/supabase/auth'
+import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 interface FieldErrors {
   email?: string
-  password?: string
 }
 
 interface TouchedState {
   email: boolean
-  password: boolean
 }
 
-export default function LoginPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const redirectTo = searchParams.get('redirectTo') ?? '/dashboard'
-
+export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [touched, setTouched] = useState<TouchedState>({
-    email: false,
-    password: false,
-  })
+  const [touched, setTouched] = useState<TouchedState>({ email: false })
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [submitNotice, setSubmitNotice] = useState<string | null>(null)
   const [isPending, setIsPending] = useState(false)
+  const [isSent, setIsSent] = useState(false)
 
   const errors: FieldErrors = useMemo(() => {
     const next: FieldErrors = {}
@@ -46,25 +37,29 @@ export default function LoginPage() {
     } else if (!EMAIL_RE.test(email)) {
       next.email = 'Érvénytelen e-mail cím formátum.'
     }
-    if (!password) {
-      next.password = 'A jelszó megadása kötelező.'
-    } else if (password.length < 6) {
-      next.password = 'A jelszó legalább 6 karakter hosszú legyen.'
-    }
     return next
-  }, [email, password])
+  }, [email])
 
-  const isValid = !errors.email && !errors.password
+  const isValid = !errors.email
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    setTouched({ email: true, password: true })
+    setTouched({ email: true })
     if (!isValid || isPending) return
 
     setSubmitError(null)
+    setSubmitNotice(null)
     setIsPending(true)
 
-    const { error } = await signIn(email, password)
+    const supabase = createClient()
+    const redirectTo =
+      typeof window !== 'undefined'
+        ? `${window.location.origin}/reset-password`
+        : undefined
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo,
+    })
 
     if (error) {
       setSubmitError(mapAuthError(error))
@@ -72,8 +67,11 @@ export default function LoginPage() {
       return
     }
 
-    router.replace(redirectTo)
-    router.refresh()
+    setSubmitNotice(
+      'Jelszó visszaállítási linket küldtünk az email címedre.',
+    )
+    setIsSent(true)
+    setIsPending(false)
   }
 
   return (
@@ -86,13 +84,14 @@ export default function LoginPage() {
       {/* Header */}
       <motion.div variants={slideUp} className="space-y-3">
         <p className="font-condensed text-[11px] uppercase tracking-wide-display text-brand-red">
-          {'// 01 / Bejelentkezés'}
+          {'// 03 / Jelszó visszaállítása'}
         </p>
         <h1 className="font-condensed text-4xl font-extrabold uppercase tracking-display text-foreground sm:text-5xl">
-          Üdv újra.
+          Elfelejtetted?
         </h1>
         <p className="text-sm text-muted-foreground">
-          Add meg a hitelesítő adataidat a folytatáshoz.
+          Add meg a fiókodhoz tartozó e-mail címet, és küldünk egy
+          visszaállítási linket.
         </p>
       </motion.div>
 
@@ -117,7 +116,7 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             onBlur={() => setTouched((t) => ({ ...t, email: true }))}
-            disabled={isPending}
+            disabled={isPending || isSent}
             aria-invalid={touched.email && !!errors.email}
             aria-describedby={
               touched.email && errors.email ? 'email-error' : undefined
@@ -136,46 +135,7 @@ export default function LoginPage() {
           )}
         </motion.div>
 
-        {/* Password */}
-        <motion.div variants={slideUp} className="space-y-2">
-          <label
-            htmlFor="password"
-            className="flex items-center justify-between font-condensed text-[11px] uppercase tracking-wide-display text-muted-foreground"
-          >
-            <span>Jelszó</span>
-            <span className="text-muted-foreground/50">[ required ]</span>
-          </label>
-          <Input
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            minLength={6}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onBlur={() => setTouched((t) => ({ ...t, password: true }))}
-            disabled={isPending}
-            aria-invalid={touched.password && !!errors.password}
-            aria-describedby={
-              touched.password && errors.password
-                ? 'password-error'
-                : undefined
-            }
-            className="h-11 bg-card font-sans text-base placeholder:text-muted-foreground/60"
-            placeholder="••••••••"
-          />
-          {touched.password && errors.password && (
-            <p
-              id="password-error"
-              role="alert"
-              className="text-xs text-red-500"
-            >
-              {errors.password}
-            </p>
-          )}
-        </motion.div>
-
-        {/* Submit error (server) */}
+        {/* Server error */}
         {submitError && (
           <div
             role="alert"
@@ -188,46 +148,51 @@ export default function LoginPage() {
           </div>
         )}
 
+        {/* Server success notice */}
+        {submitNotice && (
+          <div
+            role="status"
+            className={cn(
+              'rounded-md border px-3 py-2 text-sm',
+              'border-emerald-500/30 bg-emerald-500/10 text-emerald-500',
+            )}
+          >
+            {submitNotice}
+          </div>
+        )}
+
         {/* Submit */}
         <motion.div variants={slideUp}>
           <Button
             type="submit"
             size="lg"
-            disabled={isPending || !isValid}
+            disabled={isPending || !isValid || isSent}
             className="h-11 w-full font-condensed text-sm uppercase tracking-wide-display"
           >
             {isPending ? (
               <>
                 <Loader2 className="size-4 animate-spin" />
-                Belépés...
+                Küldés...
               </>
+            ) : isSent ? (
+              'Elküldve'
             ) : (
-              'Bejelentkezés'
+              'Visszaállítási link küldése'
             )}
           </Button>
         </motion.div>
 
-        {/* Forgot-password link */}
-        <motion.p variants={slideUp} className="text-center">
-          <Link
-            href="/forgot-password"
-            className="font-condensed text-xs uppercase tracking-wide-display text-muted-foreground underline-offset-4 transition-colors hover:text-brand-red hover:underline"
-          >
-            Elfelejtett jelszó?
-          </Link>
-        </motion.p>
-
-        {/* Footer link */}
+        {/* Back-to-login link */}
         <motion.p
           variants={slideUp}
           className="pt-2 text-center text-sm text-muted-foreground"
         >
-          Nincs még fiókod?{' '}
           <Link
-            href="/register"
-            className="font-condensed uppercase tracking-wide-display text-brand-red underline-offset-4 hover:underline"
+            href="/login"
+            className="inline-flex items-center gap-1.5 font-condensed uppercase tracking-wide-display text-brand-red underline-offset-4 hover:underline"
           >
-            Regisztrálj
+            <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
+            Vissza a bejelentkezéshez
           </Link>
         </motion.p>
       </form>

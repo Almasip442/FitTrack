@@ -168,6 +168,13 @@ export function WorkoutPlanEditor({ plan: initialPlan }: WorkoutPlanEditorProps)
   >(new Map())
   const saveStatusResetRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  // ---------- Library request id (cancellation token for load-more) ----------
+  // Bumped whenever the search/filter scope changes. `handleLoadMoreLibrary`
+  // captures the id when it starts and discards its result if the id has
+  // moved on by the time the response arrives — preventing duplicate items
+  // from a stale page-2 fetch when the user types fast.
+  const libraryRequestIdRef = useRef(0)
+
   // ---------- DnD sensors ----------
   // Keyboard sensor pulled from the sortable preset for accessible reordering.
   const sensors = useSensors(
@@ -189,6 +196,10 @@ export function WorkoutPlanEditor({ plan: initialPlan }: WorkoutPlanEditorProps)
 
   useEffect(() => {
     let cancelled = false
+    // Invalidate any in-flight load-more request: by the time it resolves,
+    // the library scope will have moved on and its data must not be merged.
+    libraryRequestIdRef.current += 1
+    const requestId = libraryRequestIdRef.current
     // Defer state updates to a microtask so the effect body itself doesn't
     // trigger a cascading render (react-hooks/set-state-in-effect).
     const start = () => {
@@ -204,17 +215,19 @@ export function WorkoutPlanEditor({ plan: initialPlan }: WorkoutPlanEditorProps)
         limit: LIBRARY_PAGE_SIZE,
       })
         .then((res) => {
-          if (cancelled) return
+          if (cancelled || libraryRequestIdRef.current !== requestId) return
           setLibraryItems(res.data)
           setLibraryPage(res.page)
           setLibraryHasMore(res.hasMore)
         })
         .catch((err: unknown) => {
-          if (cancelled) return
+          if (cancelled || libraryRequestIdRef.current !== requestId) return
           setLibraryError(err instanceof Error ? err.message : 'Hiba történt')
         })
         .finally(() => {
-          if (!cancelled) setLibraryLoading(false)
+          if (!cancelled && libraryRequestIdRef.current === requestId) {
+            setLibraryLoading(false)
+          }
         })
     }
     queueMicrotask(start)
@@ -226,6 +239,10 @@ export function WorkoutPlanEditor({ plan: initialPlan }: WorkoutPlanEditorProps)
 
   const handleLoadMoreLibrary = useCallback(async () => {
     if (libraryLoadingMore || !libraryHasMore) return
+    // Snapshot the id at fetch start; if the user types or filters before
+    // the request resolves, the search effect bumps `libraryRequestIdRef`
+    // and we drop this stale page on the floor instead of appending it.
+    const requestId = libraryRequestIdRef.current
     setLibraryLoadingMore(true)
     try {
       const next = libraryPage + 1
@@ -237,14 +254,18 @@ export function WorkoutPlanEditor({ plan: initialPlan }: WorkoutPlanEditorProps)
         page: next,
         limit: LIBRARY_PAGE_SIZE,
       })
+      if (libraryRequestIdRef.current !== requestId) return
       setLibraryItems((prev) => [...prev, ...res.data])
       setLibraryPage(res.page)
       setLibraryHasMore(res.hasMore)
     } catch (err) {
+      if (libraryRequestIdRef.current !== requestId) return
       const msg = err instanceof Error ? err.message : 'Hiba történt'
       toast.error(msg)
     } finally {
-      setLibraryLoadingMore(false)
+      if (libraryRequestIdRef.current === requestId) {
+        setLibraryLoadingMore(false)
+      }
     }
   }, [
     libraryLoadingMore,
@@ -789,9 +810,9 @@ export function WorkoutPlanEditor({ plan: initialPlan }: WorkoutPlanEditorProps)
           {/* ---------- Library panel ---------- */}
           <section
             className={cn(
-              'lg:sticky lg:top-20 lg:self-start',
+              'lg:sticky lg:top-20 lg:self-start lg:flex lg:flex-col',
               'space-y-4 rounded-lg border border-border bg-card/40 p-4',
-              'lg:max-h-[calc(100vh-7rem)] lg:overflow-hidden',
+              'lg:max-h-[calc(100vh-7rem)]',
             )}
             aria-label="Gyakorlat-könyvtár"
           >
@@ -820,7 +841,7 @@ export function WorkoutPlanEditor({ plan: initialPlan }: WorkoutPlanEditorProps)
             {/* Library scroll area */}
             <div
               className={cn(
-                'lg:max-h-[calc(100vh-22rem)] lg:overflow-y-auto lg:pr-1',
+                'lg:flex-1 lg:min-h-0 lg:overflow-y-auto lg:pr-1',
                 '-mx-1 px-1',
               )}
             >
@@ -1125,7 +1146,10 @@ export function WorkoutPlanEditor({ plan: initialPlan }: WorkoutPlanEditorProps)
         {activeDragExercise ? (
           <ExerciseDragGhost exercise={activeDragExercise} />
         ) : activeRowExercise ? (
-          <div className="opacity-95">
+          // The ghost is purely visual: disable pointer events so the
+          // stepper/delete buttons inside don't show hover/active states
+          // or capture clicks while the user is mid-drag.
+          <div className="pointer-events-none opacity-95">
             <WorkoutDayExerciseCard
               row={activeRowExercise}
               index={0}

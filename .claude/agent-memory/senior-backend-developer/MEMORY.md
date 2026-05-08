@@ -3,3 +3,5 @@
 - [FitTrack Auth Pattern](project_auth_pattern.md) — auth.ts vs auth-actions.ts split; updateSession middleware; protected/auth route lists
 - [database.ts type contract](project_database_types_contract.md) — every Tables entry needs Relationships: [] or .update/.insert types collapse to never
 - [Deployment Configuration](project_deployment.md) — Vercel/Supabase/Stripe/OpenRouter touchpoints, vercel.json maxDuration map, demo user contract
+- [Pathname forwarding pattern](feedback_pathname_header_pattern.md) — Use new Headers + NextResponse.next({request:{headers}}); never trust next-url; read x-pathname first in layouts
+- [Onboarding gate + Link prefetch interaction](project_onboarding_prefetch_loop.md) — Why protected-layout cross-section Links must skip prefetch on /onboarding

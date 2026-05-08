@@ -3,8 +3,9 @@
  * filter labels, color tokens and three-letter "specimen codes"
  * shown on the exercise cards.
  *
- * The values match the seed data in `supabase/migrations/...exercises_seed`
- * so a chip click filters via exact `eq` match on the API.
+ * EQUIPMENT_OPTIONS values are English wger equipment names (as stored
+ * by the seed script). The API filters with ilike so casing doesn't matter,
+ * but the substring must appear in the stored comma-separated equipment string.
  */
 
 export type Difficulty = 'kezdő' | 'haladó' | 'profi'
@@ -36,11 +37,13 @@ export const MUSCLE_GROUPS: MuscleGroup[] = [
 ]
 
 export const EQUIPMENT_OPTIONS: EquipmentOption[] = [
-  { value: 'súlyzó', label: 'Súlyzó' },
-  { value: 'gép', label: 'Gép' },
-  { value: 'testsúly', label: 'Testsúly' },
-  { value: 'kötél', label: 'Kötél' },
-  { value: 'rúd', label: 'Rúd' },
+  { value: 'Barbell', label: 'Rúd' },
+  { value: 'Dumbbell', label: 'Kézisúlyzó' },
+  { value: 'Machine', label: 'Gép' },
+  { value: 'Body weight', label: 'Testsúly' },
+  { value: 'Kettlebell', label: 'Kettlebell' },
+  { value: 'Cable', label: 'Kábel' },
+  { value: 'Pull-up bar', label: 'Húzódzkodó rúd' },
 ]
 
 export const DIFFICULTIES: { value: Difficulty; label: string }[] = [

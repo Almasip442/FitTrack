@@ -10,7 +10,7 @@ FitTrack Pro splits Supabase Auth helpers across three sibling modules under `sr
 - `auth-actions.ts` — `'use server'` module. Houses Server Actions that need `redirect()` (currently `signOutAction`). Kept separate so `auth.ts` is not pulled into the Server Action bundle.
 - `middleware.ts` — `updateSession(request)` helper following the exact `@supabase/ssr` cookie-rebuild pattern (rebuild `NextResponse` inside `setAll`). Also owns the `PROTECTED_PREFIXES` and `AUTH_PAGES` lists.
 
-The Next.js entry `src/middleware.ts` only delegates to `updateSession` and exports a matcher that excludes `_next/static`, `_next/image`, favicon, and image asset extensions; API routes are intentionally INCLUDED so their session cookies refresh.
+The Next.js entry `src/proxy.ts` only delegates to `updateSession` and exports a matcher that excludes `_next/static`, `_next/image`, favicon, and image asset extensions; API routes are intentionally INCLUDED so their session cookies refresh. Next.js 16 renamed the `middleware` file convention to `proxy` — exporting a `proxy` function from `src/proxy.ts` is the supported form. The legacy `src/middleware.ts` path is deprecated and silently downgrades the helper to a pass-through, which breaks `x-pathname` propagation.
 
 Protected route prefixes are exactly: `/dashboard`, `/workouts`, `/calories`, `/progress`, `/shop`, `/profile`, `/onboarding`. Auth pages (redirected away when authenticated) are: `/login`, `/register`. Unauthenticated redirects to `/login` carry the original path in `?redirectTo=...`; the login page reads it via `useSearchParams` and replaces to that target after sign-in.
 

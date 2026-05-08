@@ -45,18 +45,11 @@ function getStripe(): Stripe {
     throw new Error('STRIPE_SECRET_KEY is not configured.')
   }
   stripeClient = new Stripe(key, {
-    // Pinned to the version aligned with the project's Stripe dashboard.
-    // The SDK's strict literal type (`LatestApiVersion`) is bumped on
-    // every release, so we widen via `unknown` — at runtime any version
-    // string is accepted by the SDK.
-    apiVersion:
-      '2025-04-30.basil' as unknown as ConstructorParameters<
-        typeof Stripe
-      >[1] extends infer C
-        ? C extends { apiVersion?: infer V }
-          ? V
-          : never
-        : never,
+    // Pinned to the SDK's `LatestApiVersion` so the checkout route and
+    // the Stripe webhook handler share an identical wire format. Bumping
+    // the `stripe` npm package will surface here as a type error and
+    // force a deliberate review.
+    apiVersion: '2026-04-22.dahlia',
   })
   return stripeClient
 }
@@ -139,7 +132,7 @@ export async function POST(request: NextRequest) {
   const productIds = Array.from(new Set(items.map((i) => i.product_id)))
   const { data: products, error: productsError } = await supabase
     .from('products')
-    .select('id, name, price, is_active')
+    .select('id, name, price, is_active, stock')
     .in('id', productIds)
     .eq('is_active', true)
 
@@ -159,6 +152,17 @@ export async function POST(request: NextRequest) {
 
   const productById = new Map(products.map((p) => [p.id, p]))
 
+  // ---- Stock check (must run before Stripe Session creation) ----
+  for (const item of items) {
+    const product = productById.get(item.product_id)!
+    if (item.quantity > product.stock) {
+      return NextResponse.json(
+        { error: `Insufficient stock for: ${product.name}` },
+        { status: 400 },
+      )
+    }
+  }
+
   // ---- Build Stripe line items ----
   // The element type lives on the Sessions resource namespace; we infer
   // it from the SessionCreateParams shape so we do not depend on the
@@ -177,8 +181,9 @@ export async function POST(request: NextRequest) {
         currency: 'huf',
         product_data: { name: product.name },
         // HUF is a zero-decimal currency in Stripe — pass the price
-        // directly as the smallest unit.
-        unit_amount: product.price,
+        // directly as the smallest unit. Round defensively so a
+        // stray decimal price never reaches the Stripe API.
+        unit_amount: Math.round(product.price),
       },
       quantity: item.quantity,
     }

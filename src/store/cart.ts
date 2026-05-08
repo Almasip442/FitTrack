@@ -82,6 +82,11 @@ export const useCartStore = create<CartStore>()(
     }),
     {
       name: 'fittrack-cart',
+      // SSR-safety: don't hydrate from localStorage during the server render.
+      // The CartDrawer triggers `useCartStore.persist.rehydrate()` after mount
+      // so the server- and client-rendered markup match (no hydration warnings,
+      // no badge flash before persisted state is read).
+      skipHydration: true,
     },
   ),
 )

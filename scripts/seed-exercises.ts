@@ -41,7 +41,7 @@ const WGER_PAGE_SIZE = 100;
 const WGER_STATUS_APPROVED = 2;
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const OPENROUTER_MODEL = 'nvidia/nemotron-super-49b-v1:free';
+const OPENROUTER_MODEL = 'deepseek/deepseek-r1-distill-llama-70b:free';
 const OPENROUTER_DELAY_MS = 500;
 
 const BATCH_SIZE = 50;

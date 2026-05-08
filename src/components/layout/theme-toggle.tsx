@@ -8,16 +8,36 @@ import { cn } from '@/lib/utils'
 
 /**
  * Theme toggle that avoids hydration mismatches by deferring the
- * icon-swap until `next-themes` has resolved the theme on the client.
+ * theme-dependent icon render until after mount.
  *
- * `resolvedTheme` is `undefined` on the server / first paint and becomes
- * 'light' | 'dark' after mount — we use that as the readiness signal,
- * so no `setState`-in-effect dance is needed.
+ * The server (and the very first client render) cannot know the user's
+ * resolved theme, so we render a neutral, fixed-size placeholder until
+ * `mounted` flips to true. This guarantees identical server/client output
+ * during hydration, then swaps in the real icons once we're safely past it.
  */
 export function ThemeToggle({ className }: { className?: string }) {
   const { resolvedTheme, setTheme } = useTheme()
-  const isReady = resolvedTheme === 'dark' || resolvedTheme === 'light'
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const isDark = resolvedTheme === 'dark'
+
+  if (!mounted) {
+    // Neutral placeholder — same dimensions as the real button so layout
+    // doesn't shift when the theme-dependent icons appear post-hydration.
+    return (
+      <div
+        aria-hidden="true"
+        className={cn(
+          'relative inline-flex h-9 w-9 items-center justify-center rounded-md',
+          className,
+        )}
+      />
+    )
+  }
 
   return (
     <button
@@ -36,16 +56,16 @@ export function ThemeToggle({ className }: { className?: string }) {
         aria-hidden="true"
         className={cn(
           'h-5 w-5 transition-all duration-300',
-          isReady && !isDark
-            ? 'rotate-0 scale-100 opacity-100'
-            : '-rotate-90 scale-0 opacity-0',
+          isDark
+            ? '-rotate-90 scale-0 opacity-0'
+            : 'rotate-0 scale-100 opacity-100',
         )}
       />
       <Moon
         aria-hidden="true"
         className={cn(
           'absolute h-5 w-5 transition-all duration-300',
-          isReady && isDark
+          isDark
             ? 'rotate-0 scale-100 opacity-100'
             : 'rotate-90 scale-0 opacity-0',
         )}

@@ -52,9 +52,27 @@ function isAuthPath(pathname: string): boolean {
 export async function updateSession(
   request: NextRequest,
 ): Promise<NextResponse> {
+  // Propagate the current pathname into a request header so server
+  // layouts (which cannot access the URL directly) can read it via
+  // `headers().get('x-pathname')`. This is the canonical workaround
+  // — without it the protected layout's onboarding-gate runs against
+  // an empty pathname and bounces /onboarding back to /onboarding,
+  // producing a redirect loop and a blank screen.
+  //
+  // Implementation note: we build a NEW Headers object from the
+  // request headers and set `x-pathname` on it before passing it
+  // through `NextResponse.next({ request: { headers } })`. Mutating
+  // `request.headers` directly is unreliable in the App Router —
+  // Next.js clones the request before downstream consumers read it,
+  // so the mutation is sometimes lost. Constructing a fresh Headers
+  // object and routing it via the `request.headers` option is the
+  // pattern Next documents for forwarding headers from middleware.
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-pathname', request.nextUrl.pathname)
+
   let response = NextResponse.next({
     request: {
-      headers: request.headers,
+      headers: requestHeaders,
     },
   })
 
@@ -70,9 +88,12 @@ export async function updateSession(
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value),
           )
+          // Re-build the response so refreshed cookies are written, but
+          // keep the same `requestHeaders` (with `x-pathname` set) so
+          // downstream layouts still receive the pathname header.
           response = NextResponse.next({
             request: {
-              headers: request.headers,
+              headers: requestHeaders,
             },
           })
           cookiesToSet.forEach(({ name, value, options }) =>

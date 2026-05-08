@@ -98,9 +98,9 @@ export async function GET(request: NextRequest) {
       .select('*', { count: 'exact' })
 
     // ---- Filters (combined with AND) ----
-    if (category) query = query.eq('category', category)
+    if (category) query = query.ilike('category', `%${category}%`)
     if (muscleGroup) query = query.eq('muscle_group', muscleGroup)
-    if (equipment) query = query.eq('equipment', equipment)
+    if (equipment) query = query.ilike('equipment', `%${equipment}%`)
     if (difficulty) query = query.eq('difficulty', difficulty)
 
     // ---- Free-text search ----

@@ -28,7 +28,7 @@ import type { Profile } from '@/types/database'
 // ---------------------------------------------------------------------
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
-const OPENROUTER_MODEL = 'nvidia/nemotron-3-super-120b-a12b:free'
+const OPENROUTER_MODEL = 'deepseek/deepseek-r1-distill-llama-70b:free'
 const OPENROUTER_TIMEOUT_MS = 30_000
 const APP_URL = 'https://fittrack-pro.vercel.app'
 const APP_TITLE = 'FitTrack Pro'
@@ -367,12 +367,16 @@ async function callOpenRouter(
       }),
     })
 
-    if (!res.ok) return null
+    if (!res.ok) {
+      console.error('[OpenRouter] HTTP', res.status, await res.text())
+      return null
+    }
 
     const json = (await res.json()) as OpenRouterResponse
     const content = json.choices?.[0]?.message?.content?.trim()
     return content ? content : null
-  } catch {
+  } catch (err) {
+    console.error('[OpenRouter] fetch error:', err)
     return null
   } finally {
     clearTimeout(timer)
@@ -434,9 +438,18 @@ export async function POST() {
     const userId = user.id
 
     // Compute the ISO week window once and reuse it everywhere.
+    // Clamp weekEnd to today so we never query a future date range
+    // (e.g. when the analysis is generated mid-week).
     const today = new Date()
+    const todayDateOnly = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+    )
     const weekStart = startOfWeekMonday(today)
-    const weekEnd = addDays(weekStart, 6)
+    const weekEndCandidate = addDays(weekStart, 6)
+    const weekEnd =
+      weekEndCandidate > todayDateOnly ? todayDateOnly : weekEndCandidate
     const weekStartIso = toIsoDate(weekStart)
     const weekEndIso = toIsoDate(weekEnd)
 

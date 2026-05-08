@@ -29,6 +29,16 @@ interface NavbarProps {
  */
 export function Navbar({ userName, avatarUrl }: NavbarProps = {}) {
   const pathname = usePathname()
+  // While the user is stuck on /onboarding (incomplete profile), every
+  // protected route's RSC prefetch is server-redirected back to
+  // /onboarding by the layout's onboarding-gate. Next.js auto-prefetches
+  // every visible <Link>, so the navbar's five cross-section links cause
+  // an infinite RSC fetch loop (each rendered /onboarding RSC payload
+  // re-references the same five links and prefetches them again).
+  // Disabling prefetch on this surface while on /onboarding breaks the
+  // loop without affecting the regular UX on every other page.
+  const onOnboarding =
+    pathname === '/onboarding' || pathname.startsWith('/onboarding/')
 
   return (
     <header
@@ -55,6 +65,7 @@ export function Navbar({ userName, avatarUrl }: NavbarProps = {}) {
               <Link
                 key={route.href}
                 href={route.href}
+                prefetch={onOnboarding ? false : undefined}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
                   'relative px-3 py-2 font-condensed text-sm font-semibold',
@@ -84,6 +95,7 @@ export function Navbar({ userName, avatarUrl }: NavbarProps = {}) {
           <ThemeToggle />
           <Link
             href="/profile"
+            prefetch={onOnboarding ? false : undefined}
             aria-label="Profilom"
             className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
           >

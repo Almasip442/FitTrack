@@ -47,23 +47,37 @@ function readEnum<T extends string>(
   return { value: v as T }
 }
 
-/** Read & validate an integer field. */
-function readInt(form: FormData, key: string): { value: number | null } | { error: string } {
+/** Read & validate an integer field. Optional `max` enforces an inclusive upper bound. */
+function readInt(
+  form: FormData,
+  key: string,
+  max?: number,
+): { value: number | null } | { error: string } {
   const v = readString(form, key)
   if (v === null) return { value: null }
   const n = Number(v)
   if (!Number.isInteger(n) || n < 0) {
     return { error: `Érvénytelen szám: ${key}` }
   }
+  if (typeof max === 'number' && n > max) {
+    return { error: `Érvénytelen szám: ${key}` }
+  }
   return { value: n }
 }
 
-/** Read & validate a positive numeric (decimal) field. */
-function readDecimal(form: FormData, key: string): { value: number | null } | { error: string } {
+/** Read & validate a positive numeric (decimal) field. Optional `max` enforces an inclusive upper bound. */
+function readDecimal(
+  form: FormData,
+  key: string,
+  max?: number,
+): { value: number | null } | { error: string } {
   const v = readString(form, key)
   if (v === null) return { value: null }
   const n = Number(v)
   if (!Number.isFinite(n) || n <= 0) {
+    return { error: `Érvénytelen szám: ${key}` }
+  }
+  if (typeof max === 'number' && n > max) {
     return { error: `Érvénytelen szám: ${key}` }
   }
   return { value: n }
@@ -92,16 +106,16 @@ export async function updateProfile(formData: FormData): Promise<ProfileActionRe
     // ----- Parse + validate -----
     const name = readString(formData, 'name')
 
-    const ageRes = readInt(formData, 'age')
+    const ageRes = readInt(formData, 'age', 120)
     if ('error' in ageRes) return { success: false, error: ageRes.error }
 
     const genderRes = readEnum<Gender>(formData, 'gender', GENDERS)
     if ('error' in genderRes) return { success: false, error: genderRes.error }
 
-    const weightRes = readDecimal(formData, 'weight')
+    const weightRes = readDecimal(formData, 'weight', 500)
     if ('error' in weightRes) return { success: false, error: weightRes.error }
 
-    const heightRes = readDecimal(formData, 'height')
+    const heightRes = readDecimal(formData, 'height', 300)
     if ('error' in heightRes) return { success: false, error: heightRes.error }
 
     const goalRes = readEnum<Goal>(formData, 'goal', GOALS)
