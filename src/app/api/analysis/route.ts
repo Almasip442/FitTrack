@@ -28,7 +28,7 @@ import type { Profile } from '@/types/database'
 // ---------------------------------------------------------------------
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
-const OPENROUTER_MODEL = 'deepseek/deepseek-r1-distill-llama-70b:free'
+const OPENROUTER_MODEL = 'nvidia/nemotron-3-super-120b-a12b:free'
 const OPENROUTER_TIMEOUT_MS = 30_000
 const APP_URL = 'https://fittrack-pro.vercel.app'
 const APP_TITLE = 'FitTrack Pro'
@@ -374,6 +374,7 @@ async function callOpenRouter(
 
     const json = (await res.json()) as OpenRouterResponse
     const content = json.choices?.[0]?.message?.content?.trim()
+    console.log('[OpenRouter] Response content:', content)
     return content ? content : null
   } catch (err) {
     console.error('[OpenRouter] fetch error:', err)
