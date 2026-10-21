@@ -29,9 +29,15 @@ function currentWeekMonday(): string {
 /** Shape of the successful POST /api/analysis response. */
 interface AnalysisApiResponse {
   id: string
-  summary: string
-  suggestions: string[]
-  rating: number
+  summary: string | null
+  suggestions: string[] | null
+  rating: number | null
+  rule_based_summary: string
+  rule_based_suggestions: string[]
+  rule_based_rating: number
+  risk_warning: string
+  metrics_snapshot: WeeklyAnalysis['metrics_snapshot']
+  ai_status: 'success' | 'fallback' | 'sample'
   week_start: string
   week_end: string
 }
@@ -54,6 +60,12 @@ function apiResponseToAnalysis(
     ai_analysis: res.summary,
     ai_suggestions: res.suggestions,
     ai_rating: res.rating,
+    rule_based_summary: res.rule_based_summary,
+    rule_based_suggestions: res.rule_based_suggestions,
+    rule_based_rating: res.rule_based_rating,
+    risk_warning: res.risk_warning,
+    metrics_snapshot: res.metrics_snapshot,
+    ai_status: res.ai_status,
     created_at: new Date().toISOString(),
   }
 }
@@ -102,6 +114,9 @@ export function AnalysisCta({ latestAnalysis }: AnalysisCtaProps) {
 
       const data: AnalysisApiResponse = await res.json()
       const mapped = apiResponseToAnalysis(data)
+      if (data.ai_status === 'fallback') {
+        toast.info('Az AI most nem elérhető; a szabályalapú heti értékelés készült el.')
+      }
       setNewAnalysis(mapped)
       setOverlayOpen(true)
       router.refresh()

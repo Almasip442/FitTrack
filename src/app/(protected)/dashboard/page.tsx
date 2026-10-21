@@ -22,7 +22,6 @@ const HU_DAYS = [
 ] as const
 
 function formatHungarianDate(date: Date): string {
-  const dayName = HU_DAYS[date.getDay()]
   const month = date.getMonth() + 1
   const day = date.getDate()
   return `${date.getFullYear()}. ${month.toString().padStart(2, '0')}. ${day.toString().padStart(2, '0')}.`

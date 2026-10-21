@@ -34,7 +34,7 @@ A FitTrack Pro projekt (Next.js + Supabase fullstack fitness alkalmazás) teljes
 
 ### Iteration B1 — Kritikus auth és navigáció javítások
 
-**Status:** DONE
+**Status:** IN PROGRESS
 
 **Goal:** Az alapvető authentikációs flow hibáinak javítása — működő kijelentkezés a navbarból és a hiányzó "Elfelejtett jelszó" funkció implementálása.
 
@@ -67,13 +67,13 @@ A FitTrack Pro projekt (Next.js + Supabase fullstack fitness alkalmazás) teljes
 
 **Tasks:**
 
-- [x] B2.1 OpenRouter modell-azonosító csere: `src/app/api/analysis/route.ts` L31 — `nvidia/nemotron-3-super-120b-a12b:free` lecserélése `deepseek/deepseek-r1-distill-llama-70b:free` modellre
+- [x] B2.1 OpenRouter modell-azonosító csere: a gyakran változó ingyenes modell helyett az `openrouter/free` router választ elérhető, JSON választ támogató modellt
 - [x] B2.2 OpenRouter hibák loggolása: a `callOpenRouter` üres `catch {}` blokkjának és a néma `if (!res.ok) return null` ágnak a felváltása értelmes `console.error` loggolással (HTTP status, response body kiírása), hogy a hibák debuggolhatóak legyenek
 - [x] B2.3 `weekEnd` jövőbeli dátum fix: `src/app/api/analysis/route.ts` L438–441 — a `weekEnd` ne léphessen túl a mai napon (`Math.min(weekEndIso, todayIso)` mintával); biztosítani, hogy az analízis rekord `week_end` mezője soha ne legyen jövőbeli dátum
 
 **Acceptance Criteria:**
 
-- Az AI elemzés generálása sikeresen lefut a `deepseek/deepseek-r1-distill-llama-70b:free` modellel
+- Az AI elemzés generálása sikeresen lefut az `openrouter/free` routerrel (kézi ellenőrzés még szükséges)
 - OpenRouter hiba esetén a szerver log tartalmazza a HTTP status kódot és a válasz body-t
 - Az adatbázisban tárolt `weekly_analyses.week_end` érték soha nem nagyobb, mint a mai dátum
 - A heti elemzés generálható akkor is, ha a hét még nem ért véget (a `week_end` az aktuális napra csonkolódik)

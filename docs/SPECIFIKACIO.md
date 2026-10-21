@@ -115,7 +115,7 @@ A scope creep (hatókör-kúszás) a hallgatói projektek #1 kudarc-oka. Ha elő
 | **State Mgmt** | Zustand | Egyszerűbb boilerplate, megfelelő komplexitáshoz |
 | **Grafikonok** | Recharts | React-natív, deklaratív API, könnyen responsive |
 | **Backend / Adatbázis** | Supabase (PostgreSQL, beépített Auth) | Beépített API, Auth, Realtime, Storage és Row Level Security; @supabase/ssr natív Next.js támogatás |
-| **AI Elemzés** | OpenRouter API | Több LLM modell elérhető egyetlen API-n keresztül; aktuális modell: `nvidia/nemotron-3-super-120b-a12b:free`; szerver oldali proxy-n keresztül hívva |
+| **AI Elemzés** | OpenRouter API | Az `openrouter/free` router elérhető ingyenes, a JSON választ támogató modellt választ; szerver oldali proxy-n keresztül hívva |
 | **Fizetés** | Stripe (test mode) | Legjobb DX, széles dokumentáció, ingyenes tesztelés |
 | **Deployment** | Vercel (FE) + Supabase (BE+DB) | Ingyenes tier, egyszerű CI/CD, hallgatói projekthez ideális |
 | **Élelmiszer API** | Open Food Facts | Ingyenes, nyílt adatbázis, 3M+ termék, magyar termékek támogatása |

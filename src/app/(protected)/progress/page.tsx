@@ -9,10 +9,13 @@ import { TrendingUp } from 'lucide-react'
 
 import { AnalysisCta } from '@/components/progress/analysis-cta'
 import { AnalysisHistory } from '@/components/progress/analysis-history'
+import { WeeklySummarySection } from '@/components/progress/weekly-summary-section'
 import { WeightChart } from '@/components/progress/weight-chart'
 import { WeightInput } from '@/components/progress/weight-input'
 import { WeightSummaryCard } from '@/components/progress/weight-summary-card'
 import { getLatestAnalysis, getWeeklyAnalyses } from '@/lib/analysis/queries'
+import { getWeeklyProgressBundle } from '@/lib/analysis/weekly-metrics'
+import { createClient } from '@/lib/supabase/server'
 import { getLatestWeightLog, getWeightChangeSummary, getWeightLogs } from '@/lib/weight/queries'
 
 export const metadata = {
@@ -22,8 +25,13 @@ export const metadata = {
 }
 
 export default async function ProgressPage() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
   // Parallel data loading
-  const [weightLogs, latestWeightLog, weightSummary, analyses, latestAnalysis] =
+  const [weightLogs, latestWeightLog, weightSummary, analyses, latestAnalysis, weeklyMetrics] =
     await Promise.all([
       getWeightLogs(60).catch(() => []),
       getLatestWeightLog().catch(() => null),
@@ -35,6 +43,7 @@ export default async function ProgressPage() {
       })),
       getWeeklyAnalyses(12).catch(() => []),
       getLatestAnalysis().catch(() => null),
+      user ? getWeeklyProgressBundle(user.id).catch(() => null) : Promise.resolve(null),
     ])
 
   return (
@@ -62,6 +71,8 @@ export default async function ProgressPage() {
         <WeightInput latestLog={latestWeightLog} />
         <WeightSummaryCard summary={weightSummary} />
       </div>
+
+      {weeklyMetrics && <WeeklySummarySection initialBundle={weeklyMetrics} />}
 
       {/* Weight trend chart */}
       <WeightChart logs={weightLogs} />

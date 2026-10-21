@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "tsx --test src/lib/analysis/*.test.ts",
     "seed:exercises": "tsx scripts/seed-exercises.ts",
     "seed:products": "tsx scripts/seed-products.ts",
     "seed:demo-user": "tsx scripts/seed-demo-user.ts"

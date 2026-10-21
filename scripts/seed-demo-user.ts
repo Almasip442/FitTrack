@@ -1,7 +1,7 @@
 /**
  * FitTrack Pro — Demo User Seed Script
  * -----------------------------------------------------------------------------
- * Creates (or refreshes) a single demo user with realistic 6 weeks of
+ * Creates (or refreshes) a single demo user with realistic 2 consecutive completed weeks of
  * workout, calorie, and weight data so the deployed application has
  * something meaningful to demonstrate immediately after deploy.
  *
@@ -52,6 +52,28 @@ const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
   auth: { persistSession: false, autoRefreshToken: false },
 })
 
+/** Verify required migrations before creating an auth user or deleting demo data. */
+async function verifyRequiredSchema(): Promise<void> {
+  const [analysisSchema, workoutSchema] = await Promise.all([
+    supabase
+      .from('weekly_analyses')
+      .select('id, rule_based_summary, rule_based_suggestions, rule_based_rating, risk_warning, metrics_snapshot, ai_status')
+      .limit(0),
+    supabase.from('workout_exercise_logs').select('id, skipped').limit(0),
+  ])
+
+  if (analysisSchema.error || workoutSchema.error) {
+    throw new Error(
+      [
+        'A demó seedhez szükséges adatbázis-migráció hiányzik vagy a Supabase sémagyorsítótára még nem frissült.',
+        'Alkalmazd időrendben a supabase/migrations/20261021000009_workout_exercise_skip.sql és 20261021000010_weekly_analysis_comparison.sql migrációkat.',
+        "Ha már lefuttattad őket, futtasd a Supabase SQL Editorban: NOTIFY pgrst, 'reload schema'; majd várj néhány másodpercet és próbáld újra.",
+        `Schema ellenőrzés: ${analysisSchema.error?.message ?? workoutSchema.error?.message}`,
+      ].join('\n'),
+    )
+  }
+}
+
 // -----------------------------------------------------------------------------
 // Demo user constants
 // -----------------------------------------------------------------------------
@@ -69,8 +91,7 @@ const DEMO_PROFILE = {
   activity_level: 'mérsékelten_aktív' as const,
 }
 
-/** Number of past weeks to back-fill data for. */
-const WEEKS = 6
+/** Two consecutive, completed weeks are generated as a reproducible test fixture. */
 
 // -----------------------------------------------------------------------------
 // Date helpers (Monday-start ISO weeks, local time)
@@ -231,13 +252,18 @@ const DAY_PLANS: DayPlan[] = [
   },
   {
     name: 'Szerda — Hát + Bicepsz',
-    dayOfWeek: 3,
+    dayOfWeek: 2,
     exerciseCategoryFilter: ['hát', 'bicepsz'],
   },
   {
     name: 'Péntek — Láb + Váll',
-    dayOfWeek: 5,
+    dayOfWeek: 4,
     exerciseCategoryFilter: ['láb', 'váll'],
+  },
+  {
+    name: 'Szombat â€” Teljes test',
+    dayOfWeek: 6,
+    exerciseCategoryFilter: ['mellkas', 'hĂˇt', 'lĂˇb'],
   },
 ]
 
@@ -254,8 +280,8 @@ async function seedWorkoutPlan(
     .from('workout_plans')
     .insert({
       user_id: userId,
-      name: 'Demo edzésterv — 3 nap / hét',
-      description: '6 hetes fogyás-fókuszú edzésterv',
+      name: 'Demo edzésterv — 4 nap / hét',
+      description: 'Két lezárt hét összehasonlítható mintaadataival',
       is_active: true,
     })
     .select('id')
@@ -331,275 +357,114 @@ async function seedWorkoutPlan(
     )
   }
 
-  console.log('Workout plan + 3 days + 15 exercises seeded.')
+  console.log(`Workout plan + ${DAY_PLANS.length} days + ${DAY_PLANS.length * 5} exercises seeded.`)
   return { planId: plan.id, dayExerciseMap }
 }
 
 // -----------------------------------------------------------------------------
-// Daily logs + food entries + workout exercise logs (6 weeks)
-// -----------------------------------------------------------------------------
-
-const MEAL_TEMPLATES: Array<{
-  food_name: string
-  calories: number
-  protein: number
-  carbs: number
-  fat: number
-  meal_type: 'reggeli' | 'ebéd' | 'vacsora' | 'snack'
-  amount: number
-}> = [
-  // Breakfasts
-  { food_name: 'Zabkása banánnal és mézzel', calories: 380, protein: 12, carbs: 65, fat: 6, meal_type: 'reggeli', amount: 350 },
-  { food_name: 'Tojásrántotta sonkával, pirítóssal', calories: 450, protein: 28, carbs: 30, fat: 22, meal_type: 'reggeli', amount: 250 },
-  { food_name: 'Görög joghurt müzlivel és bogyós gyümölccsel', calories: 320, protein: 18, carbs: 42, fat: 8, meal_type: 'reggeli', amount: 300 },
-  // Lunches
-  { food_name: 'Csirkemell rizzsel és párolt zöldségekkel', calories: 580, protein: 45, carbs: 70, fat: 10, meal_type: 'ebéd', amount: 450 },
-  { food_name: 'Marhapörkölt nokedlivel', calories: 720, protein: 38, carbs: 65, fat: 30, meal_type: 'ebéd', amount: 500 },
-  { food_name: 'Tonhalsaláta tojással és olívaolajjal', calories: 480, protein: 35, carbs: 25, fat: 26, meal_type: 'ebéd', amount: 400 },
-  // Dinners
-  { food_name: 'Sült lazac quinoával és spenóttal', calories: 540, protein: 38, carbs: 45, fat: 22, meal_type: 'vacsora', amount: 400 },
-  { food_name: 'Pulykamell teljes kiőrlésű tésztával', calories: 510, protein: 40, carbs: 60, fat: 12, meal_type: 'vacsora', amount: 400 },
-  { food_name: 'Lencsefőzelék fasírttal', calories: 620, protein: 32, carbs: 70, fat: 22, meal_type: 'vacsora', amount: 450 },
-  // Snacks
-  { food_name: 'Whey protein shake', calories: 130, protein: 25, carbs: 4, fat: 2, meal_type: 'snack', amount: 250 },
-  { food_name: 'Banán + mandula', calories: 220, protein: 6, carbs: 30, fat: 10, meal_type: 'snack', amount: 130 },
-  { food_name: 'Túró rudi', calories: 165, protein: 6, carbs: 18, fat: 8, meal_type: 'snack', amount: 50 },
-]
-
-/** Seeded RNG so re-runs produce identical fixtures. */
-function makeRng(seed: number): () => number {
-  let s = seed >>> 0
-  return () => {
-    // Mulberry32
-    s = (s + 0x6d2b79f5) >>> 0
-    let t = s
-    t = Math.imul(t ^ (t >>> 15), t | 1)
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
-}
-
-function pickN<T>(arr: T[], n: number, rng: () => number): T[] {
-  const copy = [...arr]
-  const out: T[] = []
-  for (let i = 0; i < n && copy.length > 0; i++) {
-    const idx = Math.floor(rng() * copy.length)
-    out.push(copy[idx])
-    copy.splice(idx, 1)
-  }
-  return out
-}
+// Two deterministic, completed weeks for the weekly-summary comparison.
+const NUTRITION = [
+  { calories: [2000, 2100, 2200, 1900], protein: [125, 130, 140, 115] },
+  { calories: [2100, 2200, 2150, 2050, 2200, 2200], protein: [130, 140, 135, 125, 140, 140] },
+] as const
+const COMPLETED_DAYS = [[0, 3], [0, 3, 5]] as const
+const WEIGHT_FIXTURES = [[82.1, 82.3], [81.9, 81.8, 81.7, 81.6, 81.5]] as const
 
 async function seedDailyData(
   userId: string,
   dayExerciseMap: Map<number, SeededDayExercise[]>,
 ): Promise<void> {
-  const rng = makeRng(0xfa15d600)
-
-  const today = new Date()
-  const thisWeekStart = startOfWeekMonday(today)
-  const startDate = addDays(thisWeekStart, -7 * (WEEKS - 1))
-
+  const monday = addDays(startOfWeekMonday(new Date()), -14)
   let dailyLogsInserted = 0
   let foodEntriesInserted = 0
   let workoutLogsInserted = 0
 
-  for (let week = 0; week < WEEKS; week++) {
-    for (let weekday = 0; weekday < 7; weekday++) {
-      const date = addDays(startDate, week * 7 + weekday)
-      // Stop generating data for "the future" — don't seed past today.
-      if (toIsoDate(date) > toIsoDate(today)) break
-
+  for (let week = 0; week < 2; week++) {
+    const completedOffsets = COMPLETED_DAYS[week]
+    const nutrition = NUTRITION[week]
+    const calorieDayIndexes = week === 0 ? [0, 1, 3, 5] : [0, 1, 2, 3, 4, 5]
+    for (let offset = 0; offset < 7; offset++) {
+      const date = addDays(monday, week * 7 + offset)
+      const dateIso = toIsoDate(date)
       const dow = date.getDay()
-      const isWorkoutDay = dayExerciseMap.has(dow)
-      // Mark roughly 90% of planned workouts as completed so the AI
-      // analysis has something realistic to work with.
-      const completed = isWorkoutDay && rng() < 0.9
-
-      const { data: dailyLog, error: dailyLogError } = await supabase
+      const completed = completedOffsets.some((completedOffset) => completedOffset === offset)
+      const { data: dailyLog, error } = await supabase
         .from('daily_logs')
-        .insert({
-          user_id: userId,
-          date: toIsoDate(date),
-          workout_completed: completed,
-        })
-        .select('id')
-        .single()
-      if (dailyLogError || !dailyLog) {
-        throw new Error(`Failed to insert daily_log: ${dailyLogError?.message}`)
-      }
+        .insert({ user_id: userId, date: dateIso, workout_completed: completed })
+        .select('id').single()
+      if (error || !dailyLog) throw new Error(`Failed daily log ${dateIso}: ${error?.message}`)
       dailyLogsInserted++
 
-      // Food entries — 3 main meals + 0-2 snacks per day.
-      const mealsToday = pickN(
-        MEAL_TEMPLATES,
-        3 + Math.floor(rng() * 3),
-        rng,
-      )
-      const foodInserts = mealsToday.map((m) => ({
-        daily_log_id: dailyLog.id,
-        food_name: m.food_name,
-        calories: m.calories,
-        protein: m.protein,
-        carbs: m.carbs,
-        fat: m.fat,
-        amount: m.amount,
-        meal_type: m.meal_type,
-      }))
-      if (foodInserts.length > 0) {
-        const { error: foodError } = await supabase
-          .from('food_entries')
-          .insert(foodInserts)
-        if (foodError) {
-          throw new Error(`Failed to insert food_entries: ${foodError.message}`)
-        }
-        foodEntriesInserted += foodInserts.length
+      const foodIndex = calorieDayIndexes.indexOf(offset)
+      if (foodIndex >= 0) {
+        const calories = nutrition.calories[foodIndex]
+        const protein = nutrition.protein[foodIndex]
+        const { error: foodError } = await supabase.from('food_entries').insert([
+          { daily_log_id: dailyLog.id, food_name: 'Reggeli mintaétkezés', calories: 500, protein: 30, carbs: 55, fat: 15, amount: 1, meal_type: 'reggeli' },
+          { daily_log_id: dailyLog.id, food_name: 'Ebéd mintaétkezés', calories: 900, protein: 50, carbs: 100, fat: 25, amount: 1, meal_type: 'ebéd' },
+          { daily_log_id: dailyLog.id, food_name: 'Vacsora mintaétkezés', calories: calories - 1400, protein: protein - 80, carbs: 50, fat: 20, amount: 1, meal_type: 'vacsora' },
+        ])
+        if (foodError) throw new Error(`Failed food entries ${dateIso}: ${foodError.message}`)
+        foodEntriesInserted += 3
       }
 
-      // Workout exercise logs — only if the workout was completed.
       if (completed) {
-        const planned = dayExerciseMap.get(dow) ?? []
-        const logInserts = planned.map((dx) => {
-          // Slight progressive overload: reps drift up a bit over weeks.
-          const baseReps = 8 + Math.floor(rng() * 3)
-          const repsArr = [
-            baseReps + week,
-            baseReps + week - 1,
-            baseReps + week - 2,
-            baseReps + week - 2,
-          ].map((r) => Math.max(4, r))
-          const baseWeight = 30 + Math.floor(rng() * 30) // 30-60 kg
-          const weightsArr = repsArr.map(
-            (_, i) => baseWeight + week * 1.5 - i * 1.25,
-          )
-          return {
-            daily_log_id: dailyLog.id,
-            exercise_id: dx.exercise_id,
-            sets_completed: repsArr.length,
-            reps_completed: repsArr,
-            weight_used: weightsArr.map((w) => Math.round(w * 10) / 10),
-          }
+        const exercises = dayExerciseMap.get(dow) ?? []
+        const logs = exercises.map((exercise, index) => {
+          const load = 20 + index * 5 + week * 2
+          return { daily_log_id: dailyLog.id, exercise_id: exercise.exercise_id,
+            sets_completed: 3, reps_completed: [10, 10, 10], weight_used: [load, load, load] }
         })
-        if (logInserts.length > 0) {
-          const { error: logError } = await supabase
-            .from('workout_exercise_logs')
-            .insert(logInserts)
-          if (logError) {
-            throw new Error(
-              `Failed to insert workout_exercise_logs: ${logError.message}`,
-            )
-          }
-          workoutLogsInserted += logInserts.length
-        }
+        const { error: logError } = await supabase.from('workout_exercise_logs').insert(logs)
+        if (logError) throw new Error(`Failed workout logs ${dateIso}: ${logError.message}`)
+        workoutLogsInserted += logs.length
       }
     }
   }
-
-  console.log(
-    `Daily logs: ${dailyLogsInserted} | Food entries: ${foodEntriesInserted} | Workout logs: ${workoutLogsInserted}`,
-  )
+  console.log(`Daily logs: ${dailyLogsInserted}; food entries: ${foodEntriesInserted}; workout exercise logs: ${workoutLogsInserted}`)
 }
-
-// -----------------------------------------------------------------------------
-// Weight logs (declining trend, ~3 entries/week)
-// -----------------------------------------------------------------------------
 
 async function seedWeightLogs(userId: string): Promise<void> {
-  const rng = makeRng(0xbeefcafe)
-  const today = new Date()
-  const thisWeekStart = startOfWeekMonday(today)
-  const startDate = addDays(thisWeekStart, -7 * (WEEKS - 1))
-
-  // Linear decline from 90.5 -> ~87.2 kg over the window, with small
-  // day-to-day noise.
-  const startWeight = 90.5
-  const endWeight = 87.2
-  const totalDays = WEEKS * 7
-  const dailyDelta = (endWeight - startWeight) / totalDays
-
-  const inserts: Array<{ user_id: string; date: string; weight: number }> = []
-  for (let week = 0; week < WEEKS; week++) {
-    // 3 entries per week — Mon/Wed/Fri.
-    for (const offset of [0, 2, 4]) {
-      const date = addDays(startDate, week * 7 + offset)
-      if (toIsoDate(date) > toIsoDate(today)) break
-
-      const dayIndex = week * 7 + offset
-      const baseline = startWeight + dailyDelta * dayIndex
-      const noise = (rng() - 0.5) * 0.4 // ±0.2 kg
-      const weight = Math.round((baseline + noise) * 10) / 10
-
-      inserts.push({
-        user_id: userId,
-        date: toIsoDate(date),
-        weight,
-      })
-    }
-  }
-
-  if (inserts.length === 0) return
-
-  const { error } = await supabase
-    .from('weight_logs')
-    .insert(inserts)
-  if (error) {
-    throw new Error(`Failed to insert weight_logs: ${error.message}`)
-  }
-
-  // Sync the latest weight onto the profile so the dashboard reflects
-  // the current state.
+  const monday = addDays(startOfWeekMonday(new Date()), -14)
+  const offsets = [[0, 4], [0, 1, 2, 3, 4]] as const
+  const inserts = WEIGHT_FIXTURES.flatMap((week, weekIndex) =>
+    week.map((weight, index) => ({ user_id: userId,
+      date: toIsoDate(addDays(monday, weekIndex * 7 + offsets[weekIndex][index])), weight })),
+  )
+  const { error } = await supabase.from('weight_logs').insert(inserts)
+  if (error) throw new Error(`Failed to seed weights: ${error.message}`)
   const latest = inserts[inserts.length - 1]
-  await supabase
-    .from('profiles')
-    .update({
-      weight: latest.weight,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', userId)
-
-  console.log(`Weight logs: ${inserts.length} entries, latest ${latest.weight} kg.`)
+  const { error: profileError } = await supabase.from('profiles')
+    .update({ weight: latest.weight, updated_at: new Date().toISOString() }).eq('id', userId)
+  if (profileError) throw new Error(`Failed to update profile weight: ${profileError.message}`)
+  console.log(`Weight logs: ${inserts.length}; week averages: 82.2 kg then 81.7 kg (-0.5 kg).`)
 }
-
-// -----------------------------------------------------------------------------
-// Weekly AI analysis (one historical entry — last week)
-// -----------------------------------------------------------------------------
 
 async function seedWeeklyAnalysis(userId: string): Promise<void> {
-  const today = new Date()
-  const thisWeekStart = startOfWeekMonday(today)
-  const lastWeekStart = addDays(thisWeekStart, -7)
-  const lastWeekEnd = addDays(lastWeekStart, 6)
-
-  const { error } = await supabase
-    .from('weekly_analyses')
-    .insert({
-      user_id: userId,
-      week_start: toIsoDate(lastWeekStart),
-      week_end: toIsoDate(lastWeekEnd),
-      workouts_completed: 3,
-      avg_calories: 2150,
-      weight_change: -0.6,
-      ai_analysis:
-        'Kiváló hét volt! Mindhárom tervezett edzést teljesítetted, és sikerült a kalóriabevitelt a célon belül tartani. A 0,6 kg-os fogyás reális ütemű, ami fenntartható eredményt biztosít.',
-      ai_suggestions: [
-        'Próbálj minden edzésnap után 30g fehérjét fogyasztani a regenerációhoz.',
-        'A láb napon emeld a guggolás súlyát 2,5 kg-mal a következő héten.',
-        'Iktass be heti 1 aktív pihenőnapot, pl. 30 perc tempós sétát.',
-      ],
-      ai_rating: 8,
-    })
-  if (error) {
-    throw new Error(`Failed to insert weekly_analyses: ${error.message}`)
-  }
-  console.log('Historical weekly AI analysis seeded.')
+  const weekStart = addDays(startOfWeekMonday(new Date()), -7)
+  const weekEnd = addDays(weekStart, 6)
+  const { error } = await supabase.from('weekly_analyses').insert({
+    user_id: userId, week_start: toIsoDate(weekStart), week_end: toIsoDate(weekEnd),
+    workouts_completed: 3, avg_calories: 2150, weight_change: -0.5,
+    ai_analysis: null, ai_suggestions: null, ai_rating: null,
+    rule_based_summary: 'A lezárt mintahéten 3/4 tervezett edzés, 6/7 nap étkezési napló és 5 testsúlymérés szerepel.',
+    rule_based_suggestions: ['A naplózott adatok alapján folytasd a követhető edzésritmust.', 'A hiányzó naplóadatokat rögzítsd a pontosabb heti összehasonlításhoz.'],
+    rule_based_rating: 7,
+    risk_warning: 'Ez a mintaadatokon alapuló összesítés nem egészségügyi tanács.',
+    metrics_snapshot: { sample: true, expected: { workouts: '3/4', calories: 2150, volumeKg: 14400, weightChangeKg: -0.5 } },
+    ai_status: 'sample',
+  })
+  if (error) throw new Error(`Failed to insert sample weekly analysis: ${error.message}`)
+  console.log('Historical sample analysis seeded.')
 }
-
 // -----------------------------------------------------------------------------
 // Main
 // -----------------------------------------------------------------------------
 
 async function main(): Promise<void> {
   console.log('=== FitTrack Pro — Demo User Seed ===')
+  await verifyRequiredSchema()
+  console.log('Required database migrations verified.')
   console.log(`Email:    ${DEMO_EMAIL}`)
   console.log(`Password: ${DEMO_PASSWORD}`)
   console.log('-------------------------------------\n')
@@ -614,6 +479,9 @@ async function main(): Promise<void> {
   await seedWeeklyAnalysis(userId)
 
   console.log('\nDemo seed completed successfully.')
+  console.log('Expected closed-week metrics:')
+  console.log('  Previous: workouts 2/4; calories 2,050 kcal/day (4/7 logged); volume 9,000 kg; weight average 82.2 kg.')
+  console.log('  Latest:   workouts 3/4; calories 2,150 kcal/day (6/7 logged); volume 14,400 kg; weight average 81.7 kg; change -0.5 kg.')
   console.log(`Login at /login with ${DEMO_EMAIL} / ${DEMO_PASSWORD}`)
 }
 

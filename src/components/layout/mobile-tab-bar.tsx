@@ -24,6 +24,11 @@ export function MobileTabBar() {
   const onOnboarding =
     pathname === '/onboarding' || pathname.startsWith('/onboarding/')
 
+  // Onboarding blocks access to every protected destination. Do not render
+  // those links at all here: even a disabled Link prefetch can be retried
+  // from redirected RSC payloads by the development router.
+  if (onOnboarding) return null
+
   return (
     <nav
       aria-label="Mobil navigáció"
@@ -44,7 +49,6 @@ export function MobileTabBar() {
             <li key={tab.href} className="flex">
               <Link
                 href={tab.href}
-                prefetch={onOnboarding ? false : undefined}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
                   'group relative flex w-full flex-col items-center justify-center',

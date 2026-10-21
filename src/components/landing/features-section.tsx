@@ -2,7 +2,6 @@
 
 import { GripVertical, ShoppingCart } from 'lucide-react'
 import { motion, useReducedMotion } from 'framer-motion'
-import { cn } from '@/lib/utils'
 
 // Custom bezier typed for framer-motion v12
 const EASE_OUT_EXPO = [0.22, 1, 0.36, 1] as [number, number, number, number]

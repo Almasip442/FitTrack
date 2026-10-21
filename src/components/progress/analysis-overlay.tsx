@@ -69,9 +69,13 @@ export function AnalysisOverlay({ analysis, open, onClose }: AnalysisOverlayProp
     }
   }, [open])
 
-  const rating = analysis?.ai_rating ?? 0
+  const rating = analysis?.ai_rating ?? analysis?.rule_based_rating ?? 0
   const suggestions = analysis?.ai_suggestions ?? []
   const summary = analysis?.ai_analysis ?? ''
+  const ruleSummary = analysis?.rule_based_summary ?? ''
+  const ruleSuggestions = analysis?.rule_based_suggestions ?? []
+  const isFallback = analysis?.ai_status === 'fallback'
+  const isSample = analysis?.ai_status === 'sample'
 
   return (
     <AnimatePresence>
@@ -147,48 +151,67 @@ export function AnalysisOverlay({ analysis, open, onClose }: AnalysisOverlayProp
 
             {/* Scrollable body */}
             <div className="flex-1 overflow-y-auto px-5 py-5 sm:px-6">
-              {/* Summary text */}
-              <div className="mb-6">
-                <span className="mb-2 block font-condensed text-[10px] uppercase tracking-wide-display text-muted-foreground/70">
-                  Összefoglalás
-                </span>
-                <p className="font-sans text-sm leading-relaxed text-foreground/90">
-                  {summary}
-                </p>
+              <div className="grid gap-4 md:grid-cols-2">
+                <section className="rounded-xl border border-border/60 bg-card/40 p-4">
+                  <div className="mb-2 flex items-center justify-between gap-2">
+                    <span className="font-condensed text-[10px] uppercase tracking-wide-display text-muted-foreground/70">
+                      Szabályalapú értékelés
+                    </span>
+                    {analysis?.rule_based_rating != null && (
+                      <span className="font-condensed text-xs font-bold text-muted-foreground">
+                        {analysis.rule_based_rating}/10
+                      </span>
+                    )}
+                  </div>
+                  <p className="font-sans text-sm leading-relaxed text-foreground/90">
+                    {ruleSummary || 'Ehhez a korábbi elemzéshez nem mentettünk szabályalapú összefoglalót.'}
+                  </p>
+                  {ruleSuggestions.length > 0 && (
+                    <ul className="mt-3 list-disc space-y-1 pl-4 text-xs text-muted-foreground">
+                      {ruleSuggestions.map((item, index) => <li key={index}>{item}</li>)}
+                    </ul>
+                  )}
+                </section>
+
+                <section className="rounded-xl border border-brand-red-border/50 bg-brand-red-muted/20 p-4">
+                  <div className="mb-2 flex items-center justify-between gap-2">
+                    <span className="font-condensed text-[10px] uppercase tracking-wide-display text-brand-red">
+                      {isFallback ? 'AI nem elérhető' : isSample ? 'Mintaadat – nincs AI-válasz' : 'AI magyarázat'}
+                    </span>
+                    {!isFallback && rating > 0 && (
+                      <span className="font-condensed text-xs font-bold text-brand-red">
+                        {rating}/10
+                      </span>
+                    )}
+                  </div>
+                  <p className="font-sans text-sm leading-relaxed text-foreground/90">
+                    {summary || (isSample
+                      ? 'Ez a seedelt demóelemzés kizárólag a szabályalapú megjelenítés próbájára készült; AI-választ nem tartalmaz.'
+                      : 'Az AI szolgáltatás nem adott értékelést. A szabályalapú összefoglaló ettől még használható.')}
+                  </p>
+                  {!isFallback && suggestions.length > 0 && (
+                    <ul className="mt-3 space-y-2">
+                      {suggestions.slice(0, 3).map((suggestion, i) => (
+                        <motion.li
+                          key={i}
+                          className="flex items-start gap-2 text-xs leading-snug text-foreground/85"
+                          initial={{ opacity: 0, x: -8 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.25, delay: 0.1 + i * 0.06 }}
+                        >
+                          {suggestionIcon(suggestion)}
+                          <span>{suggestion}</span>
+                        </motion.li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
               </div>
 
-              {/* Suggestions */}
-              {suggestions.length > 0 && (
-                <div>
-                  <span className="mb-3 block font-condensed text-[10px] uppercase tracking-wide-display text-muted-foreground/70">
-                    Javaslatok
-                  </span>
-                  <ul className="space-y-2.5">
-                    {suggestions.slice(0, 3).map((suggestion, i) => (
-                      <motion.li
-                        key={i}
-                        className={cn(
-                          'flex items-start gap-3 rounded-lg border border-border/50',
-                          'bg-card/50 px-4 py-3',
-                        )}
-                        initial={{ opacity: 0, x: -12 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{
-                          duration: 0.3,
-                          ease: [0.22, 1, 0.36, 1],
-                          delay: 0.15 + i * 0.07,
-                        }}
-                      >
-                        <div className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-md bg-brand-red-muted border border-brand-red-border">
-                          {suggestionIcon(suggestion)}
-                        </div>
-                        <p className="font-sans text-sm leading-snug text-foreground/85">
-                          {suggestion}
-                        </p>
-                      </motion.li>
-                    ))}
-                  </ul>
-                </div>
+              {analysis?.risk_warning && (
+                <p className="mt-4 rounded-lg border border-border/60 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+                  {analysis.risk_warning}
+                </p>
               )}
             </div>
 

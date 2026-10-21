@@ -77,8 +77,8 @@ export function AnalysisHistory({ analyses }: AnalysisHistoryProps) {
           <div className="absolute left-[11px] top-3 bottom-3 w-px bg-border/50" aria-hidden="true" />
 
           {analyses.map((analysis) => {
-            const rating = analysis.ai_rating ?? 0
-            const summary = analysis.ai_analysis ?? ''
+            const rating = analysis.ai_rating ?? analysis.rule_based_rating ?? 0
+            const summary = analysis.ai_analysis ?? analysis.rule_based_summary ?? ''
             const preview = summary.length > 100
               ? `${summary.slice(0, 100)}…`
               : summary
@@ -117,6 +117,11 @@ export function AnalysisHistory({ analyses }: AnalysisHistoryProps) {
                         <p className="mt-1 font-sans text-xs leading-snug text-muted-foreground line-clamp-2 group-hover:text-foreground/80 transition-colors">
                           {preview}
                         </p>
+                      )}
+                      {analysis.ai_status === 'sample' && (
+                        <span className="mt-1 inline-block rounded border border-border px-1.5 py-0.5 text-[9px] uppercase tracking-wide-display text-muted-foreground">
+                          Mintaadat · nincs AI-válasz
+                        </span>
                       )}
                     </div>
 

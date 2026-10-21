@@ -81,11 +81,6 @@ const MAIN_MUSCLE_GROUPS_HU: Record<string, string> = {
 // Types
 // -----------------------------------------------------------------------------
 
-interface WgerLookupItem {
-  id: number;
-  name: string;
-}
-
 interface WgerMuscle {
   id: number;
   name: string;

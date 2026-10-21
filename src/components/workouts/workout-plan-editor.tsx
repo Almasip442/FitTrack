@@ -27,6 +27,7 @@ import {
   Check,
   CheckCircle2,
   ChevronDown,
+  ClipboardList,
   Loader2,
   PackageOpen,
   Pencil,
@@ -67,6 +68,10 @@ import {
   ExerciseDragGhost,
 } from '@/components/workouts/draggable-exercise-card'
 import { WorkoutDayExerciseCard } from '@/components/workouts/workout-day-exercise-card'
+import {
+  getLocalTodayIso,
+  WorkoutLogDialog,
+} from '@/components/workouts/workout-log-dialog'
 import { fetchExercises } from '@/lib/exercises/api'
 import {
   addExerciseToDay,
@@ -958,11 +963,40 @@ export function WorkoutPlanEditor({ plan: initialPlan }: WorkoutPlanEditorProps)
               <>
                 <div className="hidden md:block">
                   {selectedDay && (
-                    <DayDropZone
-                      day={selectedDay}
-                      onChange={handleStepperChange}
-                      onRemove={handleRemoveExercise}
-                    />
+                    <>
+                      {selectedDay.workout_day_exercises.length > 0 && (
+                        <div className="mb-3 flex justify-end">
+                          <WorkoutLogDialog
+                            date={getLocalTodayIso()}
+                            dayId={selectedDay.id}
+                            dayName={selectedDay.day_name}
+                            exercises={selectedDay.workout_day_exercises
+                              .filter((row) => row.exercises != null)
+                              .map((row) => ({
+                                id: row.exercises!.id,
+                                name: row.exercises!.name_hu,
+                                sets: row.sets,
+                                reps: row.reps,
+                              }))}
+                            trigger={
+                              <Button
+                                type="button"
+                                variant="outline"
+                                className="border-brand-red-border font-condensed text-[11px] uppercase tracking-wide-display text-brand-red hover:bg-brand-red-muted"
+                              >
+                                <ClipboardList className="size-3.5" />
+                                Edzésnapló megnyitása
+                              </Button>
+                            }
+                          />
+                        </div>
+                      )}
+                      <DayDropZone
+                        day={selectedDay}
+                        onChange={handleStepperChange}
+                        onRemove={handleRemoveExercise}
+                      />
+                    </>
                   )}
                 </div>
 
@@ -1014,6 +1048,33 @@ export function WorkoutPlanEditor({ plan: initialPlan }: WorkoutPlanEditorProps)
                               onRemove={handleRemoveExercise}
                               compact
                             />
+                            {day.workout_day_exercises.length > 0 && (
+                              <div className="mt-3">
+                                <WorkoutLogDialog
+                                  date={getLocalTodayIso()}
+                                  dayId={day.id}
+                                  dayName={day.day_name}
+                                  exercises={day.workout_day_exercises
+                                    .filter((row) => row.exercises != null)
+                                    .map((row) => ({
+                                      id: row.exercises!.id,
+                                      name: row.exercises!.name_hu,
+                                      sets: row.sets,
+                                      reps: row.reps,
+                                    }))}
+                                  trigger={
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      className="w-full border-brand-red-border font-condensed text-[11px] uppercase tracking-wide-display text-brand-red hover:bg-brand-red-muted"
+                                    >
+                                      <ClipboardList className="size-3.5" />
+                                      Edzésnapló megnyitása
+                                    </Button>
+                                  }
+                                />
+                              </div>
+                            )}
                             <div className="mt-3 flex items-center gap-2">
                               <button
                                 type="button"

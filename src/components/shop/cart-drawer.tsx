@@ -9,7 +9,7 @@
  */
 
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { ShoppingCart, Plus, Minus, X, ShoppingBag, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -34,7 +34,12 @@ export function CartDrawer() {
   // Track whether the persisted cart store has been rehydrated on the client.
   // The store uses `skipHydration: true`, so the server render and the very
   // first client render see an empty cart; we manually rehydrate after mount.
-  const [mounted, setMounted] = useState(false)
+  const hydrated = useSyncExternalStore(
+    (onStoreChange) =>
+      useCartStore.persist.onFinishHydration(() => onStoreChange()),
+    useCartStore.persist.hasHydrated,
+    () => false,
+  )
 
   const items = useCartStore((s) => s.items)
   const totalItems = useCartStore((s) => s.totalItems)
@@ -44,14 +49,13 @@ export function CartDrawer() {
 
   useEffect(() => {
     void useCartStore.persist.rehydrate()
-    setMounted(true)
   }, [])
 
   const rawItemCount = totalItems()
   const total = totalPrice()
   // Only expose the real count once the persisted state is available.
   // Pre-mount we render `0` to keep server- and client-side markup identical.
-  const itemCount = mounted ? rawItemCount : 0
+  const itemCount = hydrated ? rawItemCount : 0
 
   const handleCheckout = async () => {
     if (items.length === 0) return

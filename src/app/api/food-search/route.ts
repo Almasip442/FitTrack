@@ -15,7 +15,10 @@ import { NextRequest, NextResponse } from 'next/server'
 //   503  Open Food Facts unreachable, timed out, or returned non-OK
 // ---------------------------------------------------------------------
 
-const OFF_BASE = 'https://hu.openfoodfacts.org/cgi/search.pl'
+// The HU regional host can intermittently return 503 for API requests.
+// The global endpoint still returns Hungarian product names via
+// `product_name_hu` and is more reliable for the legacy full-text search.
+const OFF_BASE = 'https://world.openfoodfacts.org/cgi/search.pl'
 const PAGE_SIZE = 15
 const MAX_QUERY_LEN = 100
 const TIMEOUT_MS = 5000
@@ -145,7 +148,10 @@ export async function GET(request: NextRequest) {
       // OFF is a public dataset; cache successful responses briefly to
       // soak up repeat searches without hammering the upstream API.
       next: { revalidate: 300 },
-      headers: { Accept: 'application/json' },
+      headers: {
+        Accept: 'application/json',
+        'User-Agent': 'FitTrackPro/0.1.0 (food-search)',
+      },
     })
 
     if (!res.ok) {

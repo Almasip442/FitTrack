@@ -7,6 +7,8 @@ import { useMemo, useState } from 'react'
 import { cn } from '@/lib/utils'
 import type { WeightLog } from '@/types/database'
 
+const CHART_PAD = { top: 20, right: 16, bottom: 40, left: 48 }
+
 interface WeightChartProps {
   logs: WeightLog[]
   /** Optional goal weight — renders a horizontal reference line. */
@@ -122,9 +124,8 @@ function ChartBody({
   // Geometry
   const VB_WIDTH = 700
   const VB_HEIGHT = 220
-  const PAD = { top: 20, right: 16, bottom: 40, left: 48 }
-  const innerW = VB_WIDTH - PAD.left - PAD.right
-  const innerH = VB_HEIGHT - PAD.top - PAD.bottom
+  const innerW = VB_WIDTH - CHART_PAD.left - CHART_PAD.right
+  const innerH = VB_HEIGHT - CHART_PAD.top - CHART_PAD.bottom
 
   const { minWeight, maxWeight, yTicks, pathD, points } = useMemo(() => {
     const weights = logs.map((l) => l.weight)
@@ -150,11 +151,11 @@ function ChartBody({
 
     // Map weight to Y coordinate
     const yFor = (w: number) =>
-      PAD.top + innerH * (1 - (w - minW) / range)
+      CHART_PAD.top + innerH * (1 - (w - minW) / range)
 
     // Map log index to X coordinate
     const xFor = (i: number) =>
-      PAD.left + (innerW / Math.max(logs.length - 1, 1)) * i
+      CHART_PAD.left + (innerW / Math.max(logs.length - 1, 1)) * i
 
     // Points array
     const pts = logs.map((log, i) => ({
@@ -176,11 +177,11 @@ function ChartBody({
       pathD: pathStr,
       points: pts,
     }
-  }, [logs, goalWeight, innerH, innerW, PAD])
+  }, [logs, goalWeight, innerH, innerW])
 
   const range = maxWeight - minWeight || 1
   const yFor = (w: number) =>
-    PAD.top + innerH * (1 - (w - minWeight) / range)
+    CHART_PAD.top + innerH * (1 - (w - minWeight) / range)
 
   // Decide which x-axis labels to show (max ~6 to avoid crowding)
   const labelStep = Math.ceil(logs.length / 6)
@@ -207,8 +208,8 @@ function ChartBody({
           return (
             <g key={tick}>
               <line
-                x1={PAD.left}
-                x2={VB_WIDTH - PAD.right}
+                x1={CHART_PAD.left}
+                x2={VB_WIDTH - CHART_PAD.right}
                 y1={y}
                 y2={y}
                 stroke="currentColor"
@@ -216,7 +217,7 @@ function ChartBody({
                 strokeWidth={0.8}
               />
               <text
-                x={PAD.left - 8}
+                x={CHART_PAD.left - 8}
                 y={y + 3.5}
                 textAnchor="end"
                 className="fill-muted-foreground/50 font-condensed text-[9px] uppercase"
@@ -231,8 +232,8 @@ function ChartBody({
         {/* Goal weight reference line */}
         {goalWeight != null && (
           <line
-            x1={PAD.left}
-            x2={VB_WIDTH - PAD.right}
+            x1={CHART_PAD.left}
+            x2={VB_WIDTH - CHART_PAD.right}
             y1={yFor(goalWeight)}
             y2={yFor(goalWeight)}
             stroke="rgb(16 185 129)"
@@ -245,7 +246,7 @@ function ChartBody({
         {/* Area fill under the line */}
         {points.length > 1 && (
           <motion.path
-            d={`${pathD} L ${points[points.length - 1].x.toFixed(2)} ${(PAD.top + innerH).toFixed(2)} L ${points[0].x.toFixed(2)} ${(PAD.top + innerH).toFixed(2)} Z`}
+            d={`${pathD} L ${points[points.length - 1].x.toFixed(2)} ${(CHART_PAD.top + innerH).toFixed(2)} L ${points[0].x.toFixed(2)} ${(CHART_PAD.top + innerH).toFixed(2)} Z`}
             fill="url(#weightGradient)"
             opacity={0.15}
             initial={{ opacity: 0 }}
@@ -285,8 +286,8 @@ function ChartBody({
             <g key={logs[i].id}>
               {/* Hit area — equal-width column per data point */}
               <rect
-                x={PAD.left + (innerW / Math.max(points.length - 1, 1)) * i - 8}
-                y={PAD.top}
+                x={CHART_PAD.left + (innerW / Math.max(points.length - 1, 1)) * i - 8}
+                y={CHART_PAD.top}
                 width={Math.max(innerW / Math.max(points.length - 1, 1), 16)}
                 height={innerH}
                 fill="transparent"
@@ -320,7 +321,7 @@ function ChartBody({
             <text
               key={`label-${i}`}
               x={p.x}
-              y={VB_HEIGHT - PAD.bottom + 16}
+              y={VB_HEIGHT - CHART_PAD.bottom + 16}
               textAnchor="middle"
               className="fill-muted-foreground/50 font-condensed text-[9px] uppercase"
               style={{ letterSpacing: '0.04em' }}

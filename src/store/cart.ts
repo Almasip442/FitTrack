@@ -6,7 +6,7 @@
  */
 
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware'
 import type { Product } from '@/types/database'
 
 export type CartItem = {
@@ -22,6 +22,16 @@ type CartStore = {
   clearCart: () => void
   totalPrice: () => number
   totalItems: () => number
+}
+
+// `createJSONStorage(() => window.localStorage)` returns undefined during
+// server rendering, which removes the persist API from the server store.
+// Keep a no-op storage available on the server so SSR can safely call the
+// store's hydration helpers; the browser uses localStorage as usual.
+const serverStorage: StateStorage = {
+  getItem: () => null,
+  setItem: () => undefined,
+  removeItem: () => undefined,
 }
 
 export const useCartStore = create<CartStore>()(
@@ -82,6 +92,9 @@ export const useCartStore = create<CartStore>()(
     }),
     {
       name: 'fittrack-cart',
+      storage: createJSONStorage(() =>
+        typeof window === 'undefined' ? serverStorage : window.localStorage,
+      ),
       // SSR-safety: don't hydrate from localStorage during the server render.
       // The CartDrawer triggers `useCartStore.persist.rehydrate()` after mount
       // so the server- and client-rendered markup match (no hydration warnings,

@@ -1,6 +1,9 @@
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
+  outputFileTracingIncludes: {
+    '/api/analysis': ['./docs/AI_ANALYSIS_RULES.md'],
+  },
   images: {
     // Supabase Storage and any other CDN-hosted product / exercise / avatar
     // imagery must be allow-listed for `next/image` optimisation. We accept

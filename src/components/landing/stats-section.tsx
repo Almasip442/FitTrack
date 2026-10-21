@@ -38,25 +38,26 @@ function CountUpStat({ stat }: { stat: StatItem }) {
   const isInView = useInView(ref, { once: true, margin: '-60px' })
   const shouldReduceMotion = useReducedMotion()
   const count = useMotionValue(0)
-  const [displayValue, setDisplayValue] = useState('0')
+  const [animatedValue, setAnimatedValue] = useState('0')
 
   useEffect(() => {
     if (!isInView || !stat.isNumeric || stat.numericTarget === undefined) return
-    if (shouldReduceMotion) {
-      setDisplayValue(String(stat.numericTarget))
-      return
-    }
+    if (shouldReduceMotion) return
 
     const controls = animate(count, stat.numericTarget, {
       duration: 1.8,
       ease: 'easeOut',
       onUpdate(value) {
-        setDisplayValue(Math.round(value).toString())
+        setAnimatedValue(Math.round(value).toString())
       },
     })
     return () => controls.stop()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isInView, shouldReduceMotion])
+
+  const displayValue = shouldReduceMotion
+    ? String(stat.numericTarget ?? 0)
+    : animatedValue
 
   if (!stat.isNumeric) {
     return (

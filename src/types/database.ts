@@ -10,7 +10,7 @@
  */
 
 // Json helper type (mirrors Supabase generated output)
-type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
   public: {
@@ -327,6 +327,12 @@ export type Database = {
           ai_analysis: string | null
           ai_suggestions: string[] | null
           ai_rating: number | null
+          rule_based_summary: string | null
+          rule_based_suggestions: string[]
+          rule_based_rating: number | null
+          risk_warning: string | null
+          metrics_snapshot: Json | null
+          ai_status: 'success' | 'fallback' | 'sample'
           created_at: string
         }
         Insert: {
@@ -340,6 +346,12 @@ export type Database = {
           ai_analysis?: string | null
           ai_suggestions?: string[] | null
           ai_rating?: number | null
+          rule_based_summary?: string | null
+          rule_based_suggestions?: string[]
+          rule_based_rating?: number | null
+          risk_warning?: string | null
+          metrics_snapshot?: Json | null
+          ai_status?: 'success' | 'fallback' | 'sample'
           created_at?: string
         }
         Update: {
@@ -353,6 +365,12 @@ export type Database = {
           ai_analysis?: string | null
           ai_suggestions?: string[] | null
           ai_rating?: number | null
+          rule_based_summary?: string | null
+          rule_based_suggestions?: string[]
+          rule_based_rating?: number | null
+          risk_warning?: string | null
+          metrics_snapshot?: Json | null
+          ai_status?: 'success' | 'fallback' | 'sample'
           created_at?: string
         }
         Relationships: []
@@ -464,6 +482,7 @@ export type Database = {
           id: string
           daily_log_id: string
           exercise_id: string
+          skipped: boolean
           sets_completed: number | null
           reps_completed: number[] | null
           weight_used: number[] | null
@@ -474,6 +493,7 @@ export type Database = {
           id?: string
           daily_log_id: string
           exercise_id: string
+          skipped?: boolean
           sets_completed?: number | null
           reps_completed?: number[] | null
           weight_used?: number[] | null
@@ -484,6 +504,7 @@ export type Database = {
           id?: string
           daily_log_id?: string
           exercise_id?: string
+          skipped?: boolean
           sets_completed?: number | null
           reps_completed?: number[] | null
           weight_used?: number[] | null

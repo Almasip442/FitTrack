@@ -548,6 +548,200 @@ export type WorkoutExerciseLogInput = {
   notes?: string
 }
 
+export type WorkoutSessionExerciseInput = {
+  exercise_id: string
+  skipped: boolean
+  reps_completed: number[]
+  weight_used: number[]
+}
+
+function isIsoDate(value: string): boolean {
+  if (typeof value !== 'string') return false
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false
+  const parsed = new Date(`${value}T00:00:00.000Z`)
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value
+}
+
+/** Load this user's detailed exercise logs for a calendar date, if present. */
+export async function getWorkoutLogsForDate(date: string): Promise<{
+  success: boolean
+  logs: WorkoutExerciseLog[]
+  error?: string
+}> {
+  const userId = await getAuthUserId()
+  if (!userId) return { success: false, logs: [], error: AUTH_REQUIRED }
+  if (!isIsoDate(date)) {
+    return { success: false, logs: [], error: 'Érvénytelen dátum.' }
+  }
+
+  const supabase = await createClient()
+  const { data: dailyLog, error: dailyLogError } = await supabase
+    .from('daily_logs')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('date', date)
+    .maybeSingle()
+
+  if (dailyLogError) {
+    return { success: false, logs: [], error: 'A napi edzésnapló nem tölthető be.' }
+  }
+  if (!dailyLog) return { success: true, logs: [] }
+
+  const { data, error } = await supabase
+    .from('workout_exercise_logs')
+    .select('*')
+    .eq('daily_log_id', dailyLog.id)
+    .order('created_at', { ascending: true })
+
+  if (error) {
+    return { success: false, logs: [], error: 'A részletes edzésadatok nem tölthetők be.' }
+  }
+
+  return { success: true, logs: data ?? [] }
+}
+
+/** Save or update the detailed exercise log for a user-owned workout day. */
+export async function saveWorkoutSession(
+  date: string,
+  workoutDayId: string,
+  entries: WorkoutSessionExerciseInput[],
+): Promise<ActionResult> {
+  const userId = await getAuthUserId()
+  if (!userId) return { success: false, error: AUTH_REQUIRED }
+  if (!isIsoDate(date)) return { success: false, error: 'Érvénytelen dátum.' }
+  if (!workoutDayId || !Array.isArray(entries) || entries.length === 0) {
+    return { success: false, error: 'Nincs naplózható gyakorlat.' }
+  }
+  if (
+    entries.some(
+      (entry) =>
+        !entry ||
+        typeof entry.exercise_id !== 'string' ||
+        typeof entry.skipped !== 'boolean' ||
+        !Array.isArray(entry.reps_completed) ||
+        !Array.isArray(entry.weight_used),
+    )
+  ) {
+    return { success: false, error: 'Érvénytelen edzésnapló adat.' }
+  }
+
+  const exerciseIds = entries.map((entry) => entry.exercise_id)
+  if (
+    exerciseIds.some((id) => typeof id !== 'string' || id.length === 0) ||
+    new Set(exerciseIds).size !== exerciseIds.length
+  ) {
+    return { success: false, error: 'Érvénytelen vagy ismétlődő gyakorlat.' }
+  }
+  if (entries.every((entry) => entry.skipped)) {
+    return { success: false, error: 'Legalább egy gyakorlatot rögzíts elvégzettként.' }
+  }
+  for (const entry of entries) {
+    if (entry.skipped) continue
+    if (
+      !Array.isArray(entry.reps_completed) ||
+      !Array.isArray(entry.weight_used) ||
+      entry.reps_completed.length === 0 ||
+      entry.reps_completed.length !== entry.weight_used.length ||
+      entry.reps_completed.some(
+        (reps) => !Number.isInteger(reps) || reps < 0 || reps > 1000,
+      ) ||
+      entry.weight_used.some(
+        (weight) => !Number.isFinite(weight) || weight < 0 || weight > 1000,
+      )
+    ) {
+      return { success: false, error: 'Ellenőrizd a szériák ismétléseit és súlyait.' }
+    }
+  }
+
+  const supabase = await createClient()
+  const { data: day, error: dayError } = await supabase
+    .from('workout_days')
+    .select('id, workout_plans!inner(user_id)')
+    .eq('id', workoutDayId)
+    .eq('workout_plans.user_id', userId)
+    .maybeSingle()
+  if (dayError || !day) return { success: false, error: NOT_FOUND }
+
+  const { data: plannedExercises, error: plannedError } = await supabase
+    .from('workout_day_exercises')
+    .select('exercise_id')
+    .eq('workout_day_id', workoutDayId)
+  if (plannedError) {
+    return { success: false, error: 'Az edzésterv gyakorlatai nem ellenőrizhetők.' }
+  }
+  const plannedIds = new Set((plannedExercises ?? []).map((row) => row.exercise_id))
+  if (exerciseIds.some((id) => !plannedIds.has(id))) {
+    return { success: false, error: 'A napló olyan gyakorlatot tartalmaz, amely nincs ezen az edzésnapon.' }
+  }
+
+  const { error: createLogError } = await supabase
+    .from('daily_logs')
+    .upsert(
+      { user_id: userId, date },
+      { onConflict: 'user_id,date', ignoreDuplicates: true },
+    )
+  if (createLogError) {
+    return { success: false, error: `A napi napló létrehozása sikertelen: ${createLogError.message}` }
+  }
+
+  const { data: dailyLog, error: findLogError } = await supabase
+    .from('daily_logs')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('date', date)
+    .single()
+  if (findLogError || !dailyLog) {
+    return { success: false, error: 'A napi napló nem található.' }
+  }
+
+  for (const entry of entries) {
+    if (entry.skipped) {
+      const { error } = await supabase.from('workout_exercise_logs').upsert(
+        {
+          daily_log_id: dailyLog.id,
+          exercise_id: entry.exercise_id,
+          skipped: true,
+          sets_completed: 0,
+          reps_completed: [],
+          weight_used: [],
+        },
+        { onConflict: 'daily_log_id,exercise_id' },
+      )
+      if (error) {
+        return { success: false, error: `A kihagyott gyakorlat frissítése sikertelen: ${error.message}` }
+      }
+      continue
+    }
+
+    const { error } = await supabase.from('workout_exercise_logs').upsert(
+      {
+        daily_log_id: dailyLog.id,
+        exercise_id: entry.exercise_id,
+        skipped: false,
+        sets_completed: entry.reps_completed.length,
+        reps_completed: entry.reps_completed,
+        weight_used: entry.weight_used,
+      },
+      { onConflict: 'daily_log_id,exercise_id' },
+    )
+    if (error) {
+      return { success: false, error: `A részletes edzésnapló mentése sikertelen: ${error.message}` }
+    }
+  }
+
+  const { error: completeError } = await supabase
+    .from('daily_logs')
+    .update({ workout_completed: true })
+    .eq('id', dailyLog.id)
+    .eq('user_id', userId)
+  if (completeError) {
+    return { success: false, error: `Az edzés befejezésének jelölése sikertelen: ${completeError.message}` }
+  }
+
+  revalidateWorkoutSurfaces()
+  return { success: true }
+}
+
 export async function upsertWorkoutExerciseLog(
   dailyLogId: string,
   exerciseId: string,
@@ -584,6 +778,7 @@ export async function upsertWorkoutExerciseLog(
       {
         daily_log_id: dailyLogId,
         exercise_id: exerciseId,
+        skipped: false,
         sets_completed: data.sets_completed,
         reps_completed: data.reps_completed,
         weight_used: data.weight_used,

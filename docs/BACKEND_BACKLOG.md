@@ -537,7 +537,7 @@ Egy magyar nyelvű fullstack fitness webalkalmazás backend oldala. A backend a 
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'nvidia/nemotron-3-super-120b-a12b:free',
+      model: 'openrouter/free',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },

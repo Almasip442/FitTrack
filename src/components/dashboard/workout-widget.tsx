@@ -1,15 +1,14 @@
 'use client'
 
-import { useState, useTransition } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { CheckCircle, Dumbbell, Moon } from 'lucide-react'
 
 import { Button, buttonVariants } from '@/components/ui/button'
 import { slideUp } from '@/lib/animations'
-import { completeTodayWorkout } from '@/lib/dashboard/actions'
 import { cn } from '@/lib/utils'
 import type { DashboardTodayWorkout } from '@/lib/dashboard/queries'
+import { getLocalTodayIso, WorkoutLogDialog } from '@/components/workouts/workout-log-dialog'
 
 /* -------------------------------------------------------------------------- */
 /*  Types                                                                      */
@@ -65,18 +64,6 @@ function ExerciseRow({
 /* -------------------------------------------------------------------------- */
 
 export function WorkoutWidget({ workout }: WorkoutWidgetProps) {
-  const [optimisticCompleted, setOptimisticCompleted] = useState(
-    workout.isCompleted,
-  )
-  const [isPending, startTransition] = useTransition()
-
-  const handleComplete = () => {
-    setOptimisticCompleted(true)
-    startTransition(async () => {
-      await completeTodayWorkout()
-    })
-  }
-
   return (
     <motion.div
       variants={slideUp}
@@ -101,7 +88,7 @@ export function WorkoutWidget({ workout }: WorkoutWidgetProps) {
           )}
         </div>
 
-        {optimisticCompleted && (
+        {workout.isCompleted && (
           <span className="flex items-center gap-1.5 font-condensed text-xs font-bold uppercase tracking-wide-display text-emerald-500 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded-full">
             <CheckCircle className="size-3.5 stroke-[1.5]" />
             Elvégezve
@@ -182,26 +169,30 @@ export function WorkoutWidget({ workout }: WorkoutWidgetProps) {
 
           {/* Complete button */}
           <div className="mt-auto pt-1">
-            {optimisticCompleted ? (
-              <div className="flex items-center justify-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 py-2.5 text-emerald-500">
-                <CheckCircle className="size-4 stroke-[1.5]" />
-                <span className="font-condensed text-sm font-bold uppercase tracking-wide-display">
-                  Edzés elvégezve
-                </span>
-              </div>
-            ) : (
-              <Button
-                onClick={handleComplete}
-                disabled={isPending}
-                className={cn(
-                  'w-full font-condensed uppercase tracking-wide-display',
-                  'bg-[rgba(120,0,0,0.1)] border border-[rgba(120,0,0,0.35)]',
-                  'text-brand-red hover:bg-[rgba(120,0,0,0.2)] hover:border-brand-red',
-                  'transition-all duration-200',
-                )}
-              >
-                {isPending ? 'Mentés...' : 'Kész vagyok!'}
-              </Button>
+            {workout.day && workout.exercises.length > 0 && (
+              <WorkoutLogDialog
+                date={getLocalTodayIso()}
+                dayId={workout.day.id}
+                dayName={workout.day.day_name}
+                exercises={workout.exercises.map((exercise) => ({
+                  id: exercise.id,
+                  name: exercise.name_hu,
+                  sets: exercise.sets,
+                  reps: exercise.reps,
+                }))}
+                trigger={
+                  <Button
+                    className={cn(
+                      'w-full font-condensed uppercase tracking-wide-display',
+                      'bg-[rgba(120,0,0,0.1)] border border-[rgba(120,0,0,0.35)]',
+                      'text-brand-red hover:bg-[rgba(120,0,0,0.2)] hover:border-brand-red',
+                      'transition-all duration-200',
+                    )}
+                  >
+                    {workout.isCompleted ? 'Edzésnapló megnyitása' : 'Edzésnapló indítása'}
+                  </Button>
+                }
+              />
             )}
           </div>
         </>

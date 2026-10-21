@@ -536,7 +536,7 @@ Auth: Supabase Auth (email + jelszó)
 Storage: Supabase Storage bucket-ek (avatars, exercises)
 API integrációk:
   • wger REST API — gyakorlat-adatbázis statikus import (seed script, 150-200 gyakorlat)
-  • OpenRouter API — heti AI fejlődéselemzés generálása (modell: nvidia/nemotron-3-super-120b-a12b:free)
+  • OpenRouter API — heti AI fejlődéselemzés generálása (modellrouter: openrouter/free)
   • Open Food Facts API — élelmiszer keresés és kalóriaadatok
   • Stripe — webshop checkout (test mode)
 Fizetés: Stripe test mode (nem éles tranzakciók)

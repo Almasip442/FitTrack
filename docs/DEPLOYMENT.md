@@ -74,6 +74,8 @@ Editor felületre, és futtasd egyenként:
 5. `20260430000007_workout_rpc.sql` — `update_exercise_order` és
    `set_active_workout_plan` RPC
 6. `20260430000008_exercises_search.sql` — `search_vector` GIN index
+7. `20261021000009_workout_exercise_skip.sql` — kihagyott edzésgyakorlat jelölése
+8. `20261021000010_weekly_analysis_comparison.sql` — szabályalapú eredmény, AI állapot és bemeneti heti adatok mentése
 
 ### 3.3 RLS ellenőrzés (kötelező)
 
@@ -171,8 +173,9 @@ forint érték (nem fillér).
 1. [openrouter.ai/keys](https://openrouter.ai/keys) → **Create Key**
 2. Adj nevet a kulcsnak (pl. `fittrack-pro-prod`)
 3. Másold ki és tedd a `OPENROUTER_API_KEY` env varba
-4. Modell: `nvidia/nemotron-3-super-120b-a12b:free` (free tier, nem kell
-   credit feltöltés)
+4. Az elemzés az OpenRouter `openrouter/free` modellrouterét használja; ez az
+   elérhető ingyenes modellek közül választ, ezért a konkrét modell idővel
+   változhat. Az ingyenes végpontok korlátozott kapacitásúak.
 
 ---
 
@@ -197,8 +200,10 @@ fordításokhoz, ezért az `OPENROUTER_API_KEY` env varnak is be kell
 
 ## 9. Demo user létrehozása
 
-A `seed-demo-user.ts` script létrehoz egy működő demó felhasználót
-realisztikus 4-6 hetes edzési és táplálkozási adatokkal.
+A `seed-demo-user.ts` script létrehoz egy működő demó felhasználót két egymást
+követő, lezárt és kézzel ellenőrizhető teszthéttel. **Minden futás törli a
+`demo@fittrack.hu` felhasználó korábbi naplóadatait, edzéstervét és elemzéseit**;
+valódi felhasználóra ne futtasd.
 
 ```bash
 npx tsx scripts/seed-demo-user.ts
@@ -213,10 +218,15 @@ A script:
 
 - Létrehozza vagy újrahasznosítja a meglévő demo user-t (admin createUser)
 - Kitölti a profile-ját (cél: fogyás, ülő életmód, 35 éves férfi, 90 kg, 178 cm)
-- Létrehoz egy aktív workout plan-t 3 nappal és 5 gyakorlattal naponta
-- Generál 6 hét daily_log-ot (3 edzés/hét) realisztikus food_entries-szel
-- Generál csökkenő trend súly adatokat (90.5 kg → 87.2 kg)
-- Létrehoz egy korábbi heti AI elemzést (előző hét)
+- Létrehoz egy aktív, heti 4 napos tervet, napi 5 gyakorlattal
+- Előző lezárt hét: 2/4 részletes edzés, 4/7 étkezési nap, 2 súlymérés
+- Legutóbbi lezárt hét: 3/4 részletes edzés növekvő terheléssel, 6/7 étkezési nap, 5 súlymérés
+- Kiírja az elvárt átlagokat és volumeneket; a README tartalmazza a konkrét értékeket
+- Minta (nem AI által generált) heti elemzést rögzít a legutóbbi lezárt hétről
+
+Az alkalmazás ellenőrzése előtt futtasd a következő parancsokat: `npm run lint`,
+`npx tsc --noEmit`, `npm test`, `npm run build`. A kézi heti adatellenőrzés lépéseit
+a gyökér `README.md` fájl tartalmazza.
 
 ---
 

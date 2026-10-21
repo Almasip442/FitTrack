@@ -51,10 +51,20 @@ export function Navbar({ userName, avatarUrl }: NavbarProps = {}) {
     >
       <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Left: Logo */}
-        <Logo />
+        {onOnboarding ? (
+          <span
+            aria-label="FitTrack Pro főoldal"
+            className="inline-flex items-baseline font-condensed font-extrabold uppercase tracking-wide-display text-xl select-none"
+          >
+            <span className="text-[#780000]">FITTRACK</span>
+            <span className="ml-1.5 text-foreground">PRO</span>
+          </span>
+        ) : (
+          <Logo />
+        )}
 
         {/* Center: Desktop navigation */}
-        <nav
+        {!onOnboarding && <nav
           aria-label="Fő navigáció"
           className="hidden md:flex items-center gap-1"
         >
@@ -87,20 +97,23 @@ export function Navbar({ userName, avatarUrl }: NavbarProps = {}) {
               </Link>
             )
           })}
-        </nav>
+        </nav>}
 
         {/* Right: Cart + Theme toggle + avatar (links to /profile) + sign-out */}
         <div className="flex items-center gap-2">
           <CartDrawer />
           <ThemeToggle />
-          <Link
-            href="/profile"
-            prefetch={onOnboarding ? false : undefined}
-            aria-label="Profilom"
-            className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-          >
+          {onOnboarding ? (
             <UserAvatar name={userName} src={avatarUrl} />
-          </Link>
+          ) : (
+            <Link
+              href="/profile"
+              aria-label="Profilom"
+              className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+            >
+              <UserAvatar name={userName} src={avatarUrl} />
+            </Link>
+          )}
           <SignOutButton />
         </div>
       </div>
