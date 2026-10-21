@@ -42,3 +42,5 @@ yarn-error.log*
 next-env.d.ts
 
 /docs/01_Bancsics Eszter - Lovarda menedzsment webalkalmazás.pdf
+/docs/*.pdf
+/docs/thesis/BEMUTATO_ES_MERESI_JEGYZOKONYV.md
