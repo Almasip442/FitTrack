@@ -63,7 +63,6 @@ The automated tests verify missing-day handling, recorded-day averages, complete
 - `docs/DEPLOYMENT.md` — Supabase, environment, seed, and deployment instructions.
 - `docs/BUGFIX_BACKLOG.md` — known and resolved defects.
 - `docs/thesis/SZD2_DOLGOZAT_ELSO_VALTOZAT.md` — first thesis text draft with source references and current application figures.
-- `docs/thesis/BEMUTATO_ES_MERESI_JEGYZOKONYV.md` — October 23 demo flow, manual acceptance checklist, evidence list, and real-time tracking template.
 - `docs/thesis/MI_HASZNALATI_NAPLO.md` — concise log of development-time AI use, human decisions, and verification.
 
 ### Seed migration/schema-cache hiba
