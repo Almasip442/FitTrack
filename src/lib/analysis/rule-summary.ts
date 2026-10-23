@@ -10,10 +10,40 @@ export type RuleBasedSummary = {
 /** Build an explainable, deterministic weekly assessment from measured data. */
 export function generateRuleBasedSummary(
   metrics: WeeklyMetricSnapshot,
+  previous?: WeeklyMetricSnapshot,
+  previousPrevious?: WeeklyMetricSnapshot,
 ): RuleBasedSummary {
   const observations: string[] = []
   const suggestions: string[] = []
   let score = 5
+
+  if (
+    previous &&
+    previousPrevious &&
+    previous.plannedWorkouts > 0 &&
+    previousPrevious.plannedWorkouts > 0
+  ) {
+    const bothWeeksUnderPlan =
+      previous.completedWorkouts < previous.plannedWorkouts &&
+      previousPrevious.completedWorkouts < previousPrevious.plannedWorkouts
+    const bothWeeksCompleted =
+      previous.completedWorkouts >= previous.plannedWorkouts &&
+      previousPrevious.completedWorkouts >= previousPrevious.plannedWorkouts
+
+    if (bothWeeksUnderPlan) {
+      suggestions.push(
+        `Az előző két lezárt héten ${previous.completedWorkouts}/${previous.plannedWorkouts}, illetve ${previousPrevious.completedWorkouts}/${previousPrevious.plannedWorkouts} edzés teljesült. Érdemes átgondolni, hogy egy alacsonyabb heti gyakoriság fenntarthatóbb-e; az alkalmazás nem módosítja automatikusan a tervedet.`,
+      )
+    } else if (
+      bothWeeksCompleted &&
+      previous.volumeKg > 0 &&
+      previousPrevious.volumeKg > 0
+    ) {
+      suggestions.push(
+        `Az előző két lezárt héten teljesült az edzésterv (${previous.completedWorkouts}/${previous.plannedWorkouts} és ${previousPrevious.completedWorkouts}/${previousPrevious.plannedWorkouts}). Ha a technika és a regeneráció rendben van, a következő héten egyetlen tényezőt változtass kis lépésben; az alkalmazás nem módosítja automatikusan a tervedet.`,
+      )
+    }
+  }
 
   if (metrics.plannedWorkouts > 0) {
     observations.push(

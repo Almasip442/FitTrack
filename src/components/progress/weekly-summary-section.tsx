@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { WeeklySummaryCard } from '@/components/progress/weekly-summary-card'
 import { Button } from '@/components/ui/button'
-import type { WeeklyProgressBundle } from '@/lib/analysis/weekly-metrics'
+import type { WeeklyComparisonBundle } from '@/lib/analysis/weekly-metrics'
 import { cn } from '@/lib/utils'
 
 function shiftWeek(iso: string, amount: number): string {
@@ -22,7 +22,7 @@ function formatWeek(iso: string): string {
   return `${format(start)} – ${format(end)}`
 }
 
-export function WeeklySummarySection({ initialBundle }: { initialBundle: WeeklyProgressBundle }) {
+export function WeeklySummarySection({ initialBundle }: { initialBundle: WeeklyComparisonBundle }) {
   const [bundle, setBundle] = useState(initialBundle)
   const [selectedWeek, setSelectedWeek] = useState(initialBundle.current.weekStart)
   const [loading, setLoading] = useState(false)
@@ -52,7 +52,7 @@ export function WeeklySummarySection({ initialBundle }: { initialBundle: WeeklyP
       .then(async (response) => {
         const body = await response.json()
         if (!response.ok) throw new Error(body.error ?? 'A hét betöltése sikertelen.')
-        return body as WeeklyProgressBundle
+        return body as WeeklyComparisonBundle
       })
       .then(setBundle)
       .catch((cause: unknown) => {

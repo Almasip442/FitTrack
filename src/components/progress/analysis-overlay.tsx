@@ -11,6 +11,7 @@ import {
 import { useEffect } from 'react'
 
 import { Button } from '@/components/ui/button'
+import { isHungarianAnalysisText } from '@/lib/analysis/language-validation'
 import { cn } from '@/lib/utils'
 import type { WeeklyAnalysis } from '@/types/database'
 
@@ -69,13 +70,27 @@ export function AnalysisOverlay({ analysis, open, onClose }: AnalysisOverlayProp
     }
   }, [open])
 
-  const rating = analysis?.ai_rating ?? analysis?.rule_based_rating ?? 0
-  const suggestions = analysis?.ai_suggestions ?? []
-  const summary = analysis?.ai_analysis ?? ''
   const ruleSummary = analysis?.rule_based_summary ?? ''
   const ruleSuggestions = analysis?.rule_based_suggestions ?? []
-  const isFallback = analysis?.ai_status === 'fallback'
+  const aiSuggestions = analysis?.ai_suggestions ?? []
+  const aiSummary = analysis?.ai_analysis ?? ''
+  const aiRiskWarning = analysis?.risk_warning ?? ''
+  const hasHungarianAi = isHungarianAnalysisText([
+    aiSummary,
+    ...aiSuggestions,
+    aiRiskWarning,
+  ])
+  const isInvalidLanguage = Boolean(analysis?.ai_analysis) && !hasHungarianAi
+  const rating = (hasHungarianAi ? analysis?.ai_rating : null)
+    ?? analysis?.rule_based_rating
+    ?? 0
+  const suggestions = hasHungarianAi ? aiSuggestions : []
+  const summary = hasHungarianAi ? aiSummary : ''
+  const isFallback = analysis?.ai_status === 'fallback' || isInvalidLanguage
   const isSample = analysis?.ai_status === 'sample'
+  const riskWarning = isInvalidLanguage
+    ? 'Ez az összesítés naplóadatokra épül, nem egészségügyi tanács. Egészségügyi kérdés esetén fordulj szakemberhez.'
+    : aiRiskWarning
 
   return (
     <AnimatePresence>
@@ -176,7 +191,13 @@ export function AnalysisOverlay({ analysis, open, onClose }: AnalysisOverlayProp
                 <section className="rounded-xl border border-brand-red-border/50 bg-brand-red-muted/20 p-4">
                   <div className="mb-2 flex items-center justify-between gap-2">
                     <span className="font-condensed text-[10px] uppercase tracking-wide-display text-brand-red">
-                      {isFallback ? 'AI nem elérhető' : isSample ? 'Mintaadat – nincs AI-válasz' : 'AI magyarázat'}
+                      {isInvalidLanguage
+                        ? 'Az AI-válasz nem volt magyar; szabályalapú értékelés'
+                        : isFallback
+                          ? 'AI nem elérhető'
+                          : isSample
+                            ? 'Mintaadat – nincs AI-válasz'
+                            : 'AI magyarázat'}
                     </span>
                     {!isFallback && rating > 0 && (
                       <span className="font-condensed text-xs font-bold text-brand-red">
@@ -208,9 +229,9 @@ export function AnalysisOverlay({ analysis, open, onClose }: AnalysisOverlayProp
                 </section>
               </div>
 
-              {analysis?.risk_warning && (
+              {riskWarning && (
                 <p className="mt-4 rounded-lg border border-border/60 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
-                  {analysis.risk_warning}
+                  {riskWarning}
                 </p>
               )}
             </div>

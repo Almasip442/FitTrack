@@ -13,7 +13,7 @@ A FitTrack Pro projekt (Next.js + Supabase fullstack fitness alkalmazás) teljes
 | Iteration | Tasks | Status | Completion |
 |---|---|---|---|
 | B1 — Kritikus auth és navigáció javítások | 2 | DONE | 100% |
-| B2 — OpenRouter AI elemzés javítás | 3 | DONE | 100% |
+| B2 — OpenRouter AI elemzés javítás | 4 | DONE — tesztfiókos visszaellenőrzés hátra | 100% |
 | B3 — Stripe checkout javítások | 3 | DONE | 100% |
 | B4 — Frontend állapotkezelés és UX javítások | 4 | DONE | 100% |
 | B5 — Backend adat konzisztencia | 3 | DONE | 100% |
@@ -21,8 +21,8 @@ A FitTrack Pro projekt (Next.js + Supabase fullstack fitness alkalmazás) teljes
 
 | Metric | Value |
 |---|---|
-| Total tasks | 15 |
-| Completed tasks | 15 |
+| Total tasks | 16 |
+| Completed tasks | 16 |
 | Remaining tasks | 0 |
 | Completion | 100% |
 
@@ -70,6 +70,7 @@ A FitTrack Pro projekt (Next.js + Supabase fullstack fitness alkalmazás) teljes
 - [x] B2.1 OpenRouter modell-azonosító csere: a gyakran változó ingyenes modell helyett az `openrouter/free` router választ elérhető, JSON választ támogató modellt
 - [x] B2.2 OpenRouter hibák loggolása: a `callOpenRouter` üres `catch {}` blokkjának és a néma `if (!res.ok) return null` ágnak a felváltása értelmes `console.error` loggolással (HTTP status, response body kiírása), hogy a hibák debuggolhatóak legyenek
 - [x] B2.3 `weekEnd` jövőbeli dátum fix: `src/app/api/analysis/route.ts` L438–441 — a `weekEnd` ne léphessen túl a mai napon (`Math.min(weekEndIso, todayIso)` mintával); biztosítani, hogy az analízis rekord `week_end` mezője soha ne legyen jövőbeli dátum
+- [x] B2.4 Vegyes nyelvű AI-válaszok kezelése: a prompt kizárólag magyar kimenetet kér; a szerver nyelvi ellenőrzést végez, és hibás nyelvű válasznál a szabályalapú eredményt menti. A felület a régebben elmentett hibás választ is magyar szabályalapú szöveggel helyettesíti. Lint és TypeScript sikeres; új tesztfiókos ellenőrzés és az új tesztek futtatása hátra van.
 
 **Acceptance Criteria:**
 

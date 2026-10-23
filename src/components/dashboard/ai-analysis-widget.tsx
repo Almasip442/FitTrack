@@ -7,6 +7,7 @@ import { Sparkles, X, ChevronRight } from 'lucide-react'
 
 import { Button, buttonVariants } from '@/components/ui/button'
 import { slideUp, scaleIn } from '@/lib/animations'
+import { isHungarianAnalysisText } from '@/lib/analysis/language-validation'
 import { cn } from '@/lib/utils'
 import type { DashboardLatestAnalysis } from '@/lib/dashboard/queries'
 
@@ -29,10 +30,17 @@ function AnalysisOverlay({
   analysis: DashboardLatestAnalysis
   onClose: () => void
 }) {
+  const hasHungarianAi = isHungarianAnalysisText([analysis.ai_analysis ?? ''])
+  const summary = hasHungarianAi
+    ? analysis.ai_analysis
+    : analysis.rule_based_summary
+  const rating = hasHungarianAi
+    ? analysis.ai_rating
+    : analysis.rule_based_rating
   const ratingColor =
-    (analysis.ai_rating ?? 0) >= 7
+    (rating ?? 0) >= 7
       ? 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30'
-      : (analysis.ai_rating ?? 0) >= 5
+      : (rating ?? 0) >= 5
         ? 'text-amber-500 bg-amber-500/10 border-amber-500/30'
         : 'text-red-500 bg-red-500/10 border-red-500/30'
 
@@ -89,14 +97,14 @@ function AnalysisOverlay({
               </p>
             )}
           </div>
-          {analysis.ai_rating !== null && (
+          {rating !== null && (
             <span
               className={cn(
                 'ml-auto shrink-0 font-condensed text-lg font-extrabold px-3 py-1 rounded-full border',
                 ratingColor,
               )}
             >
-              {analysis.ai_rating}/10
+              {rating}/10
             </span>
           )}
         </div>
@@ -104,7 +112,7 @@ function AnalysisOverlay({
         {/* Content */}
         <div className="rounded-lg bg-muted/50 p-4">
           <p className="text-sm leading-relaxed text-foreground">
-            {analysis.ai_analysis ?? 'Nincs elemzés szöveg.'}
+            {summary ?? 'Ehhez az elemzéshez nem érhető el magyar nyelvű összefoglaló.'}
           </p>
         </div>
       </motion.div>
@@ -119,7 +127,15 @@ function AnalysisOverlay({
 export function AiAnalysisWidget({ analysis }: AiAnalysisWidgetProps) {
   const [showOverlay, setShowOverlay] = useState(false)
 
-  const ratingNum = analysis?.ai_rating ?? 0
+  const hasHungarianAi = analysis
+    ? isHungarianAnalysisText([analysis.ai_analysis ?? ''])
+    : false
+  const displaySummary = analysis
+    ? (hasHungarianAi ? analysis.ai_analysis : analysis.rule_based_summary)
+    : null
+  const ratingNum = analysis
+    ? ((hasHungarianAi ? analysis.ai_rating : analysis.rule_based_rating) ?? 0)
+    : 0
   const ratingBadgeColor =
     ratingNum >= 7
       ? 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30'
@@ -127,9 +143,9 @@ export function AiAnalysisWidget({ analysis }: AiAnalysisWidgetProps) {
         ? 'text-amber-500 bg-amber-500/10 border-amber-500/30'
         : 'text-red-500 bg-red-500/10 border-red-500/30'
 
-  const summaryText = analysis?.ai_analysis
-    ? analysis.ai_analysis.slice(0, 120) +
-      (analysis.ai_analysis.length > 120 ? '...' : '')
+  const summaryText = displaySummary
+    ? displaySummary.slice(0, 120) +
+      (displaySummary.length > 120 ? '...' : '')
     : null
 
   return (

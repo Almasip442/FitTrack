@@ -72,7 +72,11 @@ export default async function ProgressPage() {
         <WeightSummaryCard summary={weightSummary} />
       </div>
 
-      {weeklyMetrics && <WeeklySummarySection initialBundle={weeklyMetrics} />}
+      {weeklyMetrics && (
+        <WeeklySummarySection
+          initialBundle={{ current: weeklyMetrics.current, previous: weeklyMetrics.previous }}
+        />
+      )}
 
       {/* Weight trend chart */}
       <WeightChart logs={weightLogs} />

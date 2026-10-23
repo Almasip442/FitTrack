@@ -24,3 +24,38 @@ test('rule summary is deterministic and flags missing logs without treating them
   assert.match(first.riskWarning, /nem egészségügyi tanács/i)
   assert.ok(first.rating >= 1 && first.rating <= 10)
 })
+
+test('two consecutive under-target weeks produce a manual lighter-plan suggestion', () => {
+  const recent = { ...emptyMetrics, completedWorkouts: 3, workoutCompletionPercent: 75, volumeKg: 14_400 }
+  const earlier = { ...emptyMetrics, completedWorkouts: 2, workoutCompletionPercent: 50, volumeKg: 9_000 }
+
+  const result = generateRuleBasedSummary(emptyMetrics, recent, earlier)
+  const adaptation = result.suggestions.find((suggestion) => suggestion.includes('előző két lezárt héten'))
+
+  assert.ok(adaptation)
+  assert.match(adaptation, /3\/4.*2\/4/)
+  assert.match(adaptation, /alacsonyabb heti gyakoriság/)
+  assert.match(adaptation, /nem módosítja automatikusan/)
+})
+
+test('two fully completed weeks suggest only a small manual progression', () => {
+  const recent = { ...emptyMetrics, completedWorkouts: 4, workoutCompletionPercent: 100, volumeKg: 14_400 }
+  const earlier = { ...emptyMetrics, completedWorkouts: 4, workoutCompletionPercent: 100, volumeKg: 9_000 }
+
+  const result = generateRuleBasedSummary(emptyMetrics, recent, earlier)
+  const adaptation = result.suggestions.find((suggestion) => suggestion.includes('előző két lezárt héten'))
+
+  assert.ok(adaptation)
+  assert.match(adaptation, /egyetlen tényezőt változtass kis lépésben/)
+  assert.match(adaptation, /nem módosítja automatikusan/)
+})
+
+test('one completed week alone is not enough to trigger an adaptive suggestion', () => {
+  const recent = { ...emptyMetrics, completedWorkouts: 4, workoutCompletionPercent: 100, volumeKg: 14_400 }
+  const result = generateRuleBasedSummary(emptyMetrics, recent)
+
+  assert.equal(
+    result.suggestions.some((suggestion) => suggestion.includes('előző két lezárt héten')),
+    false,
+  )
+})

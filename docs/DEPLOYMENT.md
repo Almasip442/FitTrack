@@ -24,7 +24,7 @@ környezetbe (Vercel + Supabase + Stripe + OpenRouter) telepítésén.
 
 ## 1. Előfeltételek
 
-- Node.js 20+ és npm helyileg
+- Node.js 22.22.2+ vagy 24.15.0+ és npm helyileg (lásd a README követelményét)
 - GitHub fiók (a kód forrásrepóhoz)
 - Supabase fiók ([supabase.com](https://supabase.com))
 - Stripe fiók ([stripe.com](https://stripe.com)) — TEST módban használjuk

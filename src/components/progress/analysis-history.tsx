@@ -6,6 +6,7 @@ import { useState } from 'react'
 
 import { AnalysisOverlay } from '@/components/progress/analysis-overlay'
 import { staggerChildren, slideUpSm } from '@/lib/animations'
+import { isHungarianAnalysisText } from '@/lib/analysis/language-validation'
 import { cn } from '@/lib/utils'
 import type { WeeklyAnalysis } from '@/types/database'
 
@@ -77,8 +78,17 @@ export function AnalysisHistory({ analyses }: AnalysisHistoryProps) {
           <div className="absolute left-[11px] top-3 bottom-3 w-px bg-border/50" aria-hidden="true" />
 
           {analyses.map((analysis) => {
-            const rating = analysis.ai_rating ?? analysis.rule_based_rating ?? 0
-            const summary = analysis.ai_analysis ?? analysis.rule_based_summary ?? ''
+            const hasHungarianAi = isHungarianAnalysisText([
+              analysis.ai_analysis ?? '',
+              ...(analysis.ai_suggestions ?? []),
+              analysis.risk_warning ?? '',
+            ])
+            const rating = (hasHungarianAi ? analysis.ai_rating : null)
+              ?? analysis.rule_based_rating
+              ?? 0
+            const summary = (hasHungarianAi ? analysis.ai_analysis : null)
+              ?? analysis.rule_based_summary
+              ?? ''
             const preview = summary.length > 100
               ? `${summary.slice(0, 100)}…`
               : summary

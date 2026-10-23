@@ -66,6 +66,8 @@ export type DashboardLatestAnalysis = {
   week_start: string
   ai_analysis: string | null
   ai_rating: number | null
+  rule_based_summary: string | null
+  rule_based_rating: number | null
 }
 
 export type DashboardData = {
@@ -447,7 +449,7 @@ async function loadLatestAnalysis(
 
   const { data, error } = await supabase
     .from('weekly_analyses')
-    .select('id, week_start, ai_analysis, ai_rating')
+    .select('id, week_start, ai_analysis, ai_rating, rule_based_summary, rule_based_rating')
     .eq('user_id', userId)
     .order('week_start', { ascending: false })
     .limit(1)
@@ -461,13 +463,20 @@ async function loadLatestAnalysis(
 
   const row = data as Pick<
     WeeklyAnalysis,
-    'id' | 'week_start' | 'ai_analysis' | 'ai_rating'
+    | 'id'
+    | 'week_start'
+    | 'ai_analysis'
+    | 'ai_rating'
+    | 'rule_based_summary'
+    | 'rule_based_rating'
   >
   return {
     id: row.id,
     week_start: row.week_start,
     ai_analysis: row.ai_analysis,
     ai_rating: row.ai_rating,
+    rule_based_summary: row.rule_based_summary,
+    rule_based_rating: row.rule_based_rating,
   }
 }
 

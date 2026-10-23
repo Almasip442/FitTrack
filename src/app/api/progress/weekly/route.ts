@@ -32,7 +32,7 @@ export async function GET(request: Request) {
 
   try {
     const bundle = await getWeeklyProgressBundle(user.id, new Date(), requested)
-    return NextResponse.json(bundle)
+    return NextResponse.json({ current: bundle.current, previous: bundle.previous })
   } catch (error) {
     console.error('[Weekly progress] Could not load selected week:', error)
     return NextResponse.json({ error: 'Nem sikerült betölteni a kiválasztott hetet.' }, { status: 500 })

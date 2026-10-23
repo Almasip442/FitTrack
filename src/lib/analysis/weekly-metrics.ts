@@ -27,9 +27,13 @@ export type WeeklyMetricSnapshot = {
   weightChange: number | null
 }
 
-export type WeeklyProgressBundle = {
+export type WeeklyComparisonBundle = {
   current: WeeklyMetricSnapshot
   previous: WeeklyMetricSnapshot
+}
+
+export type WeeklyProgressBundle = WeeklyComparisonBundle & {
+  previousPrevious: WeeklyMetricSnapshot
 }
 
 export type RawFood = { calories: number | null; protein: number | null }
@@ -191,8 +195,8 @@ export function buildWeekSnapshot(args: {
 }
 
 /**
- * Load a single authenticated user's current and preceding week from the same
- * query path used by both the progress page and AI analysis endpoint.
+ * Load the selected week and two preceding weeks for the analysis rules.
+ * Progress clients receive only the selected week and its direct comparison.
  */
 export async function getWeeklyProgressBundle(
   userId: string,
@@ -209,7 +213,11 @@ export async function getWeeklyProgressBundle(
   const currentEnd = isCurrentWeek && currentSunday > today ? today : currentSunday
   const previousStart = addDays(currentStart, -7)
   const previousEnd = addDays(currentStart, -1)
-  const fromIso = toIsoDate(previousStart)
+  // Keep two complete weeks of context so adaptive suggestions never infer
+  // a pattern from the still-in-progress current week.
+  const previousPreviousStart = addDays(previousStart, -7)
+  const previousPreviousEnd = addDays(previousStart, -1)
+  const fromIso = toIsoDate(previousPreviousStart)
   const toIso = toIsoDate(currentEnd)
 
   const supabase = await createClient()
@@ -263,12 +271,26 @@ export async function getWeeklyProgressBundle(
     (exerciseResult.data as unknown as RawExerciseLog[] | null) ?? []
 
   const previousWeights = weights
-    .filter((row) => row.date >= fromIso && row.date <= toIsoDate(previousEnd))
+    .filter((row) => row.date >= toIsoDate(previousStart) && row.date <= toIsoDate(previousEnd))
     .map((row) => row.weight)
   const previousAverageWeight = average(previousWeights)
+  const previousPreviousWeights = weights
+    .filter((row) => row.date >= fromIso && row.date <= toIsoDate(previousPreviousEnd))
+    .map((row) => row.weight)
+  const previousPreviousAverageWeight = average(previousPreviousWeights)
   const previous = buildWeekSnapshot({
     start: previousStart,
     end: previousEnd,
+    profile,
+    planDays,
+    dailyLogs,
+    weights,
+    exerciseLogs,
+    previousAverageWeight: previousPreviousAverageWeight,
+  })
+  const previousPrevious = buildWeekSnapshot({
+    start: previousPreviousStart,
+    end: previousPreviousEnd,
     profile,
     planDays,
     dailyLogs,
@@ -287,5 +309,5 @@ export async function getWeeklyProgressBundle(
     previousAverageWeight,
   })
 
-  return { current, previous }
+  return { current, previous, previousPrevious }
 }

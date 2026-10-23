@@ -1,15 +1,24 @@
 # FitTrack – SZD II. Fejlesztési és Hibajavítási Végrehajtási Terv (AI Agent Specifikáció)
 
-## 0. Aktuális haladás (2026-10-22)
+## 0. Aktuális haladás (2026-10-23)
 
 | Fázis | Állapot | Ellenőrzés / hátralévő munka |
 |---|---|---|
 | 1. Technikai blokkolók, telepíthetőség és build | **KÉSZ** | `npm ci`, `npm run lint` és `npm run build` sikeresen lefutott. Az `npm ci` Node 24.11.1 alatt `mute-stream` engine figyelmeztetést adott; ez nem akadályozta a telepítést. |
 | 2. Részletes edzésnapló felület | **KÉSZ – felhasználói kézi próba visszaigazolva** | A felhasználó megerősítette a súly/ismétlésszám mentését, új szett hozzáadását, újratöltés utáni visszatöltést és kihagyott gyakorlat jelölését; a korábbi két runtime hiba már nem jelentkezik. A dolgozat ábrái a `docs/thesis/figures/` mappában vannak. |
 | 3. Egységes heti összesítő és hiányos adatok | **KÉSZ – felhasználói demo visszaigazolva** | A hétválasztó és az összehasonlító nézet látható. A felhasználó sikeresen lefuttatta a migrációkat és a demo seedet; az alkalmazásban a 2026. október 5–11. és október 12–18. hetek ellenőrizhető értékekkel jelennek meg. A kézi eredményről képernyőkép készült. |
-| 4. Szabályalapú és MI-visszajelzés összehasonlítása | **MŰKÖDŐ – élő AI-próba korábban visszaigazolva; seed minta szabályalapú** | A felhasználó sikeres AI-jelentést jelzett. A demo seed szándékosan szabályalapú mintát tesz be, ezért a felületen ezt mintaként kell megkülönböztetni az élő AI-választól. A prezentáció előtt érdemes ugyanarra a hétre új AI-elemzést futtatni és annak eredményét is rögzíteni. |
-| 5. Ellenőrizhető teszthetek és reprodukálható indítás | **KÉSZ – seed sikeres, automatizált tesztek sikeresek** | A felhasználó sikeresen lefuttatta a demó seedet; az elvárt heti értékek kiíródnak. A projekt unit tesztjei lefutottak. A tiszta, másik gépen történő telepítési próba ettől még külön ellenőrzés. |
+| 4. Szabályalapú és MI-visszajelzés összehasonlítása | **MŰKÖDŐ – magyar nyelvi ellenőrzés hozzáadva, kézi visszaellenőrzés hátra** | A felhasználó korábban sikeres AI-jelentést jelzett. 2026. október 23-án elkészült a vegyes nyelvű AI-válaszok elutasítása és a szabályalapú magyar tartalék megjelenítése, a már mentett elemzéseknél is. A lint és a TypeScript-ellenőrzés sikeres; az új nyelvi teszteket a helyi Node `uv_os_get_passwd` ENOMEM hibája miatt még nem lehetett futtatni. Tesztfiókon ellenőrizendő. A demo seed továbbra is szabályalapú mintát tesz be, ezt meg kell különböztetni az élő AI-választól. |
+| 5. Ellenőrizhető teszthetek és reprodukálható indítás | **RÉSZBEN KÉSZ – seed sikeres, korábbi automatizált tesztek sikeresek** | A felhasználó sikeresen lefuttatta a demó seedet; az elvárt heti értékek kiíródnak. A korábbi tesztfutás sikeres volt, de a 2026. október 23-i nyelvi ellenőrzéshez hozzáadott új teszteket a helyi Node `uv_os_get_passwd` ENOMEM hibája miatt újra kell futtatni egy működő tesztkörnyezetben. A tiszta, másik gépen történő telepítési próba ettől még külön ellenőrzés. |
 | 6. Szakdolgozat és bemutató előkészítése | **MUNKAVÁLTOZAT ELKÉSZÜLT – átnézés és formai sablon hátra** | Elkészült az első tartalmi szöveg, tesztforgatókönyv, bemutatóvázlat és a képernyőképek jegyzéke a `docs/thesis/` mappában. A kari sablon és saját ellenőrzés szükséges a véglegesítéshez. |
+| 7. Kéthetes, szabályalapú adaptív javaslat | **KÉSZ – automatizált ellenőrzés sikeres** | A két legutóbbi lezárt hét tervteljesítése alapján a heti szabályalapú értékelés fenntarthatóbb gyakoriságot vagy óvatos, egyváltozós progressziót javasolhat. A tervet nem módosítja. 7 teszt, lint, TypeScript és production build sikeres. |
+
+### Következő fejlesztési lépések (2026-10-23)
+
+1. **AI nyelvi javítás visszaellenőrzése:** a tesztfiók korábban mentett, kevert nyelvű elemzését nyisd meg a dashboardon és a fejlődés oldalon. Mindkét helyen a magyar szabályalapú összefoglalónak kell megjelennie. Ezután futtasd újra az automatizált teszteket működő Node-környezetben, majd egy új heti AI-elemzésnél ellenőrizd a magyar nyelvet és a fallbackot.
+2. **Edzésterv minőségellenőrzése – következő fejlesztési iteráció:** készítsünk magyarázható tervellenőrzést a témavezető javaslata alapján. Jelezze a heti edzésnapok számát, az egymást követő napokra eső azonos izomcsoport-terhelést, a pihenőnap hiányát és a kezdő szinthez képest magas tervezett volument. Első változatban figyelmeztetéseket adjon; ne módosítsa automatikusan a tervet.
+3. **Teljes folyamat tesztelése:** tesztfiókkal járjuk végig a profil/cél → edzésterv → részletes naplózás és kihagyás → étkezés → testsúly → heti összehasonlítás → AI/fallback útvonalat. Rögzítsük az elvárt és tényleges értékeket, a hibákat és a képernyőképeket.
+4. **Opcionális, időkerethez kötött funkció:** egyszerű, szabályalapú gyakorlat-ajánló cél, izomcsoport, elérhető eszköz és nehézség alapján, rövid indoklással. Csak az edzésterv-ellenőrzés és a tesztelés után; nem szükséges a november 13-i véleményezéshez, ha veszélyezteti a stabilitást vagy a dolgozatot.
+5. **November 13-i véleményezési csomag:** a dolgozatot a kari sablonba rendezni, a tesztjegyzőkönyvet tényleges eredményekkel és képekkel kitölteni, telepítést tiszta környezetben kipróbálni, majd rögzített szoftververzióval elküldeni a témavezetőnek.
 
 > A „megvalósítva” a kód elkészültét jelenti; a 2. fázis csak a felsorolt kézi, adatbázissal végzett próba után jelölhető teljesen késznek.
 
@@ -59,6 +68,8 @@ Az alábbi területeken **tilos** új funkciót fejleszteni (csak a build-hibák
 - Webshop bővítése (`src/app/(protected)/shop/`, `src/components/shop/`)
 - Automatikus edzésterv-módosítás
 - Összetettebb ajánlórendszerek
+
+A témavezető által javasolt adaptív visszajelzés ettől különbözik: egy egyszerű, magyarázható szabály csak a két legutóbbi, teljesen lezárt hét naplózott eredményeiből ad következő hétre szóló szöveges javaslatot. Nem módosít adatot vagy tervet; összetett ajánlórendszer és automatikus alkalmazás továbbra sincs a hatókörben.
 
 ---
 
