@@ -74,7 +74,7 @@ export default async function ProgressPage() {
 
       {weeklyMetrics && (
         <WeeklySummarySection
-          initialBundle={{ current: weeklyMetrics.current, previous: weeklyMetrics.previous }}
+          initialBundle={weeklyMetrics}
         />
       )}
 

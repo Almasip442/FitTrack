@@ -74,3 +74,24 @@ test('five equal calorie days average to the recorded value, not a seven-day zer
   assert.equal(result.nutritionDays, 5)
   assert.equal(result.averageCalories, 2000)
 })
+
+test('keeps above-plan workout count while capping completion percentage at 100', () => {
+  const result = buildWeekSnapshot({
+    start: new Date(2026, 9, 5),
+    end: new Date(2026, 9, 11),
+    profile: null,
+    planDays: [{ day_of_week: 1 }, { day_of_week: 3 }, { day_of_week: 5 }],
+    dailyLogs: ['2026-10-05', '2026-10-06', '2026-10-07', '2026-10-08'].map((date) => ({
+      date,
+      workout_completed: true,
+      food_entries: null,
+    })),
+    weights: [],
+    exerciseLogs: [],
+    previousAverageWeight: null,
+  })
+
+  assert.equal(result.plannedWorkouts, 3)
+  assert.equal(result.completedWorkouts, 4)
+  assert.equal(result.workoutCompletionPercent, 100)
+})

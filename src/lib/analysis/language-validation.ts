@@ -1,5 +1,5 @@
 const HUNGARIAN_CUES = new Set([
-  'a', 'az', 'alapján', 'adat', 'adatok', 'átlag', 'cél', 'csökkent',
+  'az', 'alapján', 'adat', 'adatok', 'átlag', 'cél', 'csökkent',
   'edzés', 'és', 'ezért', 'hiányzik', 'hét', 'heti', 'hogy', 'kalória',
   'napló', 'naplózott', 'nem', 'rögzített', 'szerepel', 'teljesült',
   'testsúly', 'viszont',
@@ -10,6 +10,7 @@ const HUNGARIAN_CUES = new Set([
 const FOREIGN_MARKERS = [
   /\b(?:tampoco|logrado|entrenamiento|alimentaci[oó]n|progreso|semana)\b/iu,
   /\b(?:progr[eè]s|semaine|entra[iî]nement|alimentation|r[eé]ussi)\b/iu,
+  /\b(?:the|and|your|workout|calories|week|should|protein|weight|summary)\b/iu,
   /[\u0400-\u052f\u0370-\u03ff]/u,
 ]
 

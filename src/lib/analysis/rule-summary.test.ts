@@ -59,3 +59,21 @@ test('one completed week alone is not enough to trigger an adaptive suggestion',
     false,
   )
 })
+
+test('above-plan workouts are acknowledged without raising the completion score above plan', () => {
+  const onPlan = generateRuleBasedSummary({
+    ...emptyMetrics,
+    plannedWorkouts: 3,
+    completedWorkouts: 3,
+    workoutCompletionPercent: 100,
+  })
+  const abovePlan = generateRuleBasedSummary({
+    ...emptyMetrics,
+    plannedWorkouts: 3,
+    completedWorkouts: 4,
+    workoutCompletionPercent: 100,
+  })
+
+  assert.match(abovePlan.summary, /terven felül.*4\/3/i)
+  assert.equal(abovePlan.rating, onPlan.rating)
+})

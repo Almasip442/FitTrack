@@ -42,3 +42,21 @@ test('rejects a response without Hungarian language cues', () => {
     false,
   )
 })
+
+test('does not accept English text only because it repeats the article "a"', () => {
+  assert.equal(
+    isHungarianAnalysisText([
+      'A user has a new habit. An athlete records a result.',
+    ]),
+    false,
+  )
+})
+
+test('rejects common English analysis terms', () => {
+  assert.equal(
+    isHungarianAnalysisText([
+      'The workout summary should describe calories, protein, weight, and progress this week.',
+    ]),
+    false,
+  )
+})

@@ -5,6 +5,7 @@ import type { WeeklyMetricSnapshot } from '@/lib/analysis/weekly-metrics'
 type WeeklySummaryCardProps = {
   current: WeeklyMetricSnapshot
   previous: WeeklyMetricSnapshot
+  previousPrevious: WeeklyMetricSnapshot
 }
 
 function formatDate(iso: string): string {
@@ -30,26 +31,36 @@ function Metric({ label, value, note }: { label: string; value: string; note?: s
 
 function WeekPanel({
   metrics,
-  isCurrent,
-  previousVolume,
+  title,
+  comparisonVolume,
 }: {
   metrics: WeeklyMetricSnapshot
-  isCurrent: boolean
-  previousVolume: number
+  title: string
+  comparisonVolume?: number
 }) {
-  const volumeChange = metrics.volumeKg - previousVolume
+  const volumeChange = comparisonVolume === undefined
+    ? null
+    : metrics.volumeKg - comparisonVolume
   const calorieNote = metrics.averageCalories == null
     ? 'Nincs naplózott adat'
     : `${metrics.averageCalories.toLocaleString('hu-HU')} kcal/nap${metrics.calorieDifference == null ? '' : ` · ${metrics.calorieDifference > 0 ? '+' : ''}${metrics.calorieDifference} kcal a becsült célhoz képest`}`
   return (
-    <div className="space-y-3 rounded-xl border border-border/70 bg-card/50 p-4 sm:p-5">
-      <div className="flex items-center justify-between gap-2">
+    <article
+      aria-label={`Heti áttekintés: ${formatDate(metrics.weekStart)} – ${formatDate(metrics.weekEnd)}`}
+      className="space-y-3 rounded-xl border border-border/70 bg-card/50 p-4 sm:p-5"
+    >
+      <div className="flex flex-wrap items-start justify-between gap-2">
         <h3 className="font-condensed text-base font-bold uppercase tracking-display text-foreground">
-          {isCurrent ? 'Kiválasztott hét' : 'Előző hét'}
+          {title}
         </h3>
-        <span className="text-xs tabular-nums text-muted-foreground">
-          {formatDate(metrics.weekStart)} – {formatDate(metrics.weekEnd)}
-        </span>
+        <div className="text-right">
+          <span className="block text-xs tabular-nums text-muted-foreground">
+            {formatDate(metrics.weekStart)} – {formatDate(metrics.weekEnd)}
+          </span>
+          <span className="mt-0.5 block text-[10px] uppercase tracking-wide-display text-muted-foreground/70">
+            {metrics.elapsedDays < 7 ? 'Folyamatban · részleges hét' : 'Lezárt hét'}
+          </span>
+        </div>
       </div>
       {metrics.goal && (
         <p className="text-xs text-muted-foreground">Cél: {metrics.goal}</p>
@@ -58,7 +69,7 @@ function WeekPanel({
         <Metric
           label="Edzés"
           value={`${metrics.completedWorkouts}/${metrics.plannedWorkouts}`}
-          note={`${metrics.volumeKg.toLocaleString('hu-HU')} kg volumen${isCurrent && previousVolume > 0 ? ` · ${volumeChange > 0 ? '+' : ''}${volumeChange.toLocaleString('hu-HU')} kg az előző héthez képest` : ''}`}
+          note={`${metrics.volumeKg.toLocaleString('hu-HU')} kg volumen${volumeChange === null ? '' : ` · ${volumeChange > 0 ? '+' : ''}${volumeChange.toLocaleString('hu-HU')} kg az előző héthez képest`}`}
         />
         <Metric
           label="Étkezési napló"
@@ -82,16 +93,17 @@ function WeekPanel({
           A naplózatlan napokat nem számoltuk nulla kalóriának; az átlag csak a rögzített napokból készült.
         </p>
       )}
-    </div>
+    </article>
   )
 }
 
-export function WeeklySummaryCard({ current, previous }: WeeklySummaryCardProps) {
+export function WeeklySummaryCard({ current, previous, previousPrevious }: WeeklySummaryCardProps) {
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-        <WeekPanel metrics={current} isCurrent previousVolume={previous.volumeKg} />
-        <WeekPanel metrics={previous} isCurrent={false} previousVolume={previous.volumeKg} />
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <WeekPanel metrics={current} title="Kiválasztott hét" comparisonVolume={previous.volumeKg} />
+        <WeekPanel metrics={previous} title="Előző hét" comparisonVolume={previousPrevious.volumeKg} />
+        <WeekPanel metrics={previousPrevious} title="Két héttel korábbi" />
       </div>
       <div className="space-y-1 text-[11px] text-muted-foreground">
         <p className="flex items-start gap-2">

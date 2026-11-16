@@ -15,14 +15,14 @@ A FitTrack Pro projekt (Next.js + Supabase fullstack fitness alkalmazás) teljes
 | B1 — Kritikus auth és navigáció javítások | 2 | DONE | 100% |
 | B2 — OpenRouter AI elemzés javítás | 4 | DONE — tesztfiókos visszaellenőrzés hátra | 100% |
 | B3 — Stripe checkout javítások | 3 | DONE | 100% |
-| B4 — Frontend állapotkezelés és UX javítások | 4 | DONE | 100% |
-| B5 — Backend adat konzisztencia | 3 | DONE | 100% |
-| **Total** | **15** | **DONE** | **100%** |
+| B4 — Frontend állapotkezelés és UX javítások | 5 | DONE | 100% |
+| B5 — Backend adat konzisztencia | 4 | DONE | 100% |
+| **Total** | **18** | **DONE** | **100%** |
 
 | Metric | Value |
 |---|---|
-| Total tasks | 16 |
-| Completed tasks | 16 |
+| Total tasks | 18 |
+| Completed tasks | 18 |
 | Remaining tasks | 0 |
 | Completion | 100% |
 
@@ -70,7 +70,7 @@ A FitTrack Pro projekt (Next.js + Supabase fullstack fitness alkalmazás) teljes
 - [x] B2.1 OpenRouter modell-azonosító csere: a gyakran változó ingyenes modell helyett az `openrouter/free` router választ elérhető, JSON választ támogató modellt
 - [x] B2.2 OpenRouter hibák loggolása: a `callOpenRouter` üres `catch {}` blokkjának és a néma `if (!res.ok) return null` ágnak a felváltása értelmes `console.error` loggolással (HTTP status, response body kiírása), hogy a hibák debuggolhatóak legyenek
 - [x] B2.3 `weekEnd` jövőbeli dátum fix: `src/app/api/analysis/route.ts` L438–441 — a `weekEnd` ne léphessen túl a mai napon (`Math.min(weekEndIso, todayIso)` mintával); biztosítani, hogy az analízis rekord `week_end` mezője soha ne legyen jövőbeli dátum
-- [x] B2.4 Vegyes nyelvű AI-válaszok kezelése: a prompt kizárólag magyar kimenetet kér; a szerver nyelvi ellenőrzést végez, és hibás nyelvű válasznál a szabályalapú eredményt menti. A felület a régebben elmentett hibás választ is magyar szabályalapú szöveggel helyettesíti. Lint és TypeScript sikeres; új tesztfiókos ellenőrzés és az új tesztek futtatása hátra van.
+- [x] B2.4 Vegyes nyelvű AI-válaszok kezelése: a prompt kizárólag magyar kimenetet kér; a szerver a gyakori angol/spanyol/francia mintákat és idegen írásrendszereket is ellenőrzi, hibás válasznál pedig a szabályalapú eredményt menti. A felület a régebben elmentett hibás választ is magyar szabályalapú szöveggel helyettesíti. A regressziós tesztek lefutottak; tesztfiókos élő ellenőrzés még szükséges.
 
 **Acceptance Criteria:**
 
@@ -78,6 +78,7 @@ A FitTrack Pro projekt (Next.js + Supabase fullstack fitness alkalmazás) teljes
 - OpenRouter hiba esetén a szerver log tartalmazza a HTTP status kódot és a válasz body-t
 - Az adatbázisban tárolt `weekly_analyses.week_end` érték soha nem nagyobb, mint a mai dátum
 - A heti elemzés generálható akkor is, ha a hét még nem ért véget (a `week_end` az aktuális napra csonkolódik)
+- A csak angol, illetve kevert nyelvű választ a szerver elutasítja, és a mentett/felületen látható eredmény magyar szabályalapú tartalékra vált; unit tesztek lefedik az angol névelő ismétlődését is
 
 **Dependencies:** Nincs
 
@@ -122,6 +123,7 @@ A FitTrack Pro projekt (Next.js + Supabase fullstack fitness alkalmazás) teljes
 - [x] B4.2 DragOverlay ghost gombok elrejtése: `src/components/workouts/workout-plan-editor.tsx` — a DragOverlay-ben renderelt `WorkoutDayExerciseCard`-on a stepper és törlés gombok ne legyenek láthatók/kattinthatók (`pointer-events-none` osztály hozzáadása vagy conditional render az `isDragging` prop alapján)
 - [x] B4.3 `ensureDailyLog` race condition fix: `src/components/calories/calories-client.tsx` — a párhuzamos `ensureDailyLog` hívások koaleszálása (pl. `useRef`-ben tárolt pending Promise, ami az első hívás eredményét adja vissza minden további hívónak is), hogy ne jöjjön létre ütközés vagy duplikált rekord
 - [x] B4.4 Library load-more cancellation: `src/components/workouts/workout-plan-editor.tsx` `handleLoadMoreLibrary` függvénye — `AbortController` vagy `useRef`-es stale-check bevezetése, hogy gyors keresésváltáskor a régebbi (még folyamatban lévő) request eredménye ne kerüljön be a library listába és ne duplikálódjanak az elemek
+- [x] B4.5 Weekly selector option contrast: `src/components/progress/weekly-summary-section.tsx` — a natív hétválasztó `<option>` elemei témához igazodó popover háttér- és szövegszínt kaptak; a felhasználói képernyőképen jelzett fehér alapon fehér szöveg kódjavítása és böngészős visszaellenőrzése sikeres
 
 **Acceptance Criteria:**
 
@@ -129,6 +131,7 @@ A FitTrack Pro projekt (Next.js + Supabase fullstack fitness alkalmazás) teljes
 - Drag közben az áthelyezett gyakorlat-kártyán nincs aktív stepper vagy törlés gomb
 - A kalóriaoldalra első belépéskor (vagy gyors interakciókkor) nem jön létre több párhuzamos `daily_log` insert kísérlet
 - A gyakorlat library keresés gyors váltogatása esetén a lista mindig az aktuális keresési feltételt tükrözi, nincsenek duplikált elemek
+- Az aktív témában a hétválasztó minden opciója olvasható kijelölés és hover nélkül is (B4.5 felhasználói böngészős visszateszt sikeres)
 
 **Dependencies:** Nincs
 
@@ -147,6 +150,7 @@ A FitTrack Pro projekt (Next.js + Supabase fullstack fitness alkalmazás) teljes
 - [x] B5.1 UTC vs local time egységesítés: `src/lib/calories/queries.ts` `getWeeklyCalorieTrend` — `getUTCDate` lecserélése `getDate`-re (lokális időzóna), hogy konzisztens legyen a többi query-vel és ne térjen el az éjféli határon a megjelenített heti trend
 - [x] B5.2 Profile validáció felső korlátok: `src/lib/profile/actions.ts` `readInt`/`readDecimal` helperek — felső korlátok hozzáadása: kor max 120, súly max 500 kg, magasság max 300 cm; ha a megadott érték túllépi a limitet, validációs hiba
 - [x] B5.3 `getDashboardData` részleges hiba tolerancia: `src/lib/dashboard/queries.ts` — a `Promise.all` lecserélése `Promise.allSettled`-re, hogy egyetlen Supabase hívás átmeneti hibája ne üsse le a teljes dashboard betöltést; a hibás widgetek üres/default állapottal jelenjenek meg
+- [x] B5.4 Terven felüli edzések százalékos sapkája: `src/lib/analysis/weekly-metrics.ts` korlátozza a heti tervteljesítési százalékot 100%-ra, miközben megőrzi a tényleges teljesített alkalmak számát; `rule-summary.ts` külön megfigyelésben jelzi a terv feletti teljesítést.
 
 **Acceptance Criteria:**
 
@@ -154,6 +158,7 @@ A FitTrack Pro projekt (Next.js + Supabase fullstack fitness alkalmazás) teljes
 - A profil mentésnél 121-es kor, 501 kg súly vagy 301 cm magasság elutasításra kerül értelmes hibaüzenettel
 - Ha egyetlen dashboard query hibára fut (pl. weight_logs), a többi widget (kalória, edzés, AI) továbbra is megjelenik
 - A dashboard sosem dob 500-as hibát egyetlen részleges adatlekérdezési hiba miatt
+- A terven felüli, teljesített alkalmak száma megmarad, de a heti teljesítési százalék és a szabályalapú pontozás nem haladhatja meg a 100%-ot; a szöveges összefoglaló külön mutatja a terv feletti teljesítést
 
 **Dependencies:** Nincs
 

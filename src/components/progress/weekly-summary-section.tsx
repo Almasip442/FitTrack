@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { WeeklySummaryCard } from '@/components/progress/weekly-summary-card'
 import { Button } from '@/components/ui/button'
-import type { WeeklyComparisonBundle } from '@/lib/analysis/weekly-metrics'
+import type { WeeklyProgressBundle } from '@/lib/analysis/weekly-metrics'
 import { cn } from '@/lib/utils'
 
 function shiftWeek(iso: string, amount: number): string {
@@ -22,7 +22,7 @@ function formatWeek(iso: string): string {
   return `${format(start)} – ${format(end)}`
 }
 
-export function WeeklySummarySection({ initialBundle }: { initialBundle: WeeklyComparisonBundle }) {
+export function WeeklySummarySection({ initialBundle }: { initialBundle: WeeklyProgressBundle }) {
   const [bundle, setBundle] = useState(initialBundle)
   const [selectedWeek, setSelectedWeek] = useState(initialBundle.current.weekStart)
   const [loading, setLoading] = useState(false)
@@ -52,7 +52,7 @@ export function WeeklySummarySection({ initialBundle }: { initialBundle: WeeklyC
       .then(async (response) => {
         const body = await response.json()
         if (!response.ok) throw new Error(body.error ?? 'A hét betöltése sikertelen.')
-        return body as WeeklyComparisonBundle
+        return body as WeeklyProgressBundle
       })
       .then(setBundle)
       .catch((cause: unknown) => {
@@ -80,7 +80,7 @@ export function WeeklySummarySection({ initialBundle }: { initialBundle: WeeklyC
               Heti áttekintés
             </h2>
             <p className="text-xs text-muted-foreground">
-              A kiválasztott hét és az azt megelőző hét azonos adatforrásból készül.
+              A kiválasztott hét és az azt megelőző két hét azonos adatforrásból készül.
             </p>
           </div>
         </div>
@@ -105,7 +105,11 @@ export function WeeklySummarySection({ initialBundle }: { initialBundle: WeeklyC
             aria-label="Hét kiválasztása"
           >
             {options.map((option) => (
-              <option key={option.weekStart} value={option.weekStart}>
+              <option
+                key={option.weekStart}
+                value={option.weekStart}
+                className="bg-popover text-popover-foreground"
+              >
                 {option.label}
               </option>
             ))}
@@ -125,7 +129,11 @@ export function WeeklySummarySection({ initialBundle }: { initialBundle: WeeklyC
 
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
       <div className={cn('transition-opacity', loading && 'pointer-events-none opacity-50')} aria-busy={loading}>
-        <WeeklySummaryCard current={bundle.current} previous={bundle.previous} />
+        <WeeklySummaryCard
+          current={bundle.current}
+          previous={bundle.previous}
+          previousPrevious={bundle.previousPrevious}
+        />
       </div>
       {loading && <p className="text-xs text-muted-foreground" role="status">Heti adatok betöltése…</p>}
     </section>

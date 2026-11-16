@@ -30,11 +30,10 @@ export type WeeklyMetricSnapshot = {
 export type WeeklyComparisonBundle = {
   current: WeeklyMetricSnapshot
   previous: WeeklyMetricSnapshot
-}
-
-export type WeeklyProgressBundle = WeeklyComparisonBundle & {
   previousPrevious: WeeklyMetricSnapshot
 }
+
+export type WeeklyProgressBundle = WeeklyComparisonBundle
 
 export type RawFood = { calories: number | null; protein: number | null }
 export type RawDailyLog = {
@@ -182,7 +181,7 @@ export function buildWeekSnapshot(args: {
     workoutCompletionPercent:
       plannedWorkouts === 0
         ? null
-        : Math.round((completedWorkouts / plannedWorkouts) * 100),
+        : Math.max(0, Math.min(100, Math.round((completedWorkouts / plannedWorkouts) * 100))),
     exerciseCount: exercises.length,
     totalSets,
     totalReps,

@@ -46,9 +46,15 @@ export function generateRuleBasedSummary(
   }
 
   if (metrics.plannedWorkouts > 0) {
-    observations.push(
-      `A terv szerinti ${metrics.plannedWorkouts} edzésből ${metrics.completedWorkouts} lett teljesítettként rögzítve (${metrics.workoutCompletionPercent ?? 0}%).`,
-    )
+    if (metrics.completedWorkouts > metrics.plannedWorkouts) {
+      observations.push(
+        `A terven felül is teljesítettél edzést: ${metrics.completedWorkouts}/${metrics.plannedWorkouts} alkalom lett rögzítve. A teljesítési arány legfeljebb 100%-ként jelenik meg.`,
+      )
+    } else {
+      observations.push(
+        `A terv szerinti ${metrics.plannedWorkouts} edzésből ${metrics.completedWorkouts} lett teljesítettként rögzítve (${metrics.workoutCompletionPercent ?? 0}%).`,
+      )
+    }
     score += Math.round((metrics.workoutCompletionPercent ?? 0) / 25) - 2
     if (metrics.completedWorkouts < metrics.plannedWorkouts) {
       suggestions.push(
