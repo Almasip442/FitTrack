@@ -794,6 +794,7 @@ export function WorkoutPlanEditor({ plan: initialPlan }: WorkoutPlanEditorProps)
 
   return (
     <DndContext
+      id="workout-plan-editor"
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragStart={handleDragStart}
