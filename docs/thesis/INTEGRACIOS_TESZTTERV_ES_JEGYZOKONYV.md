@@ -1,9 +1,9 @@
 # Integrációs tesztterv és jegyzőkönyv
 
 **Projekt:** FitTrack Pro
-**Utoljára frissítve:** 2026. november 16.
+**Utoljára frissítve:** 2026. november 17.
 **Vizsgált munkaváltozat:** a háromhetes fejlődésnézetet és az AI-válaszok célzott finomításait tartalmazó, még nem commitolt munkafa.
-**Státusz:** az automatizált ellenőrzések és a Supabase API-integráció sikeresek. Az M-01–M-06 kézi próbája sikerült; az M-09–M-14 próbái hátravannak.
+**Státusz:** az automatizált ellenőrzések, a Supabase API-integráció és az M-01–M-08 sikeresek. M-09 részben igazolt; a naplózóban felfedezett duplikált gyakorlat miatti React-hibára kódvédelem készült, böngészős regressziópróba szükséges. M-10 és M-15–M-16 felhasználói visszajelzés szerint sikeres. M-12 fallback felülete képernyőképen megjelent, de a mentett előzmény igazolása még hiányzik. M-13-ból csak az ismétlődő kérés hiánya igazolt. M-11 valódi AI-válasza még nincs igazolva. M-14 a termékkatalógus üressége miatt nem volt teljesen tesztelhető; a termék-seed futtatása után újra kell próbálni.
 
 ## 1. Cél és hatókör
 
@@ -37,10 +37,10 @@ Ebben a Codex sandboxban a `npm.cmd test` első indítása és az `os.userInfo()
 
 | Azonosító | Ellenőrzés | Lefedett viselkedés | Eredmény |
 |---|---|---|---|
-| A-01 | `npm test` | Nyelvi validáció, szabályalapú összefoglaló, heti mutatók és háromhetes kártya | **SIKERES: 16/16** |
+| A-01 | `npm test` | Nyelvi validáció, szabályalapú összefoglaló, heti mutatók, háromhetes kártya és edzésnapi duplikátum-felismerés | **SIKERES: 18/18** |
 | A-02 | `npm run lint` | ESLint a projekt forrásán | **SIKERES: nincs hiba** |
 | A-03 | `npm exec tsc -- --noEmit` | TypeScript típusellenőrzés | **SIKERES** |
-| A-04 | `npm run build` | Optimalizált Next.js production build és route-generálás | **SIKERES** |
+| A-04 | `npm run build` | Optimalizált Next.js production build és route-generálás | **SIKERES; ismert Next.js biztonsági sérülékenységre frissítési figyelmeztetés jelent meg** |
 | A-05 | Hitelesített `GET /progress` demo felhasználóval | Production SSR oldal státusza, három heti panel és címkék | **SIKERES: HTTP 200; 3 panel; mindhárom hétcímke és a részleges hét jelölése megjelenik** |
 | A-06 | Hitelesített `GET /api/progress/weekly` és hibás dátumok | Három heti adatcsomag, seedelt mutatók, bemeneti dátumvalidáció | **SIKERES: HTTP 200; három dátumcsomag és seedértékek egyeznek; 6 hibás eset HTTP 400** |
 
@@ -71,19 +71,21 @@ Az API-integráció eredményeit az M-04, M-07 és M-08 sor rögzíti. Az M-01�
 | M-06 | Szűkítsd a böngészőablakot mobilméretre. | A három panel egymás alatt, levágás és vízszintes oldal-túlcsordulás nélkül jelenik meg. | 2026-11-16: sikeres; nem tapasztaltál vízszintes túlcsordulást. Bizonyíték: a beszélgetésben megosztott mobilképernyőképek. | **Sikeres** |
 | M-07 | PowerShellből kérd le hitelesítés nélkül a heti API-t. | A `GET /api/progress/weekly?week_start=2026-10-12` válasza `401`. | 2026-11-16: `401` HTTP státuszkód; helyi szerveren, böngészős hitelesítési cookie nélkül ellenőrizve. | **Sikeres** |
 | M-08 | Hitelesítetten kérj le egy érvényes hétfői dátumot, majd próbálj hiányzó, hibás, nem hétfői, jövőbeli és az 52 hetes tartományon kívüli dátumot. | Érvényes kérésnél a JSON tartalmazza a `current`, `previous` és `previousPrevious` csomópontot. Hibás vagy nem választható dátumnál az API `400` választ ad. | 2026-11-16: az érvényes kérés `200`, a három hét kezdődátuma `2026-10-12`, `2026-10-05`, `2026-09-28`; hiányzó, hibás, nem hétfői, lehetetlen, jövőbeli és 52 héten kívüli dátumra `400`. | **Sikeres** |
-| M-09 | Edzésnapló mentése, újratöltés utáni visszaolvasása és kihagyás volumenre gyakorolt hatása. | A mentett sorozatok visszatöltődnek; a kihagyott gyakorlat látszik kihagyottként, és nem ad hozzá volument. | — | Függőben |
-| M-10 | Ételkeresés, egy találat adagolása és étkezésként mentése. | A keresési eredmény kiválasztható; a grammérték alapján előnézeti tápérték készül, a mentett étel megjelenik a napi étkezésben és az összesítésben. | — | Függőben |
-| M-11 | Új, nem minta AI-elemzés kérése külön tesztfiókkal. | Sikeres AI-válasznál az összefoglaló és minden javaslat magyar; a pontszám 1–10 közötti, az eredmény frissítés után is megnyitható. | — | Függőben |
-| M-12 | AI-fallback ellenőrzése ideiglenesen érvénytelen OpenRouter-kulccsal, külön tesztfiókkal. | Az API `fallback` állapotot és szabályalapú magyar értékelést ad; az oldal ezt érthetően jelzi. Az eredeti kulcsfájl változatlan marad. | — | Függőben |
-| M-13 | Új, hiányos profilú felhasználó onboardingjának végigpróbálása. | A védett oldal onboardingra irányít; a kötelező profiladatok mentése után a dashboard nyílik meg; újratöltéskor nincs visszairányítási hurok vagy ismétlődő RSC-kérés. | — | Függőben |
-| M-14 | ThemeProvider és kosár hydration ellenőrzése friss betöltés és navigáció után. | Nincs React script/hydration hiba vagy `hasHydrated` runtime hiba; a kosár tartalma frissítés után megmarad. Vásárlást nem indítunk. | — | Függőben |
+| M-09 | Edzésnapló mentése, újratöltés utáni visszaolvasása és kihagyás volumenre gyakorolt hatása. | A mentett sorozatok visszatöltődnek; a kihagyott gyakorlat látszik kihagyottként, és nem ad hozzá volument. | 2026-11-17: a felhasználó tetszőleges tesztértékeket adott meg; a sorozatok a kihagyásokkal együtt mentődtek. A felhasználó nem rögzítette, hogy újranyitás után ellenőrizte-e, illetve mennyi volumen jelent meg. A volumen-kizárás ezért nem igazolt. A naplózó használatakor megosztott képen ismétlődő React-kulcs figyelmeztetés látszott: ugyanaz a katalógusgyakorlat kétszer szerepelt az edzésnapon. A kód most elutasítja az újabb duplikált hozzáadást, régebbi duplikált tervnél pedig útmutató figyelmeztetést mutat; ennek böngészős visszaellenőrzése még szükséges. | **Részben igazolt; regresszióteszt nyitott** |
+| M-10 | Ételkeresés, egy találat adagolása és étkezésként mentése. | A keresési eredmény kiválasztható; a grammérték alapján előnézeti tápérték készül, a mentett étel megjelenik a napi étkezésben és az összesítésben, majd frissítés után is megmarad. | 2026-11-17: a felhasználó visszajelzése szerint a folyamat rendeltetésszerűen működik, és az adatok megmaradtak. Részletes számérték vagy képernyőkép nem érkezett. | **Sikeres – felhasználói visszajelzés** |
+| M-11 | Új, nem minta AI-elemzés kérése külön tesztfiókkal. | Sikeres AI-válasznál az összefoglaló és minden javaslat magyar; a pontszám 1–10 közötti, az eredmény frissítés után is megnyitható. | 2026-11-17: a beszélgetésben látható képen az AI szolgáltatás nem adott értékelést, és a szabályalapú eredmény jelent meg. Ez a fallback megjelenését támasztja alá, nem valódi AI-választ. A javítás utáni élő AI-válasz nyelvi ellenőrzése és előzményből visszaolvasása még szükséges. | **Függőben – valódi AI-válasz nem igazolt** |
+| M-12 | AI-fallback ellenőrzése ideiglenesen érvénytelen OpenRouter-kulccsal vagy reprodukálható szolgáltatói hibával, külön tesztfiókkal. | Az API `fallback` állapotot és szabályalapú magyar értékelést ad; az oldal ezt érthetően jelzi, és az eredmény az előzményekből visszaolvasható. Az eredeti kulcsfájl változatlan marad. | 2026-11-17: a megosztott képernyőképen megjelenik a szabályalapú 3/10 értékelés és az „AI szolgáltatás nem adott értékelést” jelzés. Ez a felületi fallback-állapotot igazolja. A tartós előzményből visszaolvasás és a tesztkörnyezet visszaállításának ténye nincs külön rögzítve. A kép a beszélgetésben található; még nincs a repository `figures` könyvtárába mentve. | **Részben igazolt – felületi fallback sikeres** |
+| M-13 | Új, hiányos profilú felhasználó onboardingjának végigpróbálása. | A védett oldal onboardingra irányít; a kötelező profiladatok mentése után a dashboard nyílik meg; újratöltéskor nincs visszairányítási hurok vagy ismétlődő RSC-kérés. | 2026-11-17: új fiók regisztrációjakor a felhasználó nem találkozott ismétlődő kérésekkel. A kötelező mezők kitöltése, dashboardra átirányítás és közvetlen onboarding-útvonal újratöltés utáni ellenőrzése nincs külön megerősítve. | **Részben igazolt – kérésismétlődés nem jelentkezett** |
+| M-14 | Shop katalógus és kosár alapműveletei; hibamentes kliensoldali betöltés és hydration. | Termékek megjelennek, szűrhetők/megnyithatók, kosárba tehetők és eltávolíthatók; a kosár oldalváltás és frissítés után is helyesen töltődik vissza. Vásárlást nem indítunk. | 2026-11-17: a felhasználó a terméktábla üressége miatt nem tudta ellenőrizni a katalógust és a kosár műveleteit. A korábban jelzett React `script` és `hasHydrated` hibák eltűnéséről korábbi visszajelzés érkezett. A repository tartalmaz `npm run seed:products` szkriptet; teszt Supabase projekten futtatva feltölti a minta katalógust, utána az M-14 kosárfolyam újraellenőrizhető. | **Nem teljes – minta termékek seedelése után tesztelendő** |
+| M-15 | Testsúlymérés létrehozása és visszaolvasása külön tesztfiókban. | A mérés mentés után újratöltést követően is megmarad; a kiválasztott heti panelen a mérési darabszám és az átlag megfelel a tesztadattal számított értéknek. | 2026-11-17: a felhasználó visszajelzése szerint a testsúlytrendek működnek. Pontos tesztdátum/érték, mérési darabszám és képernyőkép nem érkezett. | **Sikeres – felhasználói visszajelzés; részletes adat nincs** |
+| M-16 | Edzésterv létrehozása vagy szerkesztése, majd visszaolvasása külön tesztfiókban. | A mentett terv neve, edzésnapja és hozzáadott gyakorlata navigáció és frissítés után is megjelenik. | 2026-11-17: a felhasználó megerősítette, hogy a mentett adatok megmaradtak. Részletes tervadat vagy képernyőkép nem érkezett. | **Sikeres – felhasználói visszajelzés** |
 
 ### Előkészület
 
 1. Indítsd el a projektet a saját gépeden a `npm.cmd run dev` paranccsal, és hagyd nyitva a terminált. A böngésző címe `http://localhost:3000`.
 2. Nyisd meg a fejlesztői eszközöket (`F12`), és készíts elő két lapot: **Console** és **Network**. A Network lapon kapcsold be a *Preserve log* opciót.
 3. Az M-01–M-08 heti nézet/API esetekhez használd a már seedelt demo felhasználót. **Ne futtasd újra a demo seedet**, mert lecseréli a demo felhasználó tesztadatait.
-4. Az M-09–M-14 mentést vagy elemzést végző esetekhez lehetőleg külön, eldobható tesztfiókot használj. Ezek adatot menthetnek a fiókba. M-09-hez használhatod a demo aktív tervét is, de csak a jelenlegi hét még üres napján, ne a seedelt történeti heteken. A Stripe Checkoutra egyik lépésben se kattints.
+4. Az M-09–M-16 mentést vagy elemzést végző esetek megismétléséhez lehetőleg külön, eldobható tesztfiókot használj. Ezek adatot menthetnek a fiókba. M-09-hez használhatod a demo aktív tervét is, de csak a jelenlegi hét még üres napján, ne a seedelt történeti heteken. M-15-höz és M-16-hoz használj elkülönített fiókot, hogy a mérés vagy terv ne módosítsa a demo összehasonlító adatait. A Stripe Checkoutra egyik lépésben se kattints.
 5. A `.env.local` tartalmát ne másold ide és ne készíts róla képernyőképet. M-12-nél kizárólag a leírt, átmeneti környezeti változót használd; a kulcsfájlt ne szerkeszd.
 
 ### Részletes lépések
@@ -135,7 +137,7 @@ Az API-integráció eredményeit az M-04, M-07 és M-08 sor rögzíti. Az M-01�
 
 #### M-09 — Edzésnapló mentése, visszatöltése és volumen
 
-1. Lépj be egy tesztfiókba, amelynek van aktív terve legalább két gyakorlattal; a kiválasztott teszthéten ne legyen más rögzített edzés. Ha nincs ilyen tesztfiókod, a demo aktív tervét használd a jelenlegi héten egy még üres edzésnapon.
+1. Lépj be egy tesztfiókba, amelynek van aktív terve legalább két különböző gyakorlattal; a kiválasztott teszthéten ne legyen más rögzített edzés. Ha ugyanaz a gyakorlat többször szerepel egy napon, távolítsd el a fölösleges tervsort, mert a napló adatmodellje gyakorlatonként egy bejegyzést tárol. Ha nincs megfelelő tesztfiókod, a demo aktív tervét használd a jelenlegi héten egy még üres edzésnapon.
 2. Nyisd meg a tervet, válassz egy edzésnapot, majd kattints az `Edzésnapló megnyitása` gombra. Az első gyakorlatnál a mínusz gombbal töröld a fölösleges sorokat, hogy egy széria maradjon; azon adj meg **10 ismétlést és 20 kg-ot**, majd kattints egyszer az `Extra széria` gombra, és az új sorba is írj **10 ismétlést és 20 kg-ot**. A többi gyakorlatot jelöld `Kihagyom` állapotúra.
 3. Kattints az `Edzésnapló mentése` gombra. Várd meg a sikeres mentési visszajelzést, zárd be a naplót, frissítsd az oldalt, és nyisd meg újra ugyanezt a napot.
 4. Ellenőrizd, hogy a 2 × (10 × 20 kg) érték visszatöltődött, a többi gyakorlat kihagyottként látszik, és ott a `Visszaveszem` gomb.
@@ -190,21 +192,38 @@ Ezt **külön tesztfiókkal** végezd, mert a fallback eredmény is elmentődik,
 4. Elvárt eredmény: sikeres mentési visszajelzés és átirányítás a `/dashboard` oldalra. Frissítés után maradj a dashboardon; a `/onboarding` közvetlen megnyitásakor a teljes profil miatt vissza kell irányítania a dashboardra.
 5. A Network naplót figyeld legalább 10 másodpercig. Az oldalbetöltés után ne ismétlődjön folyamatosan ugyanaz az onboarding/RSC-kérés. Jegyezd fel az átirányításokat, kérésdarabszámot és minden konzolhibát.
 
-#### M-14 — ThemeProvider és kosár hydration
+#### M-14 — Shop katalógus, kosár és hibamentes hydration
 
-1. Tesztfiókkal nyisd meg a `/shop` oldalt. A DevTools Console lapon töröld a korábbi üzeneteket, majd frissítsd az oldalt.
-2. Várd meg, amíg az oldal betölt. Ellenőrizd, hogy a terméklista megjelenik, és a Console-ban nincs `hasHydrated` vagy React hydration/script runtime hiba.
-3. Nyiss meg valamelyik terméket, kattints egyszer a `Kosárba` gombra, majd a fejléc kosár ikonjára. Ellenőrizd, hogy a kosár tartalma és darabszáma helyesen jelenik meg.
-4. Frissítsd az oldalt, várd meg a kliensoldali betöltést, és nyisd meg újra a kosarat. Az elem maradjon meg; ne jelenjen meg `hasHydrated` vagy React hydration/script runtime hiba a konzolban.
-5. Kapcsold át a témát a fejlécben, navigálj a dashboardra, majd vissza a shopra. Ellenőrizd a téma megmaradását és a Console lapot; ne legyen „Encountered a script tag while rendering React component” hiba.
-6. A teszt végén távolítsd el a terméket a kosárból. **Ne kattints checkout/fizetés gombra.** Rögzítsd a konzolhibákat (vagy azt, hogy nem voltak), a kosár frissítés utáni állapotát és a böngészőt.
+1. Ellenőrizd, hogy a `.env.local` a teszt Supabase projektet célozza. A projekt gyökeréből futtasd a `npm run seed:products` parancsot. Ez a `products` táblába körülbelül 22–24 minta-kiegészítőt ír; ne éles vagy olyan adatbázison futtasd, amelynek termékadatait meg kell őrizni.
+2. Tesztfiókkal nyisd meg a `/shop` oldalt. A DevTools Console lapon töröld a korábbi üzeneteket, majd frissítsd az oldalt.
+3. Várd meg, amíg az oldal betölt. Ellenőrizd, hogy a terméklista megjelenik, és a Console-ban nincs `hasHydrated` vagy React hydration/script runtime hiba.
+4. Nyiss meg valamelyik terméket, kattints egyszer a `Kosárba` gombra, majd a fejléc kosár ikonjára. Ellenőrizd, hogy a kosár tartalma és darabszáma helyesen jelenik meg.
+5. Frissítsd az oldalt, várd meg a kliensoldali betöltést, és nyisd meg újra a kosarat. Az elem maradjon meg; ne jelenjen meg `hasHydrated` vagy React hydration/script runtime hiba a konzolban.
+6. Kapcsold át a témát a fejlécben, navigálj a dashboardra, majd vissza a shopra. Ellenőrizd a téma megmaradását és a Console lapot; ne legyen „Encountered a script tag while rendering React component” hiba.
+7. A teszt végén távolítsd el a terméket a kosárból. **Ne kattints checkout/fizetés gombra.** Rögzítsd a konzolhibákat (vagy azt, hogy nem voltak), a kosár frissítés utáni állapotát és a böngészőt.
+
+#### M-15 — Testsúlymérés mentése és heti visszaolvasása
+
+1. Jelentkezz be külön tesztfiókkal, amelyben nincs testsúlymérés a mostani héten, majd nyisd meg a `Fejlődés` oldalt.
+2. A testsúly rögzítő űrlapon válaszd ki a mai dátumot, és adj meg egy egyértelmű, tesztadatnak szánt értéket (például 73,4 kg). Jegyezd fel, milyen értéket írtál be.
+3. Mentsd el a mérést, és várd meg a sikeres felületi visszajelzést. Ellenőrizd, hogy a kiválasztott hét paneljén a mérési darabszám 1, az átlag pedig a beírt érték.
+4. Frissítsd az oldalt. A mérésnek továbbra is meg kell jelennie; az érték és a darabszám ne változzon.
+5. Rögzítsd a dátumot, a beírt értéket, a heti panel kijelzését, a frissítés utáni állapotot és az esetleges hibát. Ne használj valódi egészségügyi vagy más személyes adatot.
+
+#### M-16 — Edzésterv létrehozása/szerkesztése és visszaolvasása
+
+1. Jelentkezz be külön, eldobható tesztfiókkal, és az alkalmazás `Edzés` menüjéből nyisd meg a tervszerkesztőt.
+2. Hozz létre teszttervet egy egyértelmű névvel, adj hozzá legalább egy edzésnapot és egy katalógusból választott gyakorlatot, majd mentsd el. Ha a fiókban már van aktív terv, az eredeti tervet ne módosítsd; az esetet új tesztfiókkal végezd.
+3. Navigálj el a tervoldalról, majd nyisd meg újra. Ellenőrizd a terv nevét, az edzésnapot és a gyakorlatot.
+4. Frissítsd az oldalt, és ellenőrizd újra az adatokat. Ha a szerkesztés módosításokat is tesztel, változtass meg egy gyakorlatot vagy tervnevet, mentsd el, majd nyisd meg ismét.
+5. Jegyezd fel, hogy melyik mentési művelet sikerült, visszatöltődött-e minden adat, és jelent-e meg hiba. A teszt után a tesztfiók vagy a tesztterv külön takarítható.
 
 ### Visszajelzés formátuma
 
-Kérlek, minden azonosítóhoz ezt küldd vissza; egy rövid megfigyelés is elég:
+Kérlek, minden tesztelt azonosítóhoz ezt küldd vissza; egy rövid megfigyelés is elég:
 
 ```text
-M-01: SIKERES / HIBÁS / NEM TUDTAM VÉGREHAJTANI
+M-01: SIKERES / RÉSZBEN SIKERES / HIBÁS / NEM TUDTAM VÉGREHAJTANI
 Tényleges eredmény:
 Hibaüzenet vagy Network státusz:
 Képernyőkép neve (ha készült):
@@ -216,5 +235,5 @@ Ne küldj jelszót, `.env.local` tartalmat, API-kulcsot vagy tokent. A visszajel
 
 - A sikeres build és unit teszt nem bizonyítja a Supabase-adatokkal végzett teljes böngészős folyamatot.
 - A külső AI-szolgáltatás tényleges válaszának nyelvi ellenőrzése és tartalmi megfelelősége külön, működő OpenRouter-konfigurációval végzendő el.
-- Az M-01–M-06 háromhetes nézet, mobilnézet és hétválasztó kézi próbái sikerültek; az M-09–M-14 funkcionális próbák még hátravannak. Az API hitelesített lekérése, a seedelt mutatók és a dátumvalidációs határesetek ellenőrzése szintén sikerült.
+- Az M-01–M-08 ellenőrzések sikerültek. M-10, M-15 és M-16 sikeres felhasználói visszajelzést kapott. M-09 részleges, mert a kihagyás volumenből kizárását nem rögzítették; az edzésterv duplikált gyakorlata ellen új UI/szervervédelem és regressziós unit teszt készült, de böngészőben még vissza kell ellenőrizni. M-12 fallback felülete képernyőképen megjelent, de az előzményből visszaolvasása nyitott. M-13-nál az ismétlődő kérés nem jelentkezett, a teljes onboarding sikerútja még nem igazolt. M-11 valódi AI-válasza nincs megerősítve. M-14-et az üres termékkatalógus blokkolja; a `npm run seed:products` futtatása után újra kell próbálni. Az API hitelesített lekérése, a seedelt mutatók és a dátumvalidációs határesetek ellenőrzése sikerült.
 - A dolgozat mérési fejezetébe csak a fenti kézi tesztek elvégzése után kerülhet tényleges eredmény vagy képernyőkép.

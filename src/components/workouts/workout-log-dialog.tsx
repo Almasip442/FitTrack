@@ -22,6 +22,7 @@ import {
 import type { WorkoutSessionExerciseInput } from '@/lib/workouts/actions'
 import type { WorkoutExerciseLog } from '@/types/database'
 import { cn } from '@/lib/utils'
+import { findDuplicateExerciseIds } from '@/lib/workouts/exercise-identity'
 
 export type WorkoutLoggerExercise = {
   id: string
@@ -100,6 +101,9 @@ export function WorkoutLogDialog({
         exercises.map((exercise) => [exercise.id, exercise.sets, exercise.reps]),
       ]),
     [date, dayId, exercises],
+  )
+  const duplicateExerciseIds = findDuplicateExerciseIds(
+    exercises.map((exercise) => exercise.id),
   )
 
   useEffect(() => {
@@ -263,7 +267,15 @@ export function WorkoutLogDialog({
           </div>
         ) : currentDrafts ? (
           <div className="space-y-4 pb-4">
-            {exercises.map((exercise, exerciseIndex) => {
+            {duplicateExerciseIds.size > 0 && (
+              <div
+                className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive"
+                role="alert"
+              >
+                Ugyanaz a gyakorlat többször szerepel ezen az edzésnapon. A naplózó egy gyakorlatot csak egyszer tud menteni. Zárd be ezt az ablakot, majd távolítsd el a duplikált gyakorlatot az edzéstervből.
+              </div>
+            )}
+            {duplicateExerciseIds.size === 0 && exercises.map((exercise, exerciseIndex) => {
               const draft = currentDrafts[exercise.id]
               if (!draft) return null
 
@@ -382,19 +394,22 @@ export function WorkoutLogDialog({
                 </section>
               )
             })}
-
-            <Button
-              type="button"
-              onClick={handleSave}
-              disabled={isSaving || exercises.length === 0}
-              className="h-11 w-full bg-brand-red font-condensed font-bold uppercase tracking-wide-display text-white hover:bg-brand-red/90"
-            >
-              {isSaving ? (
-                <><Loader2 className="size-4 animate-spin" /> Mentés…</>
-              ) : (
-                <><Check className="size-4" /> Edzésnapló mentése</>
-              )}
-            </Button>
+            {duplicateExerciseIds.size === 0 && (
+              <>
+                <Button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={isSaving || exercises.length === 0}
+                  className="h-11 w-full bg-brand-red font-condensed font-bold uppercase tracking-wide-display text-white hover:bg-brand-red/90"
+                >
+                  {isSaving ? (
+                    <><Loader2 className="size-4 animate-spin" /> Mentés…</>
+                  ) : (
+                    <><Check className="size-4" /> Edzésnapló mentése</>
+                  )}
+                </Button>
+              </>
+            )}
           </div>
         ) : null}
       </SheetContent>

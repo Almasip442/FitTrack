@@ -26,6 +26,16 @@ FitTrack Pro is a Next.js App Router and Supabase web application for tracking w
    npm run seed:exercises
    ```
 
+   For shop/cart testing, the repository also provides a mock catalog seed:
+
+   ```bash
+   npm run seed:products
+   ```
+
+   This upserts sample supplement products and requires
+   `SUPABASE_SERVICE_ROLE_KEY`. Run it only against the intended test Supabase
+   project; it writes to that project's `products` table.
+
 6. For a deterministic evaluation account, run `npm run seed:demo-user`. **This script resets data belonging to `demo@fittrack.hu`**; it does not touch catalog tables. It requires `SUPABASE_SERVICE_ROLE_KEY` and an exercise catalog. The generated login is printed by the script. The two closed weeks have expected recorded calorie averages of 2,050 and 2,150 kcal/day, completed workouts of 2/4 and 3/4, workout volumes of 9,000 and 14,400 kg, and average weight change of -0.5 kg. Weight averages are 82.2 and 81.7 kg. Nutrition coverage is 4/7 and 6/7.
 7. Start the development server:
 
@@ -44,12 +54,12 @@ npm test
 npm run build
 ```
 
-The automated tests verify missing-day handling, recorded-day averages, completed versus planned workouts, set/repetition/load volume, weight averages, and deterministic fallback output.
+The automated tests verify missing-day handling, recorded-day averages, completed versus planned workouts, set/repetition/load volume, weight averages, deterministic fallback output, and duplicate exercise detection within a planned workout day.
 
 ## Manual evaluation workflow
 
 1. Sign in with the seeded demo account and open `/progress`.
-2. Use the week selector above the weekly summary to move between the current week and up to 11 earlier weeks. The selected week and its preceding week are shown side by side.
+2. Use the week selector above the weekly summary to move between the current week and up to 11 earlier weeks. The selected week and the two preceding weeks are shown in three comparison panels.
 3. Select the two seeded weeks and confirm nutrition coverage of 4/7 and 6/7 and calorie averages of 2,050 and 2,150 kcal. Empty days must not lower the averages.
 4. Confirm completed/plan counts 2/4 and 3/4, with 9,000 and 14,400 kg recorded workout volume. Check that skipped or unlogged exercises do not contribute volume.
 5. Confirm the weekly weight averages (82.2 and 81.7 kg) and the -0.5 kg change.
@@ -63,6 +73,7 @@ The automated tests verify missing-day handling, recorded-day averages, complete
 - `docs/DEPLOYMENT.md` — Supabase, environment, seed, and deployment instructions.
 - `docs/BUGFIX_BACKLOG.md` — known and resolved defects.
 - `docs/thesis/SZD2_DOLGOZAT_ELSO_VALTOZAT.md` — first thesis text draft with source references and current application figures.
+- `docs/thesis/INTEGRACIOS_TESZTTERV_ES_JEGYZOKONYV.md` — automated, API and browser test cases with recorded results and remaining checks.
 - `docs/thesis/MI_HASZNALATI_NAPLO.md` — concise log of development-time AI use, human decisions, and verification.
 
 ### Seed migration/schema-cache hiba

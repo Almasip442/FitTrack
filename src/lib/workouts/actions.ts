@@ -312,6 +312,20 @@ export async function addExerciseToDay(
   }
 
   const supabase = await createClient()
+  const { data: existingRows, error: existingError } = await supabase
+    .from('workout_day_exercises')
+    .select('id')
+    .eq('workout_day_id', workoutDayId)
+    .eq('exercise_id', exerciseId)
+    .limit(1)
+
+  if (existingError) {
+    return { success: false, error: 'Nem sikerült ellenőrizni az edzésnap gyakorlatait.' }
+  }
+  if (existingRows && existingRows.length > 0) {
+    return { success: false, error: 'Ez a gyakorlat már szerepel ezen az edzésnapon.' }
+  }
+
   const { data, error } = await supabase
     .from('workout_day_exercises')
     .insert({

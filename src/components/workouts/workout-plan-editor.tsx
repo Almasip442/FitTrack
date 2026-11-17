@@ -312,6 +312,10 @@ export function WorkoutPlanEditor({ plan: initialPlan }: WorkoutPlanEditorProps)
     async (dayId: string, exercise: Exercise) => {
       const day = plan.workout_days.find((d) => d.id === dayId)
       if (!day) return
+      if (day.workout_day_exercises.some((row) => row.exercise_id === exercise.id)) {
+        toast.error('Ez a gyakorlat már szerepel ezen az edzésnapon.')
+        return
+      }
 
       // Optimistic temp row
       const tempId = `temp:${crypto.randomUUID()}`

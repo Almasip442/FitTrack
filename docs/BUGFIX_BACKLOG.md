@@ -2,7 +2,7 @@
 
 ## Scope Summary
 
-A FitTrack Pro projekt (Next.js + Supabase fullstack fitness alkalmazás) teljes kódbázisának átvizsgálása után összegyűjtött hibák iterációkra bontva. A backlog 5 iterációban fedi le a kritikus auth/navigációs hibákat, az OpenRouter AI elemzés javításait, a Stripe checkout problémákat, a frontend állapotkezelési és UX hibákat, valamint a backend adat-konzisztencia kérdéseket.
+A FitTrack Pro projekt (Next.js + Supabase fullstack fitness alkalmazás) teljes kódbázisának átvizsgálása után összegyűjtött hibák iterációkra bontva. A backlog 6 iterációban fedi le a kritikus auth/navigációs hibákat, az OpenRouter AI elemzés javításait, a Stripe checkout problémákat, a frontend állapotkezelési és UX hibákat, a backend adat-konzisztencia kérdéseit, valamint az edzésterv duplikált gyakorlatainak naplózási korlátját.
 
 **Megjegyzés:** A Stripe API verzió mismatch (`checkout: 2025-04-30.basil` vs `webhook: 2026-04-22.dahlia`) DONE — előzetesen javítva, mindkét route most a `2026-04-22.dahlia` verziót használja.
 
@@ -17,12 +17,13 @@ A FitTrack Pro projekt (Next.js + Supabase fullstack fitness alkalmazás) teljes
 | B3 — Stripe checkout javítások | 3 | DONE | 100% |
 | B4 — Frontend állapotkezelés és UX javítások | 5 | DONE | 100% |
 | B5 — Backend adat konzisztencia | 4 | DONE | 100% |
-| **Total** | **18** | **DONE** | **100%** |
+| B6 — Duplikált gyakorlatok kezelése az edzésnaplóban | 1 | DONE — böngészős regresszióteszt hátra | 100% |
+| **Total** | **19** | **DONE** | **100%** |
 
 | Metric | Value |
 |---|---|
-| Total tasks | 18 |
-| Completed tasks | 18 |
+| Total tasks | 19 |
+| Completed tasks | 19 |
 | Remaining tasks | 0 |
 | Completion | 100% |
 
@@ -164,12 +165,32 @@ A FitTrack Pro projekt (Next.js + Supabase fullstack fitness alkalmazás) teljes
 
 ---
 
+### Iteration B6 — Duplikált gyakorlatok kezelése az edzésnaplóban
+
+**Status:** IMPLEMENTÁLVA — böngészős regresszióteszt hátra
+
+**Goal:** Megakadályozni, hogy ugyanaz a katalógusgyakorlat kétszer kerüljön ugyanarra az edzésnapra, mert az edzésnapló adatmodellje naponta és gyakorlatonként egyetlen rekordot tárol.
+
+**Tasks:**
+
+- [x] B6.1 A tervszerkesztő ugyanazon gyakorlat második hozzáadását kliensoldalon és szerveroldali műveletben elutasítja. Ha egy régebbi tervben már van duplikátum, az edzésnapló nem renderel ismétlődő React-kulcsokkal, hanem magyar figyelmeztetést ad, és a duplikált tervsor eltávolítását kéri.
+
+**Acceptance Criteria:**
+
+- Ugyanaz a gyakorlat nem adható hozzá kétszer ugyanahhoz az edzésnaphoz.
+- Korábban elmentett duplikált tervnél nincs `Encountered two children with the same key` React figyelmeztetés; a naplózó világos útmutatást jelenít meg.
+- Az edzésnapló továbbra is csak egy rekordot menthet ugyanahhoz a gyakorlat-azonosítóhoz naponta.
+
+**Ellenőrzés:** 18/18 unit teszt, lint, TypeScript-ellenőrzés és production build sikeres (a Next.js ismert biztonsági sérülékenységére figyelmeztetett). A meglévő duplikált terv böngészős újrapróbája még szükséges.
+
+---
+
 ## Összefoglaló — Iteráció Függőségi Gráf
 
 ```
-B1 (Auth/Navigáció)    B2 (OpenRouter)    B3 (Stripe)    B4 (Frontend UX)    B5 (Backend konzisztencia)
-     │                      │                  │                 │                       │
-     └──────────────────────┴──────────────────┴─────────────────┴───────────────────────┘
+B1 (Auth/Navigáció)    B2 (OpenRouter)    B3 (Stripe)    B4 (Frontend UX)    B5 (Backend)    B6 (Edzésnapló)
+     │                      │                  │                 │                    │               │
+     └──────────────────────┴──────────────────┴─────────────────┴────────────────────┴───────────────┘
                                   (Mind független, párhuzamosíthatók)
 ```
 
