@@ -1,6 +1,9 @@
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
+  experimental: {
+    agentUpgrade: 'security',
+  },
   outputFileTracingIncludes: {
     '/api/analysis': ['./docs/AI_ANALYSIS_RULES.md'],
   },

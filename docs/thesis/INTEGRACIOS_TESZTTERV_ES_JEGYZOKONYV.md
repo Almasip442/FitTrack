@@ -2,7 +2,7 @@
 
 **Projekt:** FitTrack Pro
 **Utoljára frissítve:** 2026. november 17.
-**Vizsgált munkaváltozat:** a háromhetes fejlődésnézetet és az AI-válaszok célzott finomításait tartalmazó, még nem commitolt munkafa.
+**Vizsgált munkaváltozat:** a háromhetes fejlődésnézetet és az AI-válaszok célzott finomításait tartalmazó, Next.js 16.4.6-ra frissített munkafa.
 **Státusz:** az automatizált ellenőrzések, a Supabase API-integráció és az M-01–M-08 sikeresek. M-09 részben igazolt; a naplózóban felfedezett duplikált gyakorlat miatti React-hibára kódvédelem készült, böngészős regressziópróba szükséges. M-10 és M-15–M-16 felhasználói visszajelzés szerint sikeres. M-12 fallback felülete képernyőképen megjelent, de a mentett előzmény igazolása még hiányzik. M-13-ból csak az ismétlődő kérés hiánya igazolt. M-11 valódi AI-válasza még nincs igazolva. M-14 a termékkatalógus üressége miatt nem volt teljesen tesztelhető; a termék-seed futtatása után újra kell próbálni.
 
 ## 1. Cél és hatókör
@@ -17,7 +17,7 @@ Az automatizált renderelési teszt mintaadatokkal ellenőrzi a kártyát. A hit
 |---|---|
 | Operációs rendszer | Windows, PowerShell |
 | Node.js | v24.11.1 |
-| Next.js build | 16.4.2 (Turbopack) |
+| Next.js build | 16.4.6 (Turbopack) |
 | Kód | helyi munkafa; a vizsgálatkor nem készült commit |
 | Külső szolgáltatás | az automatizált unit tesztekhez nem szükséges |
 | Integrációs futtatás | production szerver `127.0.0.1:3100` címen; Supabase demo-fiók, titkos értékek naplózása nélkül |
@@ -40,7 +40,7 @@ Ebben a Codex sandboxban a `npm.cmd test` első indítása és az `os.userInfo()
 | A-01 | `npm test` | Nyelvi validáció, szabályalapú összefoglaló, heti mutatók, háromhetes kártya és edzésnapi duplikátum-felismerés | **SIKERES: 18/18** |
 | A-02 | `npm run lint` | ESLint a projekt forrásán | **SIKERES: nincs hiba** |
 | A-03 | `npm exec tsc -- --noEmit` | TypeScript típusellenőrzés | **SIKERES** |
-| A-04 | `npm run build` | Optimalizált Next.js production build és route-generálás | **SIKERES; ismert Next.js biztonsági sérülékenységre frissítési figyelmeztetés jelent meg** |
+| A-04 | `npm run build` | Optimalizált Next.js production build és route-generálás | **SIKERES Next.js 16.4.6-on; a korábbi Next.js biztonsági figyelmeztetés nem jelent meg** |
 | A-05 | Hitelesített `GET /progress` demo felhasználóval | Production SSR oldal státusza, három heti panel és címkék | **SIKERES: HTTP 200; 3 panel; mindhárom hétcímke és a részleges hét jelölése megjelenik** |
 | A-06 | Hitelesített `GET /api/progress/weekly` és hibás dátumok | Három heti adatcsomag, seedelt mutatók, bemeneti dátumvalidáció | **SIKERES: HTTP 200; három dátumcsomag és seedértékek egyeznek; 6 hibás eset HTTP 400** |
 
