@@ -3,7 +3,7 @@
 **Projekt:** FitTrack Pro
 **Utoljára frissítve:** 2026. november 17.
 **Vizsgált munkaváltozat:** a háromhetes fejlődésnézetet és az AI-válaszok célzott finomításait tartalmazó, Next.js 16.4.6-ra frissített munkafa.
-**Státusz:** az automatizált ellenőrzések, a Supabase API-integráció és az M-01–M-08 sikeresek. M-09 részben igazolt; a naplózóban felfedezett duplikált gyakorlat miatti React-hibára kódvédelem készült, böngészős regressziópróba szükséges. M-10 és M-15–M-16 felhasználói visszajelzés szerint sikeres. M-12 fallback felülete képernyőképen megjelent, de a mentett előzmény igazolása még hiányzik. M-13-ból csak az ismétlődő kérés hiánya igazolt. M-11 valódi AI-válasza még nincs igazolva. M-14 a termékkatalógus üressége miatt nem volt teljesen tesztelhető; a termék-seed futtatása után újra kell próbálni.
+**Státusz:** a Next.js 16.4.6 frissítése után a tiszta `npm ci`, lint, TypeScript, 18/18 unit teszt és production build sikeres; az `npm audit` 0 sérülékenységet jelentett. A Supabase API-integráció és az M-01–M-08 sikeresek. M-09 részben igazolt; a naplózóban felfedezett duplikált gyakorlat miatti React-hibára kódvédelem készült, böngészős regressziópróba szükséges. M-10 és M-15–M-16 felhasználói visszajelzés szerint sikeres. M-12 fallback felülete képernyőképen megjelent, de a mentett előzmény igazolása még hiányzik. M-13-ból csak az ismétlődő kérés hiánya igazolt. M-11 valódi AI-válasza még nincs igazolva. M-14 a termékkatalógus üressége miatt nem volt teljesen tesztelhető; a termék-seed futtatása után újra kell próbálni.
 
 ## 1. Cél és hatókör
 
@@ -43,6 +43,7 @@ Ebben a Codex sandboxban a `npm.cmd test` első indítása és az `os.userInfo()
 | A-04 | `npm run build` | Optimalizált Next.js production build és route-generálás | **SIKERES Next.js 16.4.6-on; a korábbi Next.js biztonsági figyelmeztetés nem jelent meg** |
 | A-05 | Hitelesített `GET /progress` demo felhasználóval | Production SSR oldal státusza, három heti panel és címkék | **SIKERES: HTTP 200; 3 panel; mindhárom hétcímke és a részleges hét jelölése megjelenik** |
 | A-06 | Hitelesített `GET /api/progress/weekly` és hibás dátumok | Három heti adatcsomag, seedelt mutatók, bemeneti dátumvalidáció | **SIKERES: HTTP 200; három dátumcsomag és seedértékek egyeznek; 6 hibás eset HTTP 400** |
+| A-07 | `npm audit` | A függőségi fa ismert sérülékenységeinek ellenőrzése | **SIKERES: 0 sérülékenység** |
 
 Az A-01 tesztcsomag fő esetei:
 
