@@ -5,6 +5,73 @@ környezetbe (Vercel + Supabase + Stripe + OpenRouter) telepítésén.
 
 ## Tartalomjegyzék
 
+## Helyi futtatás friss klónból (Windows)
+
+### Szükséges eszközök
+
+Git, Node.js és npm, böngésző, működő Supabase-projekt és internetkapcsolat szükséges. A VS Code opcionális szerkesztő. A projekt dokumentált Node-alapja 22.22.2+ vagy 24.15.0+; a tényleges próbán használt verziót külön rögzíteni kell. A Node Windows MSI telepítője az npm-et is telepíti; fnm nem szükséges. Telepítés után nyiss új terminált.
+
+```cmd
+node -v
+npm -v
+git clone https://github.com/Almasip442/FitTrack.git
+cd FitTrack
+git rev-parse HEAD
+copy .env.example .env.local
+```
+
+A copy parancsot csak akkor futtasd, ha még nincs kitöltött `.env.local`. A fájl a projekt gyökerébe kerüljön, ne `.env.local.txt` néven. PowerShellben használható a `Copy-Item .env.example .env.local` is.
+
+### Konfiguráció
+
+| Változó | Mikor kell? |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Hitelesítéshez és adatbázis-eléréshez |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | A Supabase projekt publikus klienskulcsa |
+| `SUPABASE_SERVICE_ROLE_KEY` | Seedeléshez és a Stripe webhook szerveroldali műveleteihez; titkos |
+| `OPENROUTER_API_KEY` | Valódi AI-magyarázathoz; nélküle a szabályalapú eredmény használható |
+| `STRIPE_SECRET_KEY` | Stripe teszt Checkout indításához |
+| `STRIPE_WEBHOOK_SECRET` | Webhook aláírás-ellenőrzéséhez |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe mintakonfiguráció publikus tesztkulcsa |
+| `NEXT_PUBLIC_SITE_URL` | Helyileg `http://localhost:3000`, telepítve a saját cím |
+
+A szükségtelen szolgáltatások mintakulcsait ne tekintsd működő konfigurációnak. Titkos érték ne kerüljön Gitbe, képernyőképbe vagy e-mailbe. Környezeti változó módosítása után indítsd újra a szervert; production próbánál új build is szükséges lehet.
+
+Meglévő, előkészített Supabase-projekt esetén a friss klón nem igényel új seedet vagy a már alkalmazott migrációk újrafuttatását. Új adatbázishoz a lent leírt migrációk, RLS, Auth és storage beállítások szükségesek. Az Auth engedélyezett visszairányításai között a helyi cím is szerepeljen. A Supabase-projekt ne legyen szüneteltetve.
+
+### Telepítés, ellenőrzés és indítás
+
+A parancsokat egyenként futtasd, sikeres befejezés után folytatva:
+
+```cmd
+npm ci
+npm run lint
+npx tsc --noEmit
+npm test
+npm run build
+npm start
+```
+
+Nyisd meg a `http://localhost:3000` címet. A szerver terminálja maradjon nyitva; leállítás: Ctrl+C. Fejlesztéshez a build/start helyett `npm run dev` használható. PowerShell végrehajtási házirendi hiba esetén `npm.cmd` és `npx.cmd` használható.
+
+Ha nincs gyakorlatkatalógus, a megfelelő tesztadatbázison `npm run seed:exercises` futtatható. Shop-mintákhoz `npm run seed:products`, demófiókhoz `npm run seed:demo-user` használható. Mindegyik adatbázisba ír; a demóseed törli és újraépíti a demófelhasználó adatait, ezért puszta indítás céljából ne futtasd.
+
+Az ételkeresés külső szolgáltatást használ; külön étel-CSV nem szükséges az alapfolyamathoz. A Stripe helyi webhookpróbához külön terminálban futó CLI szükséges, például `stripe listen --events checkout.session.completed --forward-to http://localhost:3000/api/webhooks/stripe`. A CLI által kiírt signing secret tartozik ehhez a helyi listenerhez. A webshop jelenleg ismert kosár/Checkout összegeltérése miatt nem tekinthető lezárt fizetési tesztnek.
+
+### Gyakori indítási hibák
+
+- `node` vagy `npm` nem ismert: telepíts Node.js-t, majd nyiss új terminált; ellenőrizd a PATH-ot.
+- `next` vagy `eslint` nem ismert: előbb sikeresen le kell futnia az `npm ci` parancsnak. Nem globális Next.js telepítés szükséges.
+- Supabase URL/key hiányzik: a gyökérben lévő `.env.local` nevét és a két kötelező értéket ellenőrizd.
+- Hiányzó adatbázisoszlop: ellenőrizd az alkalmazott migrációkat; a klónozás önmagában nem frissíti a távoli adatbázist.
+- Foglalt 3000-es port: állítsd le a korábbi példányt, vagy válassz másik portot, és igazítsd hozzá az URL-beállításokat.
+
+### Rögzített frissklón-próba
+
+2026-11-19: a hallgató saját Windows gépén, külön friss klónból sikeres futtatást jelzett az `npm ci` és az ajánlott ellenőrzési/indítási lépések után. Kezdetben a függőségek hiánya miatt a `next` parancs nem volt elérhető; telepítés után működött. Ez friss forráskönyvtárból végzett helyi telepítési próba, nem új operációs rendszeren vagy másik gépen végzett vizsgálat. A pontos Node/npm-verzió, a klón commitazonosítója és az egyes parancsok kimenete még nincs csatolva. Meglévő távoli adatbázis használata nem igazolja az üres adatbázisból történő inicializálást.
+
+Az eredményhez érdemes megőrizni: dátum, OS, `node -v`, `npm -v`, `git rev-parse HEAD`, ellenőrzési kimenetek, belépés és a fő képernyők megnyitásának eredménye, valamint mentés utáni frissítés próbája. A hiányzó bizonyítékokat ne helyettesítsd feltételezett sikerrel.
+
 1. [Előfeltételek](#1-eloefeltetelek)
 2. [Supabase projekt létrehozása](#2-supabase-projekt-letrehozasa)
 3. [Adatbázis migráció és RLS](#3-adatbazis-migracio-es-rls)

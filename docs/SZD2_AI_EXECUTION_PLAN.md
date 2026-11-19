@@ -207,3 +207,6 @@ A h?tf?=0 projektkonvenci? ?s a JavaScript vas?rnap=0 sz?moz?s elt?r?se miatt r?
 ### 2026-11-19 ? Term?kseed ?s ?j k?pbizony?t?kok
 
 A 42P10 term?kseed-hiba jav?tva: n?v helyett megl?v?/stabil ID alap? upsert, duplik?lt n?v eset?n ?r?s el?tti elutas?t?s. H?rom c?lzott unit teszt ?s TypeScript sikeres; 24 term?k sikeresen felt?ltve a konfigur?lt Supabase projektre. A heti 1/1, 400 kg jav?t?st a felhaszn?l? k?ppel visszaigazolta; a mobilbe?ll?t?s iPhone 16, 393?852. A 73,4 kg/1 m?r?s l?that?. ?j, magyar ?l? AI-panel ?rkezett k?l?n, 2000 kg-os adatk?szlettel; teljes snapshot-alap? min?s?gi m?r?s ?s el?zm?nypr?ba m?g sz?ks?ges. A k?pf?jlok helyi ?tv?tele tov?bbra is nyitott.
+# 2026-11-19 – Telepítési állapot pontosítása
+
+A hallgató saját Windows gépén friss klónból sikeres indítást igazolt. A részletes lépések és hibakeresés a `docs/DEPLOYMENT.md` dokumentumba kerültek. Ez a korábbi tiszta telepítési tételt részben lezárja: a helyi reprodukció megerősített, a pontos Node/npm-verzió, commit és parancskimenetek még pótlandók. A másik gép vagy üres adatbázis telepítése nem igazolt; UAT és AI összehasonlító mérés továbbra is külön feladat.

@@ -11,6 +11,8 @@ FitTrack Pro is a Next.js App Router and Supabase web application for tracking w
 
 ## Local setup
 
+Részletes magyar Windows útmutató, konfiguráció, hibakeresés és a friss klónból végzett próba: [DEPLOYMENT.md](docs/DEPLOYMENT.md#helyi-futtatás-friss-klónból-windows).
+
 1. Clone the repository and enter its root directory.
 2. Install the exact lockfile dependencies:
 
