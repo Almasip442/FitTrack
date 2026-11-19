@@ -87,8 +87,11 @@ function scheduledWorkoutCount(
     planDays.flatMap((day) => (day.day_of_week == null ? [] : [day.day_of_week])),
   )
   let count = 0
-  for (const date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
-    if (weekdays.has(date.getDay())) count++
+  // Calendar days are inclusive regardless of the caller's time of day.
+  const lastDay = new Date(end.getFullYear(), end.getMonth(), end.getDate())
+  for (const date = new Date(start.getFullYear(), start.getMonth(), start.getDate()); date <= lastDay; date.setDate(date.getDate() + 1)) {
+    // Database/UI convention: Monday = 0, Sunday = 6.
+    if (weekdays.has((date.getDay() + 6) % 7)) count++
   }
   return count
 }

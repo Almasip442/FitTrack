@@ -112,6 +112,12 @@ Másodlagos szereplő az üzemeltető vagy fejlesztő, aki konfigurálja a Supab
 
 **HK-07 – Testsúlymérés rögzítése.** Szereplő a bejelentkezett felhasználó; előfeltétel a fejlődésoldal elérése. A felhasználó dátumot és mérési értéket ad meg, majd menti a mérést. Hibás érték vagy dátum esetén javítási visszajelzést kap; sikeres mentés után az érték a megfelelő hét mérési darabszámában és átlagában jelenik meg, majd frissítés után visszaolvasható. Összehasonlítható heti mérés hiányában a rendszer nem állít testsúlyváltozást.
 
+A 3.1. ábra szereplők és fő használati esetek bemutatásával kapcsolja össze a fenti leírást a megvalósított rendszerrel. Az ábra magyarázó megjegyzései a tényleges státuszok és az üzleti fogalmak különbségeit is jelölik.
+
+<p align="center"><img src="./figures/hasznalati-esetek.svg" alt="Szereplők és fő használati esetek" width="95%"></p>
+
+<p align="center"><em>3.1. ábra. Szereplők és fő használati esetek (saját szerkesztés).</em></p>
+
 ### 3.3. Funkcionális követelmények
 
 | Azonosító | Prioritás | Követelmény | Elfogadás ellenőrzése |
@@ -160,6 +166,12 @@ A böngésző hitelesített kérést küld a Next.js alkalmazásnak. A szerver a
 
 A Next.js szerver- és klienskomponensei eltérő feladatot látnak el: a szerverkomponensek alkalmasak adatlekérésre és szerveroldali erőforrások használatára, míg a klienskomponensek a felhasználói interakciót, például a hétválasztást és a napló szerkesztését kezelik [1]. Az edzésnapló mentése szerveroldali műveletet vesz igénybe; a heti összesítő és az elemzés API-végponton keresztül szolgálja ki a felületet.
 
+A 4.2. ábra a teljes szakdolgozati folyamat komponenshatárai bemutatásával kapcsolja össze a fenti leírást a megvalósított rendszerrel. Az ábra magyarázó megjegyzései a tényleges státuszok és az üzleti fogalmak különbségeit is jelölik.
+
+<p align="center"><img src="./figures/teljes-architektura.svg" alt="A teljes szakdolgozati folyamat komponenshatárai" width="95%"></p>
+
+<p align="center"><em>4.2. ábra. A teljes szakdolgozati folyamat komponenshatárai (saját szerkesztés).</em></p>
+
 ### 4.2. Adatmodell és hozzáférésvédelem
 
 Az adatmodell a felhasználói profilt elválasztja a terv- és naplóadatoktól. A `profiles` táblában találhatók a célhoz és becslésekhez szükséges felhasználói adatok. A `workout_plans` aktív terve `workout_days` napokon keresztül kapcsolódik a tervezett gyakorlatsorhoz. A tényleges napi teljesítést a `daily_logs` rögzíti; ehhez kapcsolódnak a `food_entries` bejegyzések és a `workout_exercise_logs` részletes gyakorlatnaplók. A testsúlymérések külön `weight_logs` rekordok. A generált heti eredményt a `weekly_analyses` tárolja, dátummal, állapottal, strukturált válasszal és az értékeléshez használt heti adatokkal.
@@ -180,6 +192,12 @@ A heti elemzéshez fontosabb táblák és kapcsolataik összefoglalása:
 Az elnevezett táblák nem önmagukban alkotnak elemzést: a szerver a felhasználó azonosítója és a vizsgált dátumtartomány alapján kérdezi le őket. A heti mutatók csak az adott időablakhoz tartozó rekordokból készülnek. A részletes gyakorlatnapló és a terv külön tárolása teszi lehetővé, hogy a tervezett alkalom és a végrehajtott munka összevethető legyen.
 
 A Supabase Auth azonosítja a felhasználót, a Row Level Security (RLS) pedig adatbázis-szinten korlátozza, hogy mely sorok érhetők el. A kliensoldali felület elrejtése nem helyettesítené ezt a védelmet: a jogosultsági ellenőrzést a szervernek és az adatbázisnak is érvényesítenie kell. A projekt RLS-szabályokat tartalmaz a felhasználói táblákhoz [2]. A végleges értékelési fejezetben külön rögzíteni kell a jogosulatlan hozzáférés próbájának tényleges eredményét. A seedeléshez szükséges emelt jogosultságú kulcs nem kerülhet a böngészőbe vagy a verziókezelőbe.
+
+A 4.3. ábra hozzáférési rétegek és szerveroldali titkok bemutatásával kapcsolja össze a fenti leírást a megvalósított rendszerrel. Az ábra magyarázó megjegyzései a tényleges státuszok és az üzleti fogalmak különbségeit is jelölik.
+
+<p align="center"><img src="./figures/biztonsagi-hatarok.svg" alt="Hozzáférési rétegek és szerveroldali titkok" width="95%"></p>
+
+<p align="center"><em>4.3. ábra. Hozzáférési rétegek és szerveroldali titkok (saját szerkesztés).</em></p>
 
 ### 4.3. Heti összesítés és hiányzó adatok kezelése
 
@@ -218,6 +236,18 @@ A témavezető adaptív visszajelzésre vonatkozó javaslatához a rendszer a k�
 Az elemző API hitelesítés után összegyűjti a folyamatban lévő hét, valamint a két legutóbbi teljesen lezárt hét mutatóit, előállítja a szabályalapú eredményt, majd szerveroldali kérést küld az OpenRouter chat completion végpontjára [3]. A modell bemenete strukturált heti adat; az alkalmazás rendszerutasítása előírja az adatokhoz kötött válaszadást, a kizárólag magyar nyelvű kimenetet és az egészségügyi korlátokat. A szerver a visszakapott JSON-t feldolgozza, ellenőrzi a kötelező mezőket, a pontszám tartományát és a kimenet nyelvét. A nyelvi ellenőrzés kizár bizonyos gyakori angol, spanyol és francia mintákat, figyeli a nem latin írásrendszereket, és magyar nyelvi jelzések jelenlétét várja el; ez szabályalapú szűrés, nem teljes körű nyelvfelismerés. Szolgáltatási hiba vagy hibás formátumú, illetve nem magyar válasz esetén a determinisztikus eredmény használható marad. A felület a korábban elmentett, nyelvi ellenőrzésen fennakadó AI-szöveget is a szabályalapú magyar értékeléssel helyettesíti. Az AI-válasz nem módosítja a naplóadatokat, és nem hoz létre vagy ír át edzéstervet.
 
 E döntés előnye, hogy a nyelvi modell szöveges magyarázata összevethető a rögzített szabályokkal, miközben a számítások a modell nélkül is ellenőrizhetők. Korlátja, hogy az AI válasza nem determinisztikus, a külső szolgáltató változhat vagy kieshet, illetve a modell a korlátozó utasítások ellenére is adhat nem megfelelő szöveget. A szókészlet-alapú nyelvi szűrő sem ismer fel minden lehetséges idegen nyelvű vagy kevert megfogalmazást. Ezért a modell kimenete csak validálás után jelenhet meg; a dolgozat későbbi tesztelési fejezetében a sikeres választ és a fallbackot külön kell vizsgálni.
+
+A 4.4. ábra a heti értékelés üzleti folyamata bemutatásával kapcsolja össze a fenti leírást a megvalósított rendszerrel. Az ábra magyarázó megjegyzései a tényleges státuszok és az üzleti fogalmak különbségeit is jelölik.
+
+<p align="center"><img src="./figures/heti-ertekeles-folyamat.svg" alt="A heti értékelés üzleti folyamata" width="95%"></p>
+
+<p align="center"><em>4.4. ábra. A heti értékelés üzleti folyamata (saját szerkesztés).</em></p>
+
+A 4.5. ábra a napló és a heti elemzés életciklusa bemutatásával kapcsolja össze a fenti leírást a megvalósított rendszerrel. Az ábra magyarázó megjegyzései a tényleges státuszok és az üzleti fogalmak különbségeit is jelölik.
+
+<p align="center"><img src="./figures/naplo-es-elemzes-allapotok.svg" alt="A napló és a heti elemzés életciklusa" width="95%"></p>
+
+<p align="center"><em>4.5. ábra. A napló és a heti elemzés életciklusa (saját szerkesztés).</em></p>
 
 ## 5. A rendszer megvalósítása
 
@@ -301,7 +331,59 @@ A minta szakdolgozathoz hasonlóan a rendszer bemutatásának a felhasználói k
 
 A munkafolyamat fontos felületi állapotai a betöltés, az üres adat, a sikeres mentés és a hiba. A fejlődésoldal hétválasztója a kiválasztott hetet és az azt megelőző két hetet mutatja; a még tartó hetet részleges időszakként jelöli. A három kártya az edzésteljesítést és volument, az étkezési lefedettséget, a kalória- és fehérjeátlagot, valamint a testsúlyméréseket azonos szerkezetben jeleníti meg. Hiányzó érték esetén a felület adat-hiányt mutat, nem nullát helyettesít be.
 
-A dolgozatban már szereplő 5.1. és 5.2. ábra az edzésnapló sorozatainak szerkesztését, illetve a kihagyott gyakorlat állapotát szemlélteti. A fejlődésoldalról, az étkezés kereséséről és mentéséről, valamint a valódi AI-válasz és a fallback összehasonlításáról készült, olvasható és személyes adatot nem tartalmazó képernyőképeket még a fejezethez, illetve a melléklethez kell elmenteni. A beszélgetésben megosztott képek jelenleg nem helyettesítik a repositoryban hivatkozható képfájlokat.
+A dolgozatban már szereplő 5.1. és 5.2. ábra az edzésnapló sorozatainak szerkesztését, illetve a kihagyott gyakorlat állapotát szemlélteti. A következő képernyőképek a 2026. november 19-i kézi ellenőrzés mentett állapotait mutatják. A tesztelő visszajelzése szerint a felvételek oldalfrissítés után készültek.
+
+A 5.3. ábra navigáció a fő felhasználói folyamatban bemutatásával kapcsolja össze a fenti leírást a megvalósított rendszerrel. Az ábra magyarázó megjegyzései a tényleges státuszok és az üzleti fogalmak különbségeit is jelölik.
+
+<p align="center"><img src="./figures/oldalfolyam.svg" alt="Navigáció a fő felhasználói folyamatban" width="95%"></p>
+
+<p align="center"><em>5.3. ábra. Navigáció a fő felhasználói folyamatban (saját szerkesztés).</em></p>
+
+Az 5.4. ábrán az edzésterv szerkesztője látható két gyakorlattal és izomcsoport-, illetve eszközszűréssel. A „Tedd aktívvá” gomb az ezen a felvételen még nem aktív terv állapotát jelzi.
+
+![Edzésterv szerkesztése](figures/teszt-terv.png)
+
+*5.4. ábra. Edzésterv és a gyakorlatkönyvtár szűrői (saját képernyőkép).*
+
+Az étel adagjának megduplázása arányosan módosítja a kijelzett értékeket: 100 g esetén 169 kcal és 24 g fehérje, 200 g esetén 338 kcal és 48 g fehérje jelenik meg. A mentett reggeli ugyanazt a 200 g-os adagot tartalmazza; a napi összesítő egész grammra kerekíti a szénhidrátot és a zsírt.
+
+![Százgrammos adag](figures/teszt-etel-100g.png)
+
+*5.5. ábra. A kiválasztott étel 100 g-os adagja (saját képernyőkép).*
+
+![Kétszázgrammos adag](figures/teszt-etel-200g.png)
+
+*5.6. ábra. Az adag növelésének hatása a tápértékekre (saját képernyőkép).*
+
+![Mentett étkezés](figures/teszt-etkezes.png)
+
+*5.7. ábra. A mentett reggeli és a napi összesítő (saját képernyőkép).*
+
+A fejlődési nézetben a javítás utáni állapot 1/1 edzést és 400 kg volument mutat. Az étkezési lefedettség 1/4 nap: a 338 kcal a naplózott nap átlaga, nem a teljes időszak becsült tényleges fogyasztása. Az egyetlen, 73,4 kg-os testsúlymérés még nem bizonyít trendet.
+
+![Javított heti összesítő](figures/teszt-volumen-400.png)
+
+*5.8. ábra. Aktuális részleges hét, 1/1 edzés és 400 kg volumen (saját képernyőkép).*
+
+![Egy testsúlymérés](figures/teszt-testsuly-egy-meres.png)
+
+*5.9. ábra. Egyetlen testsúlymérés megjelenítése (saját képernyőkép).*
+
+![Három lezárt hét](figures/teszt-harom-het.png)
+
+*5.10. ábra. Három lezárt hét összehasonlítása a demóadatokkal (saját képernyőkép).*
+
+A mobilnézet felvétele a tesztelő által megadott iPhone 16 eszközbeállítással, 393 × 852-es böngészőnézetben készült; a kép ennek kivágott részlete. Ez a böngészőben emulált elrendezés ellenőrzését dokumentálja.
+
+![Mobil heti összesítő](figures/teszt-mobil-heti.png)
+
+*5.11. ábra. A heti kártya mobil elrendezése (saját képernyőkép).*
+
+Az AI-nézet külön adathalmazt mutat: 2/2 edzés, 2000 kg volumen, 315 kcal naplózott napi átlag és 20 g fehérje. Ezért az 5.8. ábra számaival közvetlenül nem hasonlítható össze. A szabályalapú pontszám 5/10, az AI-é 6/10; a két értékelés elkülönül. A magyar nyelvű válasz és a biztonsági megjegyzés látható, de a kép önmagában nem igazolja az AI minden állításának helyességét: ehhez a mentett bemenet és kimenet összevetése szükséges.
+
+![Szabályalapú és AI-értékelés](figures/teszt-ai-valasz.png)
+
+*5.12. ábra. A szabályalapú értékelés és a sikeres AI-válasz (saját képernyőkép).*
 
 ## 6. Ellenőrzés és jelenlegi teszteredmények
 
@@ -368,13 +450,21 @@ A projekt során az alkalmazásba épített AI-válaszban idegen nyelvű részek
 
 A hallgató mérnöki hozzájárulását a projekt problémájának és hatókörének kijelölése, a szabályalapú mutatók és a generatív magyarázat szerepének elkülönítése, az alkalmazás saját adatmodelljéhez és tesztelési igényeihez igazított döntések, valamint a felhasználói felületen végzett próbák és visszajelzések adják. E bekezdést a végleges változat előtt a saját tényleges feladatmegosztás és a MI-használati napló alapján a hallgatónak személyesen ellenőriznie és pontosítania kell.
 
+### 6.7. Kiegészítő ellenőrzés és nyitott hibák – 2026. november 19.
+
+Ez a dátumozott kiegészítés pontosítja a korábbi tesztállapotokat. A mentett képek alapján a részleges heti nézet javítás után 1/1 edzést és 400 kg volument mutat. Valódi magyar AI-válasz is rendelkezésre áll (5.12. ábra); a korábbi, november 17-i fallback megfigyelés ezért már nem az egyetlen dokumentált kimenet. A teljes, azonos mentett bemenetre épülő összehasonlító pontozás ugyanakkor még nem készült el. A tesztelő új hibainjektálásos fallback-próbát nem végzett.
+
+A tesztelő az onboardingra vonatkozó új hibajelzését visszavonta, így azt nem tartjuk nyilván nyitott hibaként. A termék- és kosárfelület képein öt, egyenként 6990 Ft-os termék összege helyesen 34 950 Ft, a kapcsolódó Stripe Checkout képernyőn azonban 349,50 Ft szerepel. A fizetési folyamat újrateszteléséig ez ismert összegeltérés. A képernyők nem bizonyítják a sikeres fizetést vagy a webhook feldolgozását.
+
+A jelenlegi eredmények fejlesztői és tesztelői próbákból származnak. A tiszta környezetű telepítés, a célfelhasználói UAT és a témavezetői végellenőrzés lezárása továbbra is szükséges. A november 19-i export véleményezhető változat, nem igazoltan hibamentes vagy hivatalosan elfogadott végleges leadás.
+
 ## 7. Összegzés és további munka
 
 A dolgozat jelenlegi munkaváltozata egy olyan központi folyamatot ír le, amely a felhasználó tervét, tényleges edzésnaplóját, étkezési bejegyzéseit és testsúlyméréseit heti időszeletekben kapcsolja össze. A megvalósítás közös aggregációs logikát használ a fejlődési nézethez és az AI-elemzés bemenetéhez. A dokumentált tervezési döntések között ezért kiemelt szerepet kap az adatlefedettség, a hiányzó napok elkülönítése, a naplózott volumen korlátozott értelmezése, valamint az, hogy az AI nem írja felül a kiszámított mutatókat vagy a felhasználó edzéstervét.
 
 A rendelkezésre álló ellenőrzési eredmények alapján a heti metrikák automatizált esetei, a statikus kódellenőrzések és a háromhetes adatot visszaadó API-próba sikeres volt. A felhasználói visszajelzés az M-01–M-08 eseteket sikeresnek jelezte. M-10, M-15 és M-16 szintén működőnek bizonyult a visszajelzés alapján; M-09 részleges, M-12-ben pedig a fallback felület látható. A valódi AI-válasz, a teljes onboarding, a kosárfunkció és a kihagyott gyakorlat volumenre gyakorolt hatásának ellenőrzése még nyitott. Ezek az eredmények a vizsgált fejlesztői/demó környezetre vonatkoznak. Nem igazolják a felhasználói viselkedés megváltozását, a javaslatok egészségügyi hatását vagy a modell minden lehetséges válaszának megfelelőségét.
 
-A következő kéziratváltozatban le kell zárni az M-09 és M-11–M-14 fennmaradó ellenőrzéseit, a felhasználói visszajelzéshez képernyőkép-bizonyítékot kell menteni, és ugyanazon heti adatokon össze kell hasonlítani a szabályalapú és valódi AI-kimenetet. A Lovarda-minta alapján külön képernyőközpontú használati bemutatót és a fejlesztés során használt MI-ről szóló fejezetet építünk a kéziratba; a mintából származó szöveget vagy lovardai tartalmat nem vesszük át. A kari útmutató nem ír elő rögzített ábraszámot, ezért az architektúra, az adatmodell és a fő felhasználói folyamat szemléltetéséhez csak indokolt diagramokat készítünk. A követelmény–használati eset–megvalósítás–teszt megfeleltetést, az ábrahivatkozásokat és az oldalszámot a végső Word/PDF tördelés után kell ellenőrizni.
+A következő kéziratváltozatban le kell zárni az M-09 és M-11–M-14 fennmaradó ellenőrzéseit, a felhasználói visszajelzéshez képernyőkép-bizonyítékot kell menteni, és ugyanazon heti adatokon össze kell hasonlítani a szabályalapú és valódi AI-kimenetet. A Lovarda-minta alapján külön képernyőközpontú használati bemutatót és a fejlesztés során használt MI-ről szóló fejezetet építünk a kéziratba; a mintából származó szöveget vagy lovardai tartalmat nem vesszük át. A témavezető október 28-i levele alapján a hat kért mérnöki ábranézet bekerült a kéziratba; a végső Word/PDF tördelésben olvashatóságukat külön ellenőrizni kell. A követelmény–használati eset–megvalósítás–teszt megfeleltetést, az ábrahivatkozásokat és az oldalszámot a végső Word/PDF tördelés után kell ellenőrizni.
 
 ## Hivatkozások
 

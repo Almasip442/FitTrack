@@ -27,3 +27,22 @@ A napló a dolgozat és a projekt fejlesztése során használt MI-eszközök l�
 - Mi volt a hallgató saját tervezési, implementációs és értékelési döntése.
 
 Ne kerüljön a naplóba API-kulcs, jelszó, hozzáférési token vagy más titok. Az alkalmazásba épített heti AI-elemzés értékelését külön kell kezelni a fejlesztés közbeni MI-használattól.
+
+## 2026-11-19 – Mérnöki ábrák és tesztútmutató
+
+OpenAI Codex: hat SVG-ábra és reprodukálható generáló szkript készült a helyi forráskód, a meglévő kézirat és a témavezető levele alapján. A kézirat ábrahivatkozásai bővültek. Külön részletes képernyőkép- és tesztvégrehajtási útmutató készült. Ellenőrzés: SVG XML-feldolgozás, hivatkozott fájlok létezése; élő felhasználói tesztet és új mérési eredményt ez a szerkesztés nem hozott létre.
+
+
+### 2026-11-19 ? Heti tervezett edz?ssz?m jav?t?sa
+
+A h?tf?=0 projektkonvenci? ?s a JavaScript vas?rnap=0 sz?moz?s elt?r?se miatt r?szleges h?ten 1/0 jelenhetett meg. A heti aggreg?tor napk?d-konverzi?t ?s napt?ri napra normaliz?lt bej?r?st kapott. N?gy ?j regresszi?val 22/22 teszt sikeres; TypeScript ?s c?lzott lint sikeres. B?ng?sz?s visszaellen?rz?s: akt?v h?tf?i terv, egy napl?zott edz?s ? november 16?19. panelen 1/1. A felhaszn?l? a bek?ld?tt k?pek mindegyik?r?l meger?s?tette, hogy friss?t?s ut?n k?sz?lt.
+
+
+### 2026-11-19 ? Term?kseed ?s ?j k?pbizony?t?kok
+
+A 42P10 term?kseed-hiba jav?tva: n?v helyett megl?v?/stabil ID alap? upsert, duplik?lt n?v eset?n ?r?s el?tti elutas?t?s. H?rom c?lzott unit teszt ?s TypeScript sikeres; 24 term?k sikeresen felt?ltve a konfigur?lt Supabase projektre. A heti 1/1, 400 kg jav?t?st a felhaszn?l? k?ppel visszaigazolta; a mobilbe?ll?t?s iPhone 16, 393?852. A 73,4 kg/1 m?r?s l?that?. ?j, magyar ?l? AI-panel ?rkezett k?l?n, 2000 kg-os adatk?szlettel; teljes snapshot-alap? min?s?gi m?r?s ?s el?zm?nypr?ba m?g sz?ks?ges. A k?pf?jlok helyi ?tv?tele tov?bbra is nyitott.
+# 2026-11-19 – Word-export és beadási ellenőrzés
+
+Pontosítás: a Word-fájl mentése és az 51 oldal/18 kép ellenőrzése sikeres. A PDF-export elindult, de a fájl létrejötte még nem igazolt; az alábbi PDF-re vonatkozó állítás csak sikeres export után tekinthető teljesültnek.
+
+Codex összevetette a kéziratot a júniusi, október 7-i és október 28-i egyeztetéssel, a Coospace félévleírással, a Lovarda-minta szövegével és a Worddel kiolvasott kari sablonokkal. A mentett 18 ábrával, külön előrészekkel és frissített tartalomjegyzékkel 51 oldalas Word-változat és PDF készült. Az intézményi személyes adatok és a hivatalos feladatkiírás kitöltése hallgatói/témavezetői feladat maradt. Az új onboarding-hibát és a kosár/Stripe összegeltérést nyitottként rögzítettük; a kihagyott AI-hibateszt nem kapott sikeres státuszt. Ellenőrzés: Word oldalszám és 18 beágyazott kép; git diff --check. A teljes vizuális oldalonkénti lektorálás és a tényleges AI összehasonlító mérés még nincs lezárva.

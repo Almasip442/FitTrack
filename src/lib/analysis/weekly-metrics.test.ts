@@ -95,3 +95,22 @@ test('keeps above-plan workout count while capping completion percentage at 100'
   assert.equal(result.completedWorkouts, 4)
   assert.equal(result.workoutCompletionPercent, 100)
 })
+
+for (const [label, start, end, days, expected] of [
+  ['Monday plan in a Monday-to-Thursday week', new Date(2026, 10, 16), new Date(2026, 10, 19), [0], 1],
+  ['Sunday plan is not due by Thursday', new Date(2026, 10, 16), new Date(2026, 10, 19), [6], 0],
+  ['Sunday plan is included on Sunday', new Date(2026, 10, 16), new Date(2026, 10, 22), [6], 1],
+  ['Thursday is included with a noon start and midnight end', new Date(2026, 10, 16, 12), new Date(2026, 10, 19), [3], 1],
+] as const) {
+  test(label, () => {
+    const result = buildWeekSnapshot({
+      start, end, profile: null,
+      planDays: days.map((day_of_week) => ({ day_of_week })),
+      dailyLogs: [{ date: '2026-11-19', workout_completed: true, food_entries: [] }],
+      weights: [], exerciseLogs: [], previousAverageWeight: null,
+    })
+    assert.equal(result.plannedWorkouts, expected)
+    assert.equal(result.completedWorkouts, 1)
+    assert.equal(result.workoutCompletionPercent, expected ? 100 : null)
+  })
+}

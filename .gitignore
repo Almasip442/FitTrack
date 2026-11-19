@@ -47,3 +47,13 @@ next-env.d.ts
 /docs/eleje.doc
 /docs/sablon_20211122.doc
 /docs/Lovarda_menedzsment_szakdolgozat_Codex.md
+
+# Local thesis preparation notes and exports
+/docs/thesis/KEPERNYOKEPEK_BEERKEZES_2026-11-19.md
+/docs/thesis/KEPERNYOKEPEK_AKTUALIS_ALLAPOTA.md
+/docs/thesis/TESZTELES_ES_KEPERNYOKEPEK_UTMUTATO.md
+/docs/thesis/FELTOLTES_ELOTTI_ELLENORZES.md
+/docs/thesis/*.docx
+/docs/thesis/*.pdf
+/scripts/export-thesis.py
+/docs/thesis/figures/generate_diagrams.py

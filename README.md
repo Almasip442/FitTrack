@@ -32,7 +32,7 @@ FitTrack Pro is a Next.js App Router and Supabase web application for tracking w
    npm run seed:products
    ```
 
-   This upserts sample supplement products and requires
+   This upserts sample supplement products by primary-key ID (preserving existing IDs; no unique-name migration is needed) and requires
    `SUPABASE_SERVICE_ROLE_KEY`. Run it only against the intended test Supabase
    project; it writes to that project's `products` table.
 

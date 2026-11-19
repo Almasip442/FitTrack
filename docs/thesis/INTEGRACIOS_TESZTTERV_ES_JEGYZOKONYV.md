@@ -238,3 +238,35 @@ Ne küldj jelszót, `.env.local` tartalmat, API-kulcsot vagy tokent. A visszajel
 - A külső AI-szolgáltatás tényleges válaszának nyelvi ellenőrzése és tartalmi megfelelősége külön, működő OpenRouter-konfigurációval végzendő el.
 - Az M-01–M-08 ellenőrzések sikerültek. M-10, M-15 és M-16 sikeres felhasználói visszajelzést kapott. M-09 részleges, mert a kihagyás volumenből kizárását nem rögzítették; az edzésterv duplikált gyakorlata ellen új UI/szervervédelem és regressziós unit teszt készült, de böngészőben még vissza kell ellenőrizni. M-12 fallback felülete képernyőképen megjelent, de az előzményből visszaolvasása nyitott. M-13-nál az ismétlődő kérés nem jelentkezett, a teljes onboarding sikerútja még nem igazolt. M-11 valódi AI-válasza nincs megerősítve. M-14-et az üres termékkatalógus blokkolja; a `npm run seed:products` futtatása után újra kell próbálni. Az API hitelesített lekérése, a seedelt mutatók és a dátumvalidációs határesetek ellenőrzése sikerült.
 - A dolgozat mérési fejezetébe csak a fenti kézi tesztek elvégzése után kerülhet tényleges eredmény vagy képernyőkép.
+
+## Részletes végrehajtási útmutató
+
+A tesztsorrend, a konkrét képtartalom, az AI-összehasonlítás, a kétfiókos védelem, az UAT és a tiszta telepítés lépései: [Tesztelés és képernyőképek](TESZTELES_ES_KEPERNYOKEPEK_UTMUTATO.md). Az útmutató létrehozása nem változtatja meg a nyitott tesztek eredményét.
+
+## 2026-11-19 ? ?j k?perny?k?pes bizony?t?kok
+
+A besz?lget?sben kapott k?pek alapj?n M-09 konkr?t volumenpr?b?j?n a k?t 10?20 kg-os sorozat mellett 400 kg heti volumen l?that?, a m?sik gyakorlat kihagyott. M-10-ben a 100 g/169 kcal ?s 200 g/338 kcal el?n?zet, valamint a mentett 200 grammos reggeli is l?tszik; a makr?k is ar?nyosak. Az ?jrat?lt?s v?grehajt?s?t a k?pek ?nmagukban nem igazolj?k. A hidrat?ci?s regresszi? ?s M-13 teljes onboardingja tov?bbra is nyitott. A heti 1/0 edz?sar?ny ?s az akt?v terv ?sszef?gg?se k?l?n vizsg?land?. A pontos k?plelt?r ?s bizony?t?kkorl?tok: [be?rkez?si jegyz?k](KEPERNYOKEPEK_BEERKEZES_2026-11-19.md). A k?pf?jlok helyi ?tv?tele m?g h?travan.
+
+
+## 2026-11-19 ? Friss?t?s ut?ni bizony?t?kok ?s h?tk?znap-sz?m?t?s
+
+A felhaszn?l? meger?s?tette, hogy minden bek?ld?tt k?p oldalfriss?t?s ut?n k?sz?lt. Ez a l?that? tesztterv, a k?t 10?20 kg-os sorozat ?s a kihagy?s visszat?lt?s?t, valamint a 200 grammos ?tkez?s tart?ss?g?t is al?t?masztja. A heti volumen 400 kg, az adagol?s 100 g/169 kcal ? 200 g/338 kcal. M-09 volumen- ?s ment?si r?szpr?b?ja igazolt; a k?l?n DnD/duplik?ci? regresszi?s m?veletsor e k?pekb?l nem igazolhat?. M-10 ?s M-16 ?jrat?lt?s ut?ni ?llapota felhaszn?l?i meger?s?t?ssel al?t?masztott. A k?pek helyi bin?ris f?jljainak ?tv?tele m?g sz?ks?ges.
+
+Az 1/0 edz?sar?ny oka a forr?sk?dban azonos?tott napk?d-elt?r?s: a projektben h?tf?=0, vas?rnap=6, m?g Date.getDay() vas?rnap=0 ?rt?ket ad. A heti sz?ml?l? eddig k?zvetlen?l hasonl?totta a k?t ?rt?ket. Jav?t?s: (getDay()+6)%7; a bej?r?s kezd? ?s v?gd?tuma napt?ri napra normaliz?lt, ?gy a d?lben indul? lek?rdez?s sem hagyja ki a z?r?napot. N?gy ?j regresszi?s eset k?sz?lt; 22/22 teszt sikeres, TypeScript ?s az ?rintett f?jlok lintellen?rz?se sikeres. A sandbox felhaszn?l?lek?rdez?si hib?ja miatt a teszt norm?l jogosults?ggal futott. Az akt?v h?tf?i tervvel a november 16?19-i panel elv?rt ar?nya 1/1; a jav?t?s ut?ni b?ng?sz?s k?p m?g sz?ks?ges. A kor?bban mentett AI-snapshotok nem sz?mol?dnak ?jra automatikusan.
+
+Az onboarding URL-je /onboarding, c?me ?Miel?tt induln?l.?, gombja ?Ment?s ?s tov?bb?. Teljes profil? fi?kot a rendszer a Dashboardra ir?ny?t; a pr?ba ?j, hi?nyos profil? tesztfi?kkal v?gezhet?.
+
+
+## 2026-11-19 ? Jav?tott heti n?zet, mobil ?s ?l? AI
+
+A felhaszn?l? iPhone 16 be?ll?t?ssal, 393?852 CSS-pixeles n?zetben k?sz?tette a mobilk?pet. Ez b?ng?sz?s eszk?zbe?ll?t?sra vonatkoz? k?zl?s, nem bizony?t fizikai iPhone/Safari tesztet. A mobilk?p ?s az ut?na bek?ld?tt asztali k?p 1/1 edz?st, 400 kg volument, 1/4 ?tkez?si napot, 338 kcal ?tlagot, 48 g feh?rj?t ?s egy 73,4 kg-os m?r?st mutat. A h?tk?znap-k?d jav?t?s?nak b?ng?sz?s visszaellen?rz?se sikeres. A dolgozatban a kor?bbi 1/0 ?llapot helyett ezt az asztali k?pet kell haszn?lni (`teszt-volumen-400.png`); a kor?bbi k?p csak hibajav?t?si el?zm?nyk?nt ?rtelmezhet?. A bin?ris k?pf?jlok m?g nem hozz?f?rhet?k helyben, ez?rt t?nyleges f?jlcser?t nem ?ll?tunk.
+
+M-15 konkr?t m?r?si bizony?t?ka: 2026-11-19, 73,4 kg, 1 m?r?s; a grafikon ?s heti panel is mutatja. A kor?bbi felhaszn?l?i k?zl?s szerint a k?pek friss?t?s ut?n k?sz?lnek. M-06 mobilk?pe olvashat?, az els? k?rtya nem csordul t?l; a teljes oldal v?gigg?rget?s?t ez az egy k?p nem helyettes?ti. A k?l?n dem?k?pen a h?rom t?rt?neti h?t ?s a 3/4, 14 400 kg, 6/7 nap, 2150 kcal, 81,7 kg, illetve 2/4, 9000 kg, 4/7 nap, 2050 kcal, 82,2 kg ?rt?kek l?tszanak.
+
+M-11 ?j bizony?t?k: a november 16?19-i elemz?s k?l?n szab?lyalap? (5/10) ?s AI (6/10) panelt mutat; az AI sz?vege a k?pen magyar. A bemenet azonban m?sik eset: 2/2 edz?s, 2000 kg, 315 kcal, 20 g feh?rje, tests?lyadat n?lk?l. Ezt nem hasonl?tjuk a 400 kg/73,4 kg teszth?thez. Modellazonos?t?, mentett snapshot ?s az el?zm?nyb?l megnyit?s meger?s?t?se sz?ks?ges a teljes ?sszehasonl?t? m?r?shez. A k?pen az AI azt mondja, nincs tests?lyadat; a szab?lysz?veg csak annyit ?ll?t, hogy nincs legal?bb k?t m?r?s. A pontos snapshot alapj?n kell eld?nteni, hogy ez az er?sebb ?ll?t?s helyes-e. Az AI-panel ett?l f?ggetlen?l val?di AI-megjelen?st igazol, ez?rt a r?gebbi ?csak fallback l?that?? ?sszegz?s t?rt?neti ?llapot.
+
+## Term?kkatal?gus seed jav?t?sa
+
+A products.name nem UNIQUE, ez?rt az ON CONFLICT(name) 42P10 hib?t okozott. A seed most a megl?v? nevekhez tartoz? ID-kat meg?rzi, ?j mintaterm?khez determinisztikus UUID-t k?pez, ?s az els?dleges kulcson upsertel. T?bb azonos nev? megl?v? rekordn?l ?r?s el?tt meg?ll. A hib?s fut?s process.exit(1) h?v?sa helyett process.exitCode=1 szerepel, hogy a Node befejezhesse a f?gg? m?veleteket. Az UV_HANDLE_CLOSING hiba megsz?n?s?t k?l?n hib?s ?tvonalon nem tesztelt?k.
+
+Ellen?rz?s: h?rom c?lzott teszt sikeres (stabil ID-k, megl?v? ID meg?rz?se, duplik?lt n?v elutas?t?sa); TypeScript sikeres. A jav?tott `npm run seed:products` az aktu?lis projektkonfigur?ci?val sikeresen lefutott: 24 term?k (6 protein, 4 kreatin, 5 vitamin, 5 aminosav, 4 egy?b). M-14 term?khi?nyos akad?lya elh?rult, a kos?r b?ng?sz?s pr?b?ja m?g h?travan.

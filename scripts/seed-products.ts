@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  * Populates the Supabase `products` table with ~22-24 mock supplement
  * entries spread across all five categories (protein, kreatin, vitamin,
- * aminosav, egyéb). The script is idempotent: it UPSERTs on `name` so
+ * aminosav, egyéb). The script is idempotent: it UPSERTs on the primary key `id` so
  * running it twice will not create duplicates — existing rows are
  * updated in place.
  *
@@ -19,6 +19,7 @@
 import { config } from 'dotenv'
 import { createClient } from '@supabase/supabase-js'
 import { resolve } from 'path'
+import { productSeedIds } from './lib/product-seed'
 
 import type { Database } from '../src/types/database'
 
@@ -286,7 +287,16 @@ async function main(): Promise<void> {
   console.log('Starting FitTrack Pro product seed...')
   console.log(`Upserting ${PRODUCTS.length} products into Supabase...`)
 
+  // The schema guarantees uniqueness of id, not name. Preserve existing IDs.
+  const { data: existing, error: lookupError } = await supabase
+    .from('products')
+    .select('id, name')
+    .in('name', PRODUCTS.map((p) => p.name))
+  if (lookupError) throw lookupError
+  const ids = productSeedIds(PRODUCTS.map((p) => p.name), existing ?? [])
+
   const rows = PRODUCTS.map((p) => ({
+    id: ids.get(p.name)!,
     name: p.name,
     description: p.description,
     price: p.price,
@@ -298,7 +308,7 @@ async function main(): Promise<void> {
 
   const { data, error } = await supabase
     .from('products')
-    .upsert(rows, { onConflict: 'name' })
+    .upsert(rows, { onConflict: 'id' })
     .select('id, name, category, price')
 
   if (error) {
@@ -320,5 +330,5 @@ async function main(): Promise<void> {
 
 main().catch((err) => {
   console.error('Seed failed:', err)
-  process.exit(1)
+  process.exitCode = 1
 })

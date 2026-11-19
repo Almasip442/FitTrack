@@ -195,3 +195,13 @@ B1 (Auth/Navigáció)    B2 (OpenRouter)    B3 (Stripe)    B4 (Frontend UX)    B
 ```
 
 Minden bugfix iteráció független egymástól és az élő backend/frontend backlogtól is — bármilyen sorrendben végrehajtható. A javasolt prioritási sorrend (kritikusság alapján): **B1 → B3 → B2 → B5 → B4**.
+
+
+### 2026-11-19 ? Heti tervezett edz?ssz?m jav?t?sa
+
+A h?tf?=0 projektkonvenci? ?s a JavaScript vas?rnap=0 sz?moz?s elt?r?se miatt r?szleges h?ten 1/0 jelenhetett meg. A heti aggreg?tor napk?d-konverzi?t ?s napt?ri napra normaliz?lt bej?r?st kapott. N?gy ?j regresszi?val 22/22 teszt sikeres; TypeScript ?s c?lzott lint sikeres. B?ng?sz?s visszaellen?rz?s: akt?v h?tf?i terv, egy napl?zott edz?s ? november 16?19. panelen 1/1. A felhaszn?l? a bek?ld?tt k?pek mindegyik?r?l meger?s?tette, hogy friss?t?s ut?n k?sz?lt.
+
+
+### 2026-11-19 ? Term?kseed ?s ?j k?pbizony?t?kok
+
+A 42P10 term?kseed-hiba jav?tva: n?v helyett megl?v?/stabil ID alap? upsert, duplik?lt n?v eset?n ?r?s el?tti elutas?t?s. H?rom c?lzott unit teszt ?s TypeScript sikeres; 24 term?k sikeresen felt?ltve a konfigur?lt Supabase projektre. A heti 1/1, 400 kg jav?t?st a felhaszn?l? k?ppel visszaigazolta; a mobilbe?ll?t?s iPhone 16, 393?852. A 73,4 kg/1 m?r?s l?that?. ?j, magyar ?l? AI-panel ?rkezett k?l?n, 2000 kg-os adatk?szlettel; teljes snapshot-alap? min?s?gi m?r?s ?s el?zm?nypr?ba m?g sz?ks?ges. A k?pf?jlok helyi ?tv?tele tov?bbra is nyitott.
