@@ -49,3 +49,23 @@ Codex összevetette a kéziratot a júniusi, október 7-i és október 28-i egye
 # 2026-11-19 – Reprodukálható helyi indítás dokumentálása
 
 Codex a hallgató frissklón-próbájának visszajelzéséből kiegészítette a DEPLOYMENT útmutatót és a tesztjegyzőkönyvet. A hallgató pontosítása alapján ugyanazon a Windows gépen végzett próbát rögzítettünk, nem másik laptopos telepítést. A pontos futtatókörnyezet és commitazonosító hiánya megmaradt korlátként. Új szoftvertesztet nem állítottunk végrehajtottnak; a módosítás dokumentációs jellegű.
+
+### 2026-11-19 – A dolgozat nyelvi átdolgozása
+
+Codex a felhasználó kérésére átdolgozta a kézirat szerkesztői utasításokat tartalmazó, ismétlődő és jelentésszerű részeit. A böngészős próbák leírása a szerző korábbi visszajelzéseire épül; az automatizált ellenőrzések és az MI közreműködése külön szerepelnek. A tesztelési fejezetben a november 19-i 25 sikeres eset és az új képbizonyítékok váltották fel az elavult állapotleírásokat. A nyitott AI-összehasonlítás, a Stripe összegeltérés és a telepítési próba korlátai megmaradtak. Új alkalmazásteszt vagy mérési eredmény nem készült; a módosítás nyelvi és dokumentációs jellegű. A Word-változatot a módosított kéziratból újrageneráljuk.
+
+
+### 2026-11-19 – Igényfeltárás és MI-közreműködés pontosítása
+
+A szerző 3–4 edzővel folytatott informális beszélgetéseket erősített meg. Ezek a rugalmas sorozatnapló, a kihagyás mentése és a hiányzó étkezési adatok elkülönítésének kialakításához adtak támpontot. Ez nem formális interjú vagy UAT; pontos dátumokat nem találtunk ki. A szerző GPT‑6.2 által tömörített kutatási összefoglalókat olvasott. A 6.6. fejezet négy valós együttműködési példát kapott, a Codex kód-, teszt- és szövegelőállító szerepének feltüntetésével.
+
+Forrásellenőrzés: Codex, 2026-11-19. A célzott ellenőrzés a kézirat kutatási számaira és fő következtetéseire terjedt ki, nem minden forrás teljes lektorálására, és nem a szerző személyes olvasásaként szerepel.
+
+- [7] Mifflin: az eredeti absztrakt egyszerűsített férfi/női REE-egyenlete megfelel a hivatkozott képletnek. https://pubmed.ncbi.nlm.nih.gov/2305711/
+- [9] Heaselgrave: az elfogadott szerzői kézirat absztraktja igazolja a 49 férfit, 6 hetet, 9/18/27 sorozatot és a nem szignifikáns csoportközi eredményt. A FitTrack mutatóját nem validálja; ezt pontosítottuk. https://pure-oai.bham.ac.uk/ws/portalfiles/portal/54153731/Heaselgrave_et_al_Dose_response_of_weekly_International_Journal_Sports_Physiology_and_Performance_2018.pdf
+- [10] SMARTER: kiadói Results és Conclusions, 502 résztvevő, 12 hónap, nincs szignifikáns csoportközi testsúlykülönbség; az üzenetmegnyitás kedvezőbb eredménnyel társult. https://www.jmir.org/2022/7/e38243/
+- [11] WHO: kiadói áttekintés, etika, emberi jogok és elszámoltathatóság. https://www.who.int/publications/i/item/9789240029200
+- [13] Raber: kiadói PDF absztrakt, 59 tanulmány és a módszerek összehasonlításának korlátai. https://doi.org/10.1017/S136898002100358X
+- [14] Jin: eredeti absztrakt, 57 bevont résztvevő (54 fejezte be), 12 hét, nincs szignifikáns testsúly/BMI csoportközi különbség. https://synapse.koreamed.org/upload/synapsexml/0161nrp/pdf/nrp-17-1238.pdf
+
+A bibliográfiai dátumokat nem írtuk át visszamenőleg. A mostani ellenőrzés dátuma ehhez a bejegyzéshez tartozik. Új alkalmazásteszt nem futott; dokumentáció és Word-export változott.

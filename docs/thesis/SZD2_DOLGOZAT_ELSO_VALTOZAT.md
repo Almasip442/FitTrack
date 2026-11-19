@@ -1,14 +1,19 @@
 # Személyre szabott edzés- és táplálkozáskövető webalkalmazás fejlesztése
 ## Heti fejlődéselemzés strukturált naplóadatok és nagy nyelvi modell felhasználásával
 
-**Szakdolgozat II. – első tartalmi munkaváltozat, bővítve 2026. november 17-én**
+**Szakdolgozat II. – véleményezésre előkészített változat, frissítve 2026. november 19-én**
 
 **Szerző:** Almási Péter  
 **Neptun-kód:** BC0GZD  
-**Intézmény / kar / szak:** [kitöltendő a kari sablon szerint]  
+**Intézmény:** Szegedi Tudományegyetem
+
+**Kar:** Természettudományi és Informatikai Kar
+
+**Szak és képzési szint:** programtervező informatikus alapképzési szak (BSc)
+
 **Témavezető:** Dr. Bilicki Vilmos
 
-> Ez a munkakézirat bevezetést, elméleti hátteret, követelményelemzést, rendszertervezési és megvalósítási leírást, valamint a jelenleg rögzíthető teszteredményeket tartalmaz. A kézi tesztelés még folyamatban van: a később végrehajtott black-box esetek eredményeit és képernyőképeit a tesztjegyzőkönyv alapján kell majd beépíteni. Ez még nem az 50 oldalas, kari Word-sablonra tördelve ellenőrzött végleges dokumentum; a fejezeteket a hallgatónak a saját megvalósításával össze kell vetnie.
+> A kézirat a 2026. november 19-ig megvalósított rendszert és a dokumentált ellenőrzések eredményeit mutatja be. A még nyitott mérési és működési kérdéseket a 6. és 7. fejezet tárgyalja.
 
 ---
 
@@ -20,9 +25,9 @@ Az edzés és a táplálkozás tudatos követése több, egymással összefügg�
 
 A nehézséget nem kizárólag az adatok mennyisége jelenti. A naplók gyakran hiányosak: előfordulhat, hogy egy napra nem került étkezés, egy tervezett gyakorlatot kihagytak, vagy csak egyetlen testsúlymérés áll rendelkezésre. Ha a hiányzó étkezési napokat nulla kalóriaként kezeljük, az átlag lefelé torzul. Ha a megtervezett edzést azonosnak vesszük a ténylegesen elvégzett edzéssel, akkor a teljesítési mutató nem tükrözi a naplót. Rövid adatsorból pedig nem indokolt tartós testsúlytrendet állítani. A rendszernek ezért különbséget kell tennie a hiányzó adat, a rögzített nulla érték, a terv és a tényleges teljesítés között.
 
-A projekt kiinduló értéke az, hogy az edzéstervet, az edzésnaplót, a táplálkozási bejegyzéseket és a testsúlyméréseket közös heti nézetben kapcsolja össze. Így a felhasználónak nem kell külön felületekről kézzel összegyűjtenie az összehasonlításhoz szükséges adatokat. A rendszer nem állítja, hogy a piacon elérhető más alkalmazásoknál általánosságban jobb; a dolgozat vizsgált hozzájárulása a FitTrack Pro-ban megvalósított, adatokkal visszaellenőrizhető heti összesítés és az arra épített magyarázat.
+A FitTrack Pro az edzéstervet, az edzésnaplót, a táplálkozási bejegyzéseket és a testsúlyméréseket közös heti nézetben kapcsolja össze. A felhasználó így egy helyen tekintheti át, mit tervezett, mit rögzített ténylegesen, és hogyan változtak az adatai az előző hetekhez képest. A dolgozat ennek a folyamatnak a megvalósítását és ellenőrzését mutatja be.
 
-A témavezető a projekt szakmai fókuszát a különálló modulok további bővítése helyett a személyes cél, a tényleges edzés, a táplálkozás és a testsúlyváltozás összekapcsolásában jelölte meg [6]. Ennek megfelelően a webshop a működő alkalmazás kiegészítő része, de nem a jelen dolgozatrész központi vizsgálati tárgya. A vizsgált fő felhasználói folyamat a személyes célok és terv kialakításától a naplózáson át a heti értékelés megtekintéséig tart.
+A témavezető a projekt szakmai fókuszát a különálló modulok további bővítése helyett a személyes cél, a tényleges edzés, a táplálkozás és a testsúlyváltozás összekapcsolásában jelölte meg [6]. Ennek megfelelően a webshop a működő alkalmazás kiegészítő része, de nem a dolgozat központi témája. A vizsgált fő felhasználói folyamat a személyes célok és terv kialakításától a naplózáson át a heti értékelés megtekintéséig tart.
 
 ### 1.2. Célkitűzés és vizsgálati kérdések
 
@@ -32,7 +37,7 @@ A dolgozat a következő kérdéseket vizsgálja:
 
 1. Hogyan lehet az edzéstervből, a tényleges edzésnaplóból, az étkezésekből és a testsúlymérésekből egységes, kézzel is ellenőrizhető heti mutatókat előállítani?
 2. Hogyan kezelhetők a hiányzó vagy részleges naplóadatok úgy, hogy ne keveredjenek össze a nulla értékkel, és ne vezessenek félre a heti átlagok?
-3. Milyen magyarázó többletet adhat a strukturált adatokból készített AI-válasz a szabályalapú összefoglalóhoz képest, és milyen működési, biztonsági és adatminőségi korlátokat kell bemutatni?
+3. Milyen magyarázó többletet adhat a strukturált adatokból készített AI-válasz a szabályalapú összefoglalóhoz képest, és milyen működési és adatminőségi korlátai vannak?
 
 A dolgozatban az alkalmazás AI-funkcióját nem egészségügyi döntéshozóként kezelem. A vizsgálat tárgya az, hogy a nyelvi modell mennyire érthetően fogalmazza meg a rendszerben már összesített adatokat, és mennyire követi a megadott korlátokat. A nyers naplóadatok és a számított mutatók ellenőrizhetősége fontosabb, mint a modell szövegének meggyőző hangzása.
 
@@ -40,7 +45,7 @@ A dolgozatban az alkalmazás AI-funkcióját nem egészségügyi döntéshozók�
 
 A dolgozat fő területe a profilhoz és célhoz kötött heti edzés- és táplálkozáskövetés, a részletes edzésnapló, a testsúlyadatok összesítése, valamint a szabályalapú és AI-alapú visszajelzés összevetése. A felhasználó gyakorlatokból edzéstervet állíthat össze, naplózhatja a tényleges sorozatokat, ismétléseket és súlyokat, étkezési adatokat rögzíthet, továbbá testsúlyméréseket vehet fel. A fejlődésoldal a kiválasztott hetet és az azt megelőző két hetet hasonlítja össze; a folyamatban lévő időszakot részleges hétként jelöli.
 
-A rendszer célértékeket becsül a profil megadott adataiból, de ezek nem klinikai mérések. A felület és az AI-kimenet nem helyettesít orvosi, dietetikusi vagy edzői tanácsadást. A rövid vagy hiányos napló nem teszi lehetővé az egészségi állapotra vonatkozó következtetést. A webshop, a fizetési folyamat, valamint az automatikus edzésterv-módosítás nem tartozik e dolgozatrész fő értékelési körébe.
+A rendszer célértékeket becsül a profil megadott adataiból, de ezek nem klinikai mérések. A felület és az AI-kimenet nem helyettesít orvosi, dietetikusi vagy edzői tanácsadást. A rövid vagy hiányos napló nem teszi lehetővé az egészségi állapotra vonatkozó következtetést. A webshop, a fizetési folyamat, valamint az automatikus edzésterv-módosítás nem tartozik a vizsgálat fő körébe.
 
 ## 2. Elméleti háttér és szakmai alapok
 
@@ -60,7 +65,7 @@ Az edzésterv és az edzésnapló eltérő kérdésekre válaszol. A terv azt r�
 
 A FitTrack Pro egyik leíró mutatója a naplózott volumen, amelyet a rendszer a sorozatonkénti ismétlésszám és a rögzített súly szorzatösszegeként számít. Ez reprodukálható összehasonlító adatot ad az alkalmazásban, de nem azonos egy teljes edzésprogram élettani terhelésének vagy izomadaptációjának mérésével. A gyakorlatok biomechanikai eltérései, a mozgástartomány, a végrehajtás módja és az erőkifejtés nem jelennek meg ebben az egyetlen összegben.
 
-Heaselgrave és munkatársai 49, ellenállásos edzésben tapasztalt férfival végeztek hathetes randomizált vizsgálatot, amelyben heti 9, 18 vagy 27 bicepszsorozatot hasonlítottak össze. Mindhárom csoport izomvastagsága és egyismétléses maximális ereje nőtt; a csoportok közötti különbségek az elsődleges izomvastagság- és erőmutatóknál nem voltak szignifikánsak [9]. A vizsgálat egy meghatározott izomcsoportra, résztvevőkre és időszakra vonatkozott, ezért nem ad univerzális heti volumenreceptet. A dolgozatban azért releváns, mert alátámasztja a volumen mint naplózható és összehasonlítható adat használatát, miközben megmutatja, miért nem helyes ebből közvetlenül egészségi vagy fejlődési állítást levonni.
+Heaselgrave és munkatársai 49, ellenállásos edzésben tapasztalt férfival végeztek hathetes randomizált vizsgálatot, amelyben heti 9, 18 vagy 27 bicepszsorozatot hasonlítottak össze. Mindhárom csoport izomvastagsága és egyismétléses maximális ereje nőtt; a csoportok közötti különbségek az elsődleges izomvastagság- és erőmutatóknál nem voltak szignifikánsak [9]. A vizsgálat egy meghatározott izomcsoportra, résztvevőkre és időszakra vonatkozott, ezért nem ad univerzális heti volumenreceptet. A vizsgálatban a heti sorozatszám és az edzésgyakoriság is eltért a csoportok között. A FitTrack ismétlésszám és súly alapján számított volumenmutatójának használata saját tervezési döntés; a kutatás nem ennek a mutatónak az érvényességét vizsgálta.
 
 A rendszer ezért a tényleges szetteket és a súlyokat rögzíti, de a heti volumenre vonatkozó szöveget leíró statisztikaként kezeli. A szabályalapú és AI-alapú visszajelzés nem állítja, hogy a volumen növekedése önmagában bizonyítja a fejlődést. A kihagyott gyakorlat külön állapota szintén fontos: ha a kihagyás nulla ismétléssel vagy hiányzó sorral lenne összemosva, a terv és a tényleges edzés közötti különbség nehezebben lenne visszaellenőrizhető.
 
@@ -89,6 +94,12 @@ A fenti kutatási eredmények és technikai korlátok a dolgozatban nem közvetl
 Ennek megfelelően a követelmények között szerepel a tervezett és végrehajtott edzés külön tárolása, a részletes sorozatnapló, az étkezési és testsúlyadatok hetes aggregálása, a hiányzó adatok látható jelzése, valamint az AI-válasz determinisztikus tartaléka. A későbbi értékelés feladata annak ellenőrzése, hogy ezek a követelmények a felületen és az adatbázisban is teljesülnek-e; a dolgozat nem használja fel a szakirodalmat a még el nem végzett felhasználói tesztek helyettesítésére.
 
 ## 3. Követelményelemzés
+
+A témaválasztásomat többéves, hobbiszintű érdeklődés előzte meg az edzés és a táplálkozás iránt. A követelmények átgondolását 3–4 edzővel folytatott informális szakmai beszélgetés is segítette. A beszélgetések egyik fontos gondolata az volt, hogy a felhasználó nem minden alkalommal tudja pontosan végrehajtani az előre összeállított tervet. A naplónak ezért a ténylegesen elvégzett munkát kell követnie, és lehetőséget kell adnia az eltérések rögzítésére.
+
+Ez a szempont három megoldásban jelent meg. Az edzésnaplóban a sorozatok hozzáadhatók és törölhetők, így a rögzített edzés eltérhet a tervezettől. A kihagyott gyakorlat külön állapotot kap, amely mentés után is megmarad. A táplálkozási összesítés pedig megkülönbözteti a hiányzó bejegyzést a nulla beviteltől: a nem naplózott napokat nem számítja nulla kalóriával a heti átlagba. Az első két megoldás a változó teljesítményt, a harmadik a naplózás hiányosságait kezeli.
+
+Az edzői beszélgetések gyakorlati támpontokat adtak, de nem alkottak formális interjús vagy reprezentatív vizsgálatot, és nem helyettesítik az alkalmazás felhasználói tesztelését. A részletes edzésnapló és a heti táplálkozási összesítés a témavezetői javaslatokban is szerepelt [6]; az edzői tapasztalatok ezek konkrét működésének kialakítását segítették. A tájékozódás a Szakdolgozat I. és II. készítésének időszakához kapcsolódott; az egyes beszélgetések és olvasások pontos dátumát nem rögzítettem.
 
 ### 3.1. Szereplők és használati környezet
 
@@ -191,7 +202,7 @@ A heti elemzéshez fontosabb táblák és kapcsolataik összefoglalása:
 
 Az elnevezett táblák nem önmagukban alkotnak elemzést: a szerver a felhasználó azonosítója és a vizsgált dátumtartomány alapján kérdezi le őket. A heti mutatók csak az adott időablakhoz tartozó rekordokból készülnek. A részletes gyakorlatnapló és a terv külön tárolása teszi lehetővé, hogy a tervezett alkalom és a végrehajtott munka összevethető legyen.
 
-A Supabase Auth azonosítja a felhasználót, a Row Level Security (RLS) pedig adatbázis-szinten korlátozza, hogy mely sorok érhetők el. A kliensoldali felület elrejtése nem helyettesítené ezt a védelmet: a jogosultsági ellenőrzést a szervernek és az adatbázisnak is érvényesítenie kell. A projekt RLS-szabályokat tartalmaz a felhasználói táblákhoz [2]. A végleges értékelési fejezetben külön rögzíteni kell a jogosulatlan hozzáférés próbájának tényleges eredményét. A seedeléshez szükséges emelt jogosultságú kulcs nem kerülhet a böngészőbe vagy a verziókezelőbe.
+A Supabase Auth azonosítja a felhasználót, a Row Level Security (RLS) pedig adatbázis-szinten korlátozza, hogy mely sorok érhetők el. A kliensoldali felület elrejtése nem helyettesítené ezt a védelmet: a jogosultsági ellenőrzést a szervernek és az adatbázisnak is érvényesítenie kell. A projekt RLS-szabályokat tartalmaz a felhasználói táblákhoz [2]. A hitelesítés nélküli API-kérés eredményét a 6.2. alfejezet ismerteti; ez önmagában nem igazolja valamennyi RLS-szabály helyességét. A seedeléshez szükséges emelt jogosultságú kulcs nem kerülhet a böngészőbe vagy a verziókezelőbe.
 
 A 4.3. ábra hozzáférési rétegek és szerveroldali titkok bemutatásával kapcsolja össze a fenti leírást a megvalósított rendszerrel. Az ábra magyarázó megjegyzései a tényleges státuszok és az üzleti fogalmak különbségeit is jelölik.
 
@@ -275,7 +286,7 @@ A mentési szerveroldali művelet hitelesített felhasználót követel meg, ér
 
 Az elvégzett gyakorlat `sets_completed`, `reps_completed` és `weight_used` mezőket kap; a sorozatszintű ismétlés- és súlyértékek tömbökben tárolódnak. Kihagyásnál a `skipped` mező igaz, a sorozatszám nulla, a két részletes tömb pedig üres. Ez a tárolási forma megkülönbözteti a kihagyást a hiányzó naplótól, és a heti aggregációban lehetővé teszi, hogy a kihagyott gyakorlat ne növelje a volument. A mentés az edzésnaphoz tartozó napi napló `workout_completed` állapotát is frissíti. A felhasználó később ugyanazt a dátumot megnyitva visszakapja a rögzített sorozatokat és kihagyásokat [8].
 
-Az 5.1. ábra a sorozatszintű rögzítőfelületet, az 5.2. ábra pedig a kihagyott állapot visszajelzését mutatja egy demó edzéstervben. A képernyőképek a felhasználói felület szemléltetésére szolgálnak; a mentés tartósságára vonatkozó teszteredményt a jegyzőkönyvben kell rögzíteni.
+Az 5.1. ábra a sorozatok rögzítését, az 5.2. ábra a kihagyott gyakorlat megjelenítését mutatja. A mentés ellenőrzését és a naplóból számított volumen próbáját a 6. fejezet ismerteti.
 
 <p align="center"><img src="./figures/edzesnaplo-szerkesztes.png" alt="Sorozatok ismétlés- és súlyértékeinek rögzítése az edzésnaplóban" width="80%"></p>
 
@@ -321,17 +332,17 @@ A külső szolgáltatók hibáját a rendszer az adott funkció hatókörében k
 
 ### 5.8. A megvalósítás értékelési szempontjai
 
-A megvalósítás fő műszaki jellemzője, hogy az edzésterv és a tényleges teljesítés külön adatként marad meg, a heti számítás pedig ugyanazt a mutatóképzést használja az összesítő és az AI-bemenet számára. A hiányzó étkezés, a nulla érték, a kihagyott gyakorlat és a hiányzó testsúly nem mosódik össze. Az AI-réteg magyarázatot adhat, de a teljes hét pontozásához nem nélkülözhetetlen, és nem írhatja felül a felhasználói naplót vagy az edzéstervet.
+Az edzésterv és a ténylegesen elvégzett munka külön tárolása teszi ellenőrizhetővé a heti visszajelzést. A fejlődésoldal és az AI-elemzés ugyanabból a heti összesítésből dolgozik. A felületen látható számok ezért közvetlenül összevethetők a modellnek átadott adatokkal. A modell feladata ezek magyarázata; a naplóbejegyzéseket és az edzéstervet nem módosítja.
 
-A rendszer teljes értékelése nem zárható le a kód áttekintésével. A külső élelmiszeradatok pontossága, a modell válaszának hasznossága, a profil- és naplófolyamatok böngészős megfigyelése, valamint a kosár és a téma betöltés utáni állapota felhasználói környezetben ellenőrzendő. Ezeket a fejezet következő része, illetve a mellékelt tesztjegyzőkönyv külön kezeli; a még végre nem hajtott próbák eredménye nem tekinthető igazoltnak.
+A számítások helyességét automatizált tesztekkel, a mentést és a megjelenítést böngészős próbákkal ellenőriztem. Az AI-válasz hasznossága ettől külön kérdés: egy hibamentesen megjelenő szöveg még tartalmazhat pontatlan következtetést. Az elvégzett ellenőrzéseket és a további vizsgálatok határait a 6. fejezet választja szét.
 
 ### 5.9. Felhasználói felület és fő munkafolyamat
 
-A minta szakdolgozathoz hasonlóan a rendszer bemutatásának a felhasználói képernyők és az azokhoz tartozó feladatok sorrendjét is követnie kell. A FitTrack Pro elsődleges navigációja a Dashboard, Edzés, Kalória és Fejlődés oldalakat kapcsolja össze; a Shop kiegészítő modul, nem a dolgozat szakmai központja. Az első használat a regisztrációból és a kötelező profiladatok megadásából indul. A felhasználó ezután edzéstervet kezel, a tényleges edzését és étkezését naplózza, testsúlymérést rögzít, majd a fejlődésoldalon áttekinti az összesített adatokat.
+A FitTrack Pro elsődleges navigációja a Dashboard, Edzés, Kalória és Fejlődés oldalakat kapcsolja össze; a Shop kiegészítő modul, nem a dolgozat szakmai központja. Az első használat a regisztrációból és a kötelező profiladatok megadásából indul. A felhasználó ezután edzéstervet kezel, a tényleges edzését és étkezését naplózza, testsúlymérést rögzít, majd a fejlődésoldalon áttekinti az összesített adatokat.
 
 A munkafolyamat fontos felületi állapotai a betöltés, az üres adat, a sikeres mentés és a hiba. A fejlődésoldal hétválasztója a kiválasztott hetet és az azt megelőző két hetet mutatja; a még tartó hetet részleges időszakként jelöli. A három kártya az edzésteljesítést és volument, az étkezési lefedettséget, a kalória- és fehérjeátlagot, valamint a testsúlyméréseket azonos szerkezetben jeleníti meg. Hiányzó érték esetén a felület adat-hiányt mutat, nem nullát helyettesít be.
 
-A dolgozatban már szereplő 5.1. és 5.2. ábra az edzésnapló sorozatainak szerkesztését, illetve a kihagyott gyakorlat állapotát szemlélteti. A következő képernyőképek a 2026. november 19-i kézi ellenőrzés mentett állapotait mutatják. A tesztelő visszajelzése szerint a felvételek oldalfrissítés után készültek.
+A dolgozatban már szereplő 5.1. és 5.2. ábra az edzésnapló sorozatainak szerkesztését, illetve a kihagyott gyakorlat állapotát szemlélteti. A következő képernyőképek a 2026. november 19-i kézi ellenőrzés mentett állapotait mutatják. A felvételeket oldalfrissítés után készítettem.
 
 A 5.3. ábra navigáció a fő felhasználói folyamatban bemutatásával kapcsolja össze a fenti leírást a megvalósított rendszerrel. Az ábra magyarázó megjegyzései a tényleges státuszok és az üzleti fogalmak különbségeit is jelölik.
 
@@ -385,6 +396,32 @@ Az AI-nézet külön adathalmazt mutat: 2/2 edzés, 2000 kg volumen, 315 kcal na
 
 *5.12. ábra. A szabályalapú értékelés és a sikeres AI-válasz (saját képernyőkép).*
 
+Az 5.13–5.14. ábra az onboarding profiladatait és az aktivitásból számolt célértéket mutatja. A példa 30 éves, 70 kg-os, 170 cm magas férfi profiljához izomnövelési cél és nagyon aktív szint tartozik; a felület 3090 kcal célértéket jelenít meg.
+
+![Profil és cél](figures/teszt-onboarding-profil.png)
+
+*5.13. ábra. Profiladatok és cél megadása (saját képernyőkép).*
+
+![Aktivitás és kalóriacél](figures/teszt-onboarding-kaloriacel.png)
+
+*5.14. ábra. Aktivitási szint és a becsült kalóriacél (saját képernyőkép).*
+
+Az 5.15. ábrán a naplóban két 10 ismétléses, 20 kg-os sorozat és egy kihagyott gyakorlat látható. A 2 × 10 × 20 = 400 kg összeg megfelel az 5.8. ábrán megjelenő heti volumennek; a kihagyott gyakorlat nem növeli ezt az összeget.
+
+![400 kg-os napló](figures/teszt-naplo-400.png)
+
+*5.15. ábra. Rögzített sorozatok és kihagyott gyakorlat (saját képernyőkép).*
+
+A kiegészítő webshop termékoldala és kosara az 5.16–5.17. ábrán látható. Öt, egyenként 6990 Ft-os mintatermék kosárértéke 34 950 Ft. Ez a kosárszámítás bemutatása; a fizetési szolgáltatóhoz továbbított összeg ismert eltérését a tesztelési fejezet külön jelzi.
+
+![Mintatermék](figures/teszt-shop-termek.png)
+
+*5.16. ábra. Mintatermék és mennyiségválasztó (saját képernyőkép).*
+
+![Kosár](figures/teszt-shop-kosar.png)
+
+*5.17. ábra. Öt termék összesítése a kosárban (saját képernyőkép).*
+
 ## 6. Ellenőrzés és jelenlegi teszteredmények
 
 ### 6.1. Ellenőrzési megközelítés
@@ -395,9 +432,9 @@ A feketedobozos esetek a felhasználói műveletre és a látható eredményre �
 
 ### 6.2. Automatizált és API-integrációs eredmények
 
-Az automatizált tesztcsomag 16 tesztet futtat a nyelvi validációra, a szabályalapú összefoglalóra, a heti metrikákra és a háromhetes kártya renderelésére. A csomag mind a 16 esetben sikeres lett. A nyelvi validációs esetek között szerepel a magyar ékezetes szöveg elfogadása, a spanyol, francia, angol vagy cirill vegyes válasz elutasítása, valamint annak ellenőrzése, hogy az angol szöveget ne fogadja el pusztán az egybetűs magyar „a” gyakori előfordulása. A szabályalapú tesztek az adaptív javaslat feltételeit és a terven felüli edzések kezelését ellenőrzik. A heti aggregációs tesztek a naplózott napok átlagát, a hiányzó napok elhagyását, a részleges hetet, a testsúlymutatót és az edzésvolument vizsgálják. A renderelési teszt rögzített mutatók mellett ellenőrzi a három külön panelt, a hétcímkéket és az összehasonlító értékeket.
+A 2026. november 19-én futtatott automatizált csomag 25 tesztet tartalmazott. Ezek kiterjedtek a naptári napok kezelésére és a termékseedre is. A korábbi esetek a nyelvi validációra, a szabályalapú összefoglalóra, a heti metrikákra és a háromhetes kártya renderelésére irányultak. Mind a 25 teszt sikeresen lefutott. A nyelvi validációs esetek között szerepel a magyar ékezetes szöveg elfogadása, a spanyol, francia, angol vagy cirill vegyes válasz elutasítása, valamint annak ellenőrzése, hogy az angol szöveget ne fogadja el pusztán az egybetűs magyar „a” gyakori előfordulása. A szabályalapú tesztek az adaptív javaslat feltételeit és a terven felüli edzések kezelését ellenőrzik. A heti aggregációs tesztek a naplózott napok átlagát, a hiányzó napok elhagyását, a részleges hetet, a testsúlymutatót és az edzésvolument vizsgálják. A renderelési teszt rögzített mutatók mellett ellenőrzi a három külön panelt, a hétcímkéket és az összehasonlító értékeket.
 
-A statikus kódellenőrzések közül az ESLint hibamentes futást adott, a TypeScript `--noEmit` ellenőrzés hibát nem jelzett, a Next.js production build pedig sikeresen összeállt és létrehozta az útvonalakat. A tesztfuttatás helyi sandbox környezetben Node `os.userInfo()` rendszerhibába ütközött; ezt a repón kívül, ideiglenesen létrehozott preload shim kerülte meg. A shim nem módosította az alkalmazás kódját vagy a felhasználói konfigurációt, és futtatás után eltávolították. A reprodukálható parancsok és korlátok az integrációs tesztjegyzőkönyvben szerepelnek.
+A fejlesztés során az ESLint, a TypeScript `--noEmit` ellenőrzése és a Next.js éles buildje is sikeresen lefutott. Ezek korábbi ellenőrzések; a november 19-i 25 tesztes futtatás nem jelent újabb teljes buildellenőrzést. A parancsok és futtatási körülmények az integrációs tesztjegyzőkönyvben szerepelnek.
 
 Az API-integráció autentikáció nélkül `401` státusszal utasította el a heti adatkérést. Bejelentkezett demófelhasználóval az érvényes hétfői kezdődátum `200` választ adott, és az aktuálisnak kijelölt hét, valamint a két megelőző hét adatcsomagját szolgáltatta. A 2026. október 12-i hét adatai 3/4 teljesített edzést, 6/7 napra rögzített étkezést, napi 2150 kcal átlagot, 14 400 kg naplózott volument és 81,7 kg testsúlyátlagot tartalmaztak. Az október 5-i hétre 2/4, 4/7, napi 2050 kcal, 9000 kg és 82,2 kg volt az elvárt érték; az API-válasz egyezett a seed kimenetével. Hat hibás dátumváltozat – köztük hiányzó, formailag hibás, nem hétfői, lehetetlen, jövőbeli és a megengedett tartományon kívüli érték – `400` választ adott.
 
@@ -408,63 +445,77 @@ A követelmények és a rögzített ellenőrzések közötti kapcsolatot a 6.1. 
 | K-01 Hitelesítés és védett hozzáférés | HK-04, HK-01–HK-03 | Supabase Auth, védett oldalak és szerveroldali tulajdonos-ellenőrzés | M-07 sikeres; M-13 részben igazolt. |
 | K-02 Profil és céladatok | HK-04, HK-03 | Profil- és onboarding űrlap, heti célérték-becslés | M-13 részben igazolt; a teljes mezőmentés és átirányítás még igazolandó. |
 | K-03 Edzésterv szerkesztése | HK-05 | Edzésterv-, edzésnap- és gyakorlatkezelés | M-16 sikeres felhasználói visszajelzés alapján; részletes bizonyíték még gyűjtendő. |
-| K-04 Részletes edzésnapló | HK-02 | Sorozatrögzítés, kihagyásmentés és heti volumenaggregáció | M-09 részben igazolt; kihagyás utáni volumen még ellenőrizendő. |
+| K-04 Részletes edzésnapló | HK-02 | Sorozatrögzítés, kihagyásmentés és heti volumenaggregáció | M-09: a mentett két sorozat és a kihagyás mellett 400 kg volumen, 1/1 edzés látható (5.8. és 5.15. ábra). |
 | K-05 Étkezés és ételkeresés | HK-06 | `/api/food-search`, adagolás és napi étkezésmentés | M-10 sikeres felhasználói visszajelzés alapján. |
-| K-06 Testsúlymérés mentése | HK-07, HK-01 | Testsúlyűrlap és heti mérési átlag | M-15 sikeres felhasználói visszajelzés alapján; pontos tesztadat nincs rögzítve. |
+| K-06 Testsúlymérés mentése | HK-07, HK-01 | Testsúlyűrlap és heti mérési átlag | M-15: működő trendekről adott visszajelzés; külön képen 73,4 kg-os egyszeri mérés (5.9. ábra). |
 | K-07–K-08 Heti választó és összehasonlítás | HK-01 | Heti aggregáció, választó és három összehasonlító panel | M-01–M-08, A-05–A-06 sikeres. |
-| K-09 Szabályalapú és AI-elemzés | HK-03 | Heti szabályösszesítő, `/api/analysis`, AI-válasz validáció | A-01 sikeres; M-11 valódi AI-válasza még nem igazolt. |
+| K-09 Szabályalapú és AI-elemzés | HK-03 | Heti szabályösszesítő, `/api/analysis`, AI-válasz validáció | A-01 sikeres; valódi magyar AI-válasz az 5.12. ábrán. A teljes összehasonlító mérés még nyitott. |
 | K-10 AI-fallback | HK-03 | Szolgáltatóhiba-kezelés és szabályalapú tartalék | M-12 fallback képernyője látható; előzmény-visszaolvasás még ellenőrizendő. |
 | K-11 Korábbi elemzések | HK-03 | Heti elemzés tárolása és előzménylista | M-11 élő eredményből való visszaolvasása még ellenőrizendő. |
 
 **6.1. táblázat. A funkcionális követelmények és az ellenőrzések nyomon követése (saját szerkesztés).**
 
-A követelmény–használati eset–megvalósítás–teszt kapcsolatok teljesebbé tételéhez a jelenlegi táblázat a fő kapcsolatokat és az ismert állapotokat együtt rögzíti. M-15 és M-16 eredményéről érkezett felhasználói visszajelzés, de részletes számadat vagy képernyőkép még nincs a repóban. A háromhetes oldal testsúlykártyája önmagában nem bizonyítja a mérőűrlap adatmentését; a tesztjegyzőkönyv ezért a konkrét mérési mentést külön kezeli.
+A táblázatban az igazolt részfolyamatok és a még nyitott ellenőrzések külön szerepelnek. Például az egyszeri testsúlymérés megjelenése a mentést szemlélteti, de önmagában nem mutat többhetes trendet. A tesztjegyzőkönyv az egyes próbák bemenetét, elvárt eredményét és a rendelkezésre álló bizonyítékot is rögzíti.
 
 ### 6.3. Böngészős ellenőrzés és nyitott próbák
 
-2026. november 16-án a felhasználó visszajelzése alapján az M-01–M-06 vizuális esetek sikeresek. A fejlődésoldalon mindhárom panel megjelent, az aktuális hét részleges, a múltbeli hetek lezárt jelölést kaptak, és a hétválasztóval, illetve a nyílvezérlőkkel a történeti hetek is betölthetők voltak. A seedelt értékek és a hiányos hét jelzései megfeleltek az elvárásnak. Mobilméretben nem jelentkezett vízszintes túlcsordulás. Az M-03 első próbáján a natív választó egyes opcióinak kontrasztja hibás volt; a témához igazodó háttér- és szövegszín bevezetése után a felhasználó a javítást böngészőben visszaellenőrizte és megfelelőnek találta.
+A november 16-i böngészős próbák során a három heti panel, az időszakok jelölése és a korábbi hetek kiválasztása megfelelően működött. A demóadatok egyeztek az elvárt értékekkel, a hiányos heteknél megjelentek az adathiányra utaló jelzések. Mobilnézetben nem tapasztaltam vízszintes túlcsordulást. A hétválasztó első próbáján fehér háttéren fehér szöveg jelent meg; a színek javítása után az opciók olvashatóvá váltak. A javítást újabb böngészős próbával ellenőriztem.
 
 Az M-07–M-08 API-esetek szintén sikeresek: hitelesítés nélkül a heti végpont `401` választ ad, hitelesített, érvényes dátummal pedig három időszakot ad vissza; az érvénytelen időszakokra `400` érkezett. Ezek a kérések az API és az adatforrás együttműködését bizonyítják, de nem helyettesítik az edzésnapló, az ételkeresés, az AI-fallback, az onboarding vagy a kosár teljes felhasználói folyamatának böngészős próbáját.
 
-2026. november 17-én a felhasználó M-09-ben tetszőleges sorozatértékeket és kihagyásokat mentett; a mentésről visszajelzett, de az újranyitás utáni volumenérték nem került feljegyzésre. A naplózó képernyőképén ugyanazon gyakorlat többszörös tervbe helyezésekor azonos React-kulcs figyelmeztetés jelent meg. Mivel az adatmodell egy gyakorlatot egyszer tárol naponta, a tervszerkesztő megakadályozza az ismételt hozzáadást, a már duplikált tervet pedig érthető üzenettel jelzi; a felhasználó később visszaigazolta, hogy a napló működik. Egy újabb böngészőképen a DnD-kit automatikusan generált `aria-describedby` azonosítói szerver- és kliensrenderelés között eltértek. A tervszerkesztő `DndContext`-je ezért explicit, stabil azonosítót kapott; a böngészős hidratációs regressziópróba még szükséges. A kihagyás volumenből való kizárása szintén további mérést igényel. Az M-10 ételkeresési és étkezésmentési folyamatát a felhasználó rendeltetésszerűnek és tartósnak jelezte. Az M-11-hez megosztott képen fallback látható, így az nem bizonyít valódi AI-választ. Az M-12 képernyőképe a szabályalapú 3/10 eredményt és az AI-szolgáltatás hibájának felületi jelzését mutatja; az elemzés-előzményből való visszaolvasást még rögzíteni kell. M-13 esetében egy új regisztrációnál nem jelentkezett a korábbi ismétlődő kérés, de a teljes profilkitöltés és átirányítás nincs dokumentálva. M-14-et az üres termékkatalógus miatt nem lehetett kosárfunkcióval végigpróbálni; a repository meglévő termék-seedje után kell ismételni. M-15 testsúlytrendjeit, valamint az M-16 edzéstervadatainak megmaradását a felhasználó működőnek jelezte. A részletes státuszokat és a fennmaradó lépéseket az `INTEGRACIOS_TESZTTERV_ES_JEGYZOKONYV.md` tartalmazza.
+Az edzésnapló próbája két felületi hibát is felszínre hozott. Ugyanazon gyakorlat többszörös felvétele azonos React-kulcsokat eredményezett. A javítás megakadályozza az ismételt hozzáadást, a korábban duplikált tervnél pedig hibaüzenetet ad. A másik esetben a húzással rendezhető elemek automatikus azonosítói eltértek a szerver és a böngésző között; a `DndContext` rögzített azonosítót kapott. A javítás után a böngészős próbát sikeresnek találtam.
+
+Az ételkeresés, az adag megadása és az étkezés mentése működött, az adatok frissítés után is megmaradtak. A november 19-i képeken a 100 grammos adag 169 kcal-os értéke 200 grammnál 338 kcal-ra nő, és ez az érték jelenik meg a napi naplóban is. Az edzésnaplóban két, egyenként tíz ismétlésből álló, 20 kg-os sorozatot mentettem, a második gyakorlatot kihagytam. A heti nézetben ennek megfelelően 400 kg volumen látható. A részleges hét edzésszáma a naptári napok kezelésének javítása után 1/1 lett.
+
+Az AI esetében szolgáltatói hiba mellett is megjelent a szabályalapú értékelés; később magyar nyelvű modellválaszt is sikerült megjeleníteni. A két állapot külön próbából származik. Az elemzések előzményből történő visszaolvasásának és az azonos bemeneten végzett összehasonlításnak a dokumentálása még hiányzik. A részletes eseteket az integrációs tesztjegyzőkönyv tartalmazza.
 
 ### 6.4. Érvényességi korlátok
 
 A jelenlegi eredmények egy fejlesztői/demó környezetben végzett ellenőrzéseket írnak le. Nem jelentenek több résztvevős használhatósági vizsgálatot, és nem bizonyítják, hogy a heti javaslatok valós felhasználók számára minden esetben hasznosak. A seed adatai reprodukálhatóak, de mesterséges minták. Az OpenRouter válasza modell- és szolgáltatófüggő, a nyelvi ellenőrzés pedig ismert mintákat szűr, nem teljes nyelvazonosítást végez. Az Open Food Facts termékadatainak pontosságára az alkalmazás nem vállal garanciát.
 
-Az M-09 volumenellenőrzése, az M-11 valódi modellválasza, az M-12 elemzés-előzményből történő visszaolvasása, az M-13 onboarding teljes sikerútja és az M-14 termékkel végzett kosárpróbája még hiányos. Az M-15–M-16 eredmények felhasználói visszajelzéseken alapulnak, de konkrét értékek és képfájlok még nem szerepelnek a repositoryban. A teljes kézi teszt lezárása, a célfelhasználói UAT, a tiszta telepítés igazolása, az aktuális UI-képernyőképek és a kari sablonban ellenőrzött tördelés még szükséges. Az automatizált és API-eredmények ezért nem jelentik a teljes rendszerértékelés lezárását.
+A bemutatott képernyőképek és tesztek az adott állapotok ellenőrzésére alkalmasak. A modell általános megbízhatóságát, a javaslatok hosszú távú hatását és a rendszer külső célfelhasználók számára való használhatóságát ezekből nem lehet megállapítani.
 
 ### 6.5. Az AI-visszajelzés későbbi összehasonlító értékelése
 
-A modell szövegének értékeléséhez ugyanazt a heti adatsnapshotot kell összevetni a determinisztikus szabályalapú eredménnyel és a külső modell válaszával. A két kimenet csak akkor hasonlítható össze, ha az időszak, a naplózott mutatók és az adatok lefedettsége azonos. Az adatokat ezért az elemzési rekordhoz mentett snapshotból vagy azonos tesztfiókban rögzített, változatlan teszthétből kell venni. A szolgáltató és modell azonosítóját, a teszt dátumát, az AI-állapotot és a fallback tényét a jegyzőkönyvben kell rögzíteni; hozzáférési kulcsot vagy személyes adatot nem szabad a dolgozatba másolni.
+Az összehasonlító vizsgálatot azonos heti adatokra tervezem: a szabályalapú összefoglalót és a modell válaszát ugyanahhoz a mentett bemenethez rendelem. Így a két szöveg közötti különbség nem az eltérő naplóadatokból származik. A vizsgálatnál a dátum, a modell és a szolgáltató azonosítója, valamint a sikeres vagy tartalék válasz állapota is szükséges a reprodukálhatósághoz.
 
-Az értékelés négy szempont szerint végezhető el, szempontonként 0–2 ponttal: (1) a szöveg állításai összhangban vannak-e a heti mutatókkal; (2) a teljes válasz magyar nyelvű és érthető-e; (3) a javaslat konkrét, a következő hétre értelmezhető és a napló adataihoz kötött-e; (4) betartja-e az egészségügyi és biztonsági korlátokat. A 0 pont hibát vagy hiányt, az 1 pont részleges teljesülést, a 2 pont megfelelő teljesülést jelöl. E skála a dolgozat saját, kis mintán alkalmazott értékelési segédlete, nem validált mérőeszköz. Az eredményeket példákkal és a szabályalapú kimenet mellé helyezve kell bemutatni, és nem szabad belőlük általános modellminőségi állítást levonni. A 2026. november 17-én megosztott AI-panel a fallback állapotot mutatja; valódi AI-választ még nem lehetett pontozni, ezért az összehasonlító értékelés az M-11 sikeres élő próbája után végezhető el.
+Az értékelés négy szempont szerint végezhető el, szempontonként 0–2 ponttal: (1) a szöveg állításai összhangban vannak-e a heti mutatókkal; (2) a teljes válasz magyar nyelvű és érthető-e; (3) a javaslat konkrét, a következő hétre értelmezhető és a napló adataihoz kötött-e; (4) betartja-e az egészségügyi és biztonsági korlátokat. A 0 pont hibát vagy hiányt, az 1 pont részleges teljesülést, a 2 pont megfelelő teljesülést jelöl. Ez a tervezett skála saját értékelési segédlet, nem validált mérőeszköz. A pontszámokat a két kimenet konkrét mondatai alapján lehet indokolni; kis mintából nem következik a modell általános minősítése. A november 17-i fallback-képet követően november 19-én valódi AI-válasz is dokumentálhatóvá vált (5.12. ábra). A teljes összehasonlító pontozás még nem történt meg; ehhez a mentett bemenet és a modellazonosító rögzítése is szükséges.
 
 ### 6.6. A fejlesztés során használt MI és saját mérnöki munka
 
-A projekt fejlesztése során használt MI-eszközök munkája elkülönül a FitTrack Pro-ba épített, heti értékelést készítő külső MI-funkciótól. A repository MI-használati naplója OpenAI Codex használatát rögzíti többek között a fejlesztési terv, a heti összesítés és validáció módosításainak, az automatizált teszteknek, valamint a szakmai dokumentáció munkaváltozatainak elkészítéséhez. A napló nem teljes beszélgetésarchívum; a projekt szempontjából lényeges feladatokat, döntéseket és ellenőrzéseket foglalja össze.
+A fejlesztés és a dolgozat elkészítése során OpenAI Codexet használtam. Az eszköz kódrészleteket, automatizált teszteket és dokumentációs szövegeket is előállított, illetve átdolgozott. Közreműködött a feladatok tervezésében, a hibakeresésben és a dolgozat nyelvi szerkesztésében is. A felhasználást és az ellenőrzések eredményét külön MI-használati napló rögzíti.
 
-A javaslatok csak a meglévő forráskóddal, követelményekkel és teszteredményekkel összevetve kerültek be a munkafába. Ilyen ellenőrzött módosítás volt a heti nézet három időszakának közös adatmodellje, a terven felüli edzés és a legfeljebb 100%-os tervteljesítési arány különválasztása, valamint a nem magyar AI-válaszok validációjának célzott szigorítása. A hallgatói visszajelzésen alapuló böngészős ellenőrzés az M-01–M-08 eseteknél a kártyákat, időszakcímkéket, hiányzó adatokat, mobil elrendezést és hétválasztót vizsgálta. A kódváltoztatásokhoz kapcsolódó automatizált csomag 16 tesztje, továbbá a lint, típusellenőrzés és production build sikeres eredményt adott.
+A szakirodalom feldolgozásához GPT‑6.2-t használtam a kutatások fontos információinak kiemelésére. Az így készült tömörített összefoglalókat olvastam és használtam a tájékozódásban; ez nem jelentette valamennyi hivatkozott publikáció teljes szövegének elolvasását. A hivatkozások az eredeti publikációkra mutatnak, az MI által készített összefoglalók nem önálló tudományos források. A kézirat forrásellenőrzése során a Codex az eredeti közlemények elérhető absztraktjaival, szövegrészleteivel és kiadói adataival vetette össze a kutatási létszámokat, időtartamokat és fő megállapításokat. Ez az eszközzel végzett ellenőrzés elkülönül a saját olvasásomtól.
 
-A projekt során az alkalmazásba épített AI-válaszban idegen nyelvű részek jelentek meg; ez a FitTrack működési hibája volt, nem a fejlesztéshez használt MI által adott kódjavaslat hibájának bizonyítéka. Hasonlóan, az OpenRouter modell- és szolgáltatóhibáit az alkalmazás külső függőségének problémájaként kell bemutatni. A két hibakört külön kell értékelni: előbbi a modellválasz és a fallback minőségéről, utóbbi a fejlesztői MI-javaslatok ellenőrzéséről szól. A jelenlegi MI-napló nem rögzít konkrét, szándékosan elvetett kódjavaslatot; ilyen példát csak akkor szabad a végleges dolgozatba írni, ha a hallgató ténylegesen fel tud idézni és alá tud támasztani egyet.
+A saját munkám része volt az alkalmazás céljainak egyeztetése, a fejlesztési feladatok és a bemutatandó folyamatok kijelölése, a szolgáltatások beállítása, valamint a böngészős próbák elvégzése. A tapasztalt hibákat képernyőképekkel és parancskimenetekkel jeleztem, majd a javított működést újra kipróbáltam. Ilyen visszacsatolás alapján javult a hétválasztó olvashatósága, az edzésnapló kihagyáskezelése és a részleges heti edzésszám megjelenítése.
 
-A hallgató mérnöki hozzájárulását a projekt problémájának és hatókörének kijelölése, a szabályalapú mutatók és a generatív magyarázat szerepének elkülönítése, az alkalmazás saját adatmodelljéhez és tesztelési igényeihez igazított döntések, valamint a felhasználói felületen végzett próbák és visszajelzések adják. E bekezdést a végleges változat előtt a saját tényleges feladatmegosztás és a MI-használati napló alapján a hallgatónak személyesen ellenőriznie és pontosítania kell.
+Az MI által javasolt kódhoz automatizált ellenőrzések is készültek. Ezek többek között a heti számításokat és a nem magyar nyelvű válaszok elutasítását vizsgálják. A teszteredmény azonban csak az ellenőrzött esetekre vonatkozik, ezért a felületi próbákra is szükség volt. A projektbe épített nyelvi modell és a fejlesztést segítő Codex külön szerepet tölt be: előbbi a naplóadatokból készít magyarázatot, utóbbi a megvalósítás és a dokumentáció elkészítését segítette.
+
+**A hétválasztó javítása.** A háromhetes nézet próbáján a hétváltás működött, de a lenyíló lista fehér hátterén fehér szöveg jelent meg. Ezt az automatizált ellenőrzések nem jelezték; böngészőben vettem észre, és képernyőképpel dokumentáltam. A Codex módosította a választó színeit, majd újra ellenőriztem az olvashatóságot és a hétváltást. A módosítást a sikeres visszaellenőrzés alapján fogadtam el.
+
+**Az edzésszám és a volumen ellenőrzése.** Két tízismétléses sorozatot mentettem 20 kg-os súllyal, a második gyakorlatot pedig kihagytam. A várt 400 kg volumen megjelent, az edzésszám azonban aktív terv mellett is 1/0 maradt. Jeleztem, hogy a kép frissítés után készült. A kód vizsgálata során a hétköznapok számozásának eltérése és a dátumhatárok kezelése bizonyult problémásnak. A Codex elkészítette a javítást és a regressziós teszteket; az újabb böngészős próbán már 1/1 edzés és 400 kg volumen szerepelt. Ezt képernyőképpel rögzítettem.
+
+**A magyar AI-válasz ellenőrzése.** Egy heti elemzésben a magyar mondatok közé idegen nyelvű szavak kerültek. A válasz megjelent a felületen, mégsem felelt meg a nyelvi követelménynek. A szöveg elolvasása után jeleztem a hibát; a Codex módosította a nyelvi szűrést és annak tesztjeit. Egy későbbi próbán magyar jelentés jelent meg, ami az adott válasz megfelelőségét igazolta, nem valamennyi jövőbeli kimenetét. Itt az alkalmazásba épített modell hibázott, a fejlesztést segítő Codex pedig a válaszellenőrzés módosításában vett részt.
+
+**A dokumentáció pontosítása.** A telepítésről jeleztem, hogy saját gépemen, új könyvtárba klónozott példányból végeztem a próbát. A leírásban ezért nem szerepel másik számítógépen végzett ellenőrzés. A szándékosan előidézett AI-szolgáltatói hibával tervezett újabb próbát nem hajtottam végre, így azt nem tüntettük fel sikeresként. Ezekben az esetekben a dokumentáció állításait a ténylegesen elvégzett munkához igazítottuk.
+
+A saját követelményalkotó munkámhoz a 3. fejezetben bemutatott edzői tapasztalatok feldolgozása is hozzátartozott. A gyakorlati igényeket az alkalmazás konkrét működésével kapcsoltam össze, majd a böngészős próbákon ellenőriztem. A megvalósításban és az automatizált ellenőrzések elkészítésében jelentős szerepet kapott a Codex; a munkamegosztás értékelésénél ezt a közreműködést is figyelembe kell venni.
 
 ### 6.7. Kiegészítő ellenőrzés és nyitott hibák – 2026. november 19.
 
-Ez a dátumozott kiegészítés pontosítja a korábbi tesztállapotokat. A mentett képek alapján a részleges heti nézet javítás után 1/1 edzést és 400 kg volument mutat. Valódi magyar AI-válasz is rendelkezésre áll (5.12. ábra); a korábbi, november 17-i fallback megfigyelés ezért már nem az egyetlen dokumentált kimenet. A teljes, azonos mentett bemenetre épülő összehasonlító pontozás ugyanakkor még nem készült el. A tesztelő új hibainjektálásos fallback-próbát nem végzett.
+A november 19-i ellenőrzés során a heti nézet már a javított 1/1 edzésszámot és a kézzel kiszámolt 400 kg volument mutatta. Az 5.12. ábrán magyar AI-válasz is látható. Új, szándékosan előidézett szolgáltatói hibával nem végeztem próbát; a tartalék értékelés bemutatása a korábban megfigyelt hibás szolgáltatói válaszon alapul.
 
-A tesztelő az onboardingra vonatkozó új hibajelzését visszavonta, így azt nem tartjuk nyilván nyitott hibaként. A termék- és kosárfelület képein öt, egyenként 6990 Ft-os termék összege helyesen 34 950 Ft, a kapcsolódó Stripe Checkout képernyőn azonban 349,50 Ft szerepel. A fizetési folyamat újrateszteléséig ez ismert összegeltérés. A képernyők nem bizonyítják a sikeres fizetést vagy a webhook feldolgozását.
+A webshop próbájában öt, egyenként 6990 Ft-os termék összege helyesen 34 950 Ft volt a kosárban. A Stripe Checkout oldalán viszont 349,50 Ft jelent meg. Ez nyitott hiba, ezért a fizetési folyamatot nem tekintem sikeresen ellenőrzöttnek. A rendelkezésre álló képek a fizetés befejezését és a webhook feldolgozását sem igazolják.
 
-A jelenlegi eredmények fejlesztői és tesztelői próbákból származnak. A tiszta környezetű telepítés, a célfelhasználói UAT és a témavezetői végellenőrzés lezárása továbbra is szükséges. A november 19-i export véleményezhető változat, nem igazoltan hibamentes vagy hivatalosan elfogadott végleges leadás.
+November 19-én a saját Windows gépemen, külön könyvtárba klónozott példányból is elindítottam az alkalmazást. A Next.js parancs kezdetben nem volt elérhető; az `npm ci` telepítése után az indítás sikerült. A próbához a meglévő Supabase-adatbázist használtam. Ez a forrásból történő telepítést ellenőrzi, de nem fedi le egy új operációs rendszer vagy üres adatbázis beállítását. A pontos Node- és npm-verziót, illetve a terminál teljes kimenetét ebben a próbában nem rögzítettem.
 
 ## 7. Összegzés és további munka
 
-A dolgozat jelenlegi munkaváltozata egy olyan központi folyamatot ír le, amely a felhasználó tervét, tényleges edzésnaplóját, étkezési bejegyzéseit és testsúlyméréseit heti időszeletekben kapcsolja össze. A megvalósítás közös aggregációs logikát használ a fejlődési nézethez és az AI-elemzés bemenetéhez. A dokumentált tervezési döntések között ezért kiemelt szerepet kap az adatlefedettség, a hiányzó napok elkülönítése, a naplózott volumen korlátozott értelmezése, valamint az, hogy az AI nem írja felül a kiszámított mutatókat vagy a felhasználó edzéstervét.
+A FitTrack Pro a tervezéstől a naplózáson át a heti visszajelzésig támogatja az edzés és a táplálkozás követését. A megvalósítás során a legfontosabb feladat a különböző naplók összekapcsolása volt: a tervből az elvárt alkalmak, az edzésnaplóból a tényleges sorozatok, az étkezésekből és testsúlymérésekből pedig a heti mutatók származnak. Ezekből a rendszer modellhívás nélkül is készít értékelést. Az AI ehhez szöveges magyarázatot és javaslatokat adhat.
 
-A rendelkezésre álló ellenőrzési eredmények alapján a heti metrikák automatizált esetei, a statikus kódellenőrzések és a háromhetes adatot visszaadó API-próba sikeres volt. A felhasználói visszajelzés az M-01–M-08 eseteket sikeresnek jelezte. M-10, M-15 és M-16 szintén működőnek bizonyult a visszajelzés alapján; M-09 részleges, M-12-ben pedig a fallback felület látható. A valódi AI-válasz, a teljes onboarding, a kosárfunkció és a kihagyott gyakorlat volumenre gyakorolt hatásának ellenőrzése még nyitott. Ezek az eredmények a vizsgált fejlesztői/demó környezetre vonatkoznak. Nem igazolják a felhasználói viselkedés megváltozását, a javaslatok egészségügyi hatását vagy a modell minden lehetséges válaszának megfelelőségét.
+A november 19-i automatizált tesztfuttatás mind a 25 esete sikeres volt. A kézi próbák és mentett képernyőképek alátámasztják a háromhetes nézet, a 400 kg-os edzésnapló, az adagarányos étkezésmentés, a mobil elrendezés és a magyar AI-kimenet megjelenítését. Az alkalmazást saját gépemen friss klónból is sikeresen elindítottam. Ezek a vizsgált környezetre vonatkozó eredmények; nem igazolják a javaslatok egészségügyi hatását vagy a modell minden lehetséges válaszának megfelelőségét.
 
-A következő kéziratváltozatban le kell zárni az M-09 és M-11–M-14 fennmaradó ellenőrzéseit, a felhasználói visszajelzéshez képernyőkép-bizonyítékot kell menteni, és ugyanazon heti adatokon össze kell hasonlítani a szabályalapú és valódi AI-kimenetet. A Lovarda-minta alapján külön képernyőközpontú használati bemutatót és a fejlesztés során használt MI-ről szóló fejezetet építünk a kéziratba; a mintából származó szöveget vagy lovardai tartalmat nem vesszük át. A témavezető október 28-i levele alapján a hat kért mérnöki ábranézet bekerült a kéziratba; a végső Word/PDF tördelésben olvashatóságukat külön ellenőrizni kell. A követelmény–használati eset–megvalósítás–teszt megfeleltetést, az ábrahivatkozásokat és az oldalszámot a végső Word/PDF tördelés után kell ellenőrizni.
+A következő lépés az AI és a szabályalapú kimenet összehasonlítása azonos mentett heteken. Ez segíthet megállapítani, hogy a modell mennyivel teszi érthetőbbé a számított eredményeket, és milyen pontatlanságokat hoz be. Emellett javításra vár a Stripe-nál tapasztalt összegeltérés. A telepítés részletesebb rögzítése és külső célfelhasználók bevonása tovább bővítené a rendszer működéséről rendelkezésre álló tapasztalatokat.
 
 ## Hivatkozások
 
